@@ -6,10 +6,10 @@ Pod::Spec.new do |s|
                   Fusion is resposible for ...
                   DESC
   s.homepage = "https://fusion.com"
-  s.documentation_url = "https://dineybomfim.github.io/fusion/"
+  s.documentation_url = "https://db-in.github.io/fusion/"
   s.license = { :type => "MIT", :file => "LICENSE" }
   s.author = 'Diney Bomfim'
-  s.source = { :git => "git@github.com:dineybomfim/fusion.git", :tag => "#{s.name}-v#{s.version}", :submodules => true }
+  s.source = { :git => "git@github.com:db-in/fusion.git", :tag => "#{s.name}-v#{s.version}", :submodules => true }
   
   s.swift_version = '5.0'
   s.requires_arc = true

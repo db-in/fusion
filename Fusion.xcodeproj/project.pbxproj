@@ -6,6 +6,20 @@
 	objectVersion = 55;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		60CFD2892A37384F00C96629 /* Publishing */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 60CFD28C2A37384F00C96629 /* Build configuration list for PBXAggregateTarget "Publishing" */;
+			buildPhases = (
+				60CFD28D2A37387500C96629 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Publishing;
+			productName = Publishing;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		04FF4231614CD3D0F23B66DB /* Pods_FusionTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 115F0FA20218E0D1327CB942 /* Pods_FusionTests.framework */; };
 		601B18B42A210E8D0050644B /* TweenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601B18B32A210E8D0050644B /* TweenTests.swift */; };
@@ -84,7 +98,7 @@
 		60A859AF2A06BBD300D3B283 /* TimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerTests.swift; sourceTree = "<group>"; };
 		60A859B02A06BBD300D3B283 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		60A859B12A06BBD400D3B283 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		60A859B72A06BBD400D3B283 /* pod_pipeline.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = pod_pipeline.sh; sourceTree = "<group>"; };
+		60A859B72A06BBD400D3B283 /* publishing.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = publishing.sh; sourceTree = "<group>"; };
 		60A859B82A06BC7600D3B283 /* Fusion.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		60A859BB2A06D84B00D3B283 /* FusionCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FusionCore.h; sourceTree = "<group>"; };
 		60A859BD2A06D84B00D3B283 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -301,17 +315,9 @@
 		60A859B52A06BBD400D3B283 /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
-				60A859B62A06BBD400D3B283 /* Travis */,
+				60A859B72A06BBD400D3B283 /* publishing.sh */,
 			);
 			path = Scripts;
-			sourceTree = "<group>";
-		};
-		60A859B62A06BBD400D3B283 /* Travis */ = {
-			isa = PBXGroup;
-			children = (
-				60A859B72A06BBD400D3B283 /* pod_pipeline.sh */,
-			);
-			path = Travis;
 			sourceTree = "<group>";
 		};
 		60A859B92A06D84B00D3B283 /* Fusion */ = {
@@ -514,6 +520,9 @@
 					60A8597A2A06BB2500D3B283 = {
 						CreatedOnToolsVersion = 14.2;
 					};
+					60CFD2892A37384F00C96629 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
 				};
 			};
 			buildConfigurationList = 600A7C702A0038C1003B0093 /* Build configuration list for PBXProject "Fusion" */;
@@ -533,6 +542,7 @@
 				60A8595A2A06BB2500D3B283 /* Sample iOS */,
 				60A8596A2A06BB2500D3B283 /* Sample tvOS */,
 				60A8597A2A06BB2500D3B283 /* Sample macOS */,
+				60CFD2892A37384F00C96629 /* Publishing */,
 			);
 		};
 /* End PBXProject section */
@@ -597,6 +607,23 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		60CFD28D2A37387500C96629 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}/Scripts/publishing.sh\"\n";
 		};
 		73A2CC09AC6E22877BF5B3A6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1126,6 +1153,24 @@
 			};
 			name = Release;
 		};
+		60CFD28A2A37384F00C96629 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H5QKC5ZBYV;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		60CFD28B2A37384F00C96629 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H5QKC5ZBYV;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1170,6 +1215,15 @@
 			buildConfigurations = (
 				60A859952A06BB2600D3B283 /* Debug */,
 				60A859962A06BB2600D3B283 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		60CFD28C2A37384F00C96629 /* Build configuration list for PBXAggregateTarget "Publishing" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				60CFD28A2A37384F00C96629 /* Debug */,
+				60CFD28B2A37384F00C96629 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

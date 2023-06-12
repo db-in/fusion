@@ -1,10 +1,10 @@
 # Account
 
-[![iOS Pipeline](https://github.com/dineybomfim/fusion/actions/workflows/ios.yml/badge.svg)](https://github.com/dineybomfim/fusion/actions/workflows/ios.yml)
-[![codecov](https://codecov.io/gh/dineybomfim/fusion/branch/master/graph/badge.svg)](https://codecov.io/gh/dineybomfim/fusion)
-[![codebeat badge](https://codebeat.co/badges/36b686b3-92d6-4b93-ac7c-37f959ed8f3b)](https://codebeat.co/projects/github-com-dineybomfim-fusion-master)
+[![iOS Pipeline](https://github.com/db-in/fusion/actions/workflows/ios.yml/badge.svg)](https://github.com/db-in/fusion/actions/workflows/ios.yml)
+[![codecov](https://codecov.io/gh/db-in/fusion/branch/master/graph/badge.svg)](https://codecov.io/gh/db-in/fusion)
+[![codebeat badge](https://codebeat.co/badges/36b686b3-92d6-4b93-ac7c-37f959ed8f3b)](https://codebeat.co/projects/github-com-db-in-fusion-master)
 ![Version](https://img.shields.io/badge/swift-5-red.svg)
-[![Platform](https://img.shields.io/cocoapods/p/Fusion.svg?style=flat)](https://github.com/dineybomfim/fusion)
+[![Platform](https://img.shields.io/cocoapods/p/Fusion.svg?style=flat)](https://github.com/db-in/fusion)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Fusion.svg)](https://img.shields.io/cocoapods/v/Fusion.svg)
 [![Swift Package Manager Compatible](https://img.shields.io/badge/Swift-Package-Manager-compatible-brightgreen.svg)](https://github.com/apple/swift-package-manager)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
@@ -33,7 +33,7 @@ pod 'Fusion'
 Add to your **Cartfile** or **Cartfile.private** file
 
 ```
-github "dineybomfim/Fusion"
+github "db-in/Fusion"
 ```
 
 ### Using [Swift Package Manager](https://swift.org/package-manager)
@@ -44,7 +44,7 @@ Add to your **Package.swift** file
 let package = Package(
     name: "myproject",
     dependencies: [
-        .package(url: "git@github.com:dineybomfim/fusion.git"),
+        .package(url: "git@github.com:db-in/fusion.git"),
     ],
     targets: [
         .target(
