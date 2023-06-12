@@ -20,7 +20,7 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
-  Fusion: b97114f56b4169a497babc1c6717569f6d46727a
+  Fusion: ca0120b7d5806721fc73cbe271b18fbfd3fe2b96
   LocalServer: bd698f3963afea4aedb2ea34c00e60735f6fc3cf
 
 PODFILE CHECKSUM: 70d7d5fdd9e623ebadc050fb63095f3f437eef12

@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
 	  s.watchos.deployment_target = '7.0'
 	  ui.public_header_files = 'Fusion/Animation/**/*.h'
 	  ui.source_files = 'Fusion/Animation/**/*.{h,m,swift}'
-	  ui.resources = 'Fusion/Animation/**/*.{xib,xcassets,storyboard}'
+#	  ui.resources = 'Fusion/Animation/**/*.{xib,xcassets,storyboard}'
 	  ui.dependency 'Fusion/Core'
 	  ui.ios.frameworks = 'UIKit'
 	  ui.watchos.frameworks = 'UIKit'

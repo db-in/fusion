@@ -51,6 +51,8 @@ public extension UNNotificationRequest {
 		let trigger = UNTimeIntervalNotificationTrigger(timeInterval: seconds, repeats: repeats)
 		let content = UNMutableNotificationContent()
 		
+#if os(tvOS)
+#else
 		content.title = title
 		content.body = message
 		content.sound = .default
@@ -59,7 +61,7 @@ public extension UNNotificationRequest {
 		if let validLink = universalLink {
 			content.userInfo = [Keys.url : validLink]
 		}
-		
+#endif
 		self.init(identifier: "\(title.hashValue)", content: content, trigger: trigger)
 	}
 	

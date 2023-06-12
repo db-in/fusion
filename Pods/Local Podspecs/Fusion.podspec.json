@@ -40,7 +40,6 @@
       "name": "Animation",
       "public_header_files": "Fusion/Animation/**/*.h",
       "source_files": "Fusion/Animation/**/*.{h,m,swift}",
-      "resources": "Fusion/Animation/**/*.{xib,xcassets,storyboard}",
       "dependencies": {
         "Fusion/Core": [
 
