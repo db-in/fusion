@@ -1,0 +1,28 @@
+{
+  "configurations" : [
+    {
+      "id" : "EFACE910-78B3-41FC-9791-48A73C85B9DF",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Fusion.xcodeproj",
+      "identifier" : "60A8595A2A06BB2500D3B283",
+      "name" : "Sample iOS"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Fusion.xcodeproj",
+        "identifier" : "600A7C7F2A0038C1003B0093",
+        "name" : "FusionTests"
+      }
+    }
+  ],
+  "version" : 1
+}

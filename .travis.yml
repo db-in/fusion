@@ -1,0 +1,12 @@
+language: swift
+osx_image: xcode14.2
+branches:
+  only:
+    - master
+before_install:
+  - gem install xcpretty --no-document --quiet
+script:
+  - set -o pipefail
+  - ./Scripts/Travis/pod_pipeline.sh
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

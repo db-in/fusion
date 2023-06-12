@@ -1,0 +1,42 @@
+Pod::Spec.new do |s|
+  s.name = "Fusion"
+  s.version = "1.0.0"
+  s.summary = "Micro Feature"
+  s.description = <<-DESC
+                  Fusion is resposible for ...
+                  DESC
+  s.homepage = "https://fusion.com"
+  s.documentation_url = "https://dineybomfim.github.io/fusion/"
+  s.license = { :type => "MIT", :file => "LICENSE" }
+  s.author = 'Diney Bomfim'
+  s.source = { :git => "git@github.com:dineybomfim/fusion.git", :tag => "#{s.name}-v#{s.version}", :submodules => true }
+  
+  s.swift_version = '5.0'
+  s.requires_arc = true
+  s.ios.deployment_target = '13.0'
+  s.osx.deployment_target = '10.0'
+  s.tvos.deployment_target = '13.0'
+  s.watchos.deployment_target = '7.0'
+  s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
+  s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
+
+  s.subspec 'Core' do |co|
+	  co.public_header_files = 'Fusion/Core/**/*.h'
+	  co.source_files = 'Fusion/Core/**/*.{h,m,swift}'
+	  co.frameworks = 'Foundation'
+	  co.frameworks = 'Security'
+	  co.frameworks = 'CommonCrypto'
+	  co.frameworks = 'UserNotifications'
+  end
+
+  s.subspec 'Animation' do |ui|
+	  ui.public_header_files = 'Fusion/Animation/**/*.h'
+	  ui.source_files = 'Fusion/Animation/**/*.{h,m,swift}'
+	  ui.resources = 'Fusion/Animation/**/*.{xib,xcassets,storyboard}'
+	  ui.dependency 'Fusion/Core'
+	  ui.ios.frameworks = 'UIKit'
+	  ui.watchos.frameworks = 'UIKit'
+	  ui.osx.frameworks = 'AppKit'
+	  ui.tvos.frameworks = 'UIKit'
+  end
+end

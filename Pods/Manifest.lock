@@ -1,0 +1,28 @@
+PODS:
+  - Fusion (1.0.0):
+    - Fusion/Animation (= 1.0.0)
+    - Fusion/Core (= 1.0.0)
+  - Fusion/Animation (1.0.0):
+    - Fusion/Core
+  - Fusion/Core (1.0.0)
+  - LocalServer (2.0.0)
+
+DEPENDENCIES:
+  - Fusion (from `./`)
+  - LocalServer
+
+SPEC REPOS:
+  trunk:
+    - LocalServer
+
+EXTERNAL SOURCES:
+  Fusion:
+    :path: "./"
+
+SPEC CHECKSUMS:
+  Fusion: 80a0205bf48fd6d8d2dbd7df47767f069dad2716
+  LocalServer: 4d18247bcf3ca3bfc933bde034119f283a8b6b5d
+
+PODFILE CHECKSUM: 5317584c8af89edfaf18e9d4daf74819c585da98
+
+COCOAPODS: 1.10.1
