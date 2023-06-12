@@ -13,14 +13,14 @@ Pod::Spec.new do |s|
   
   s.swift_version = '5.0'
   s.requires_arc = true
-  s.ios.deployment_target = '13.0'
-  s.osx.deployment_target = '10.13'
-  s.tvos.deployment_target = '13.0'
-  s.watchos.deployment_target = '7.0'
   s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
   s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
 
   s.subspec 'Core' do |co|
+	  s.ios.deployment_target = '13.0'
+	  s.osx.deployment_target = '11.0'
+	  s.tvos.deployment_target = '13.0'
+	  s.watchos.deployment_target = '7.0'
 	  co.public_header_files = 'Fusion/Core/**/*.h'
 	  co.source_files = 'Fusion/Core/**/*.{h,m,swift}'
 	  co.frameworks = 'Foundation'
@@ -30,13 +30,15 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'Animation' do |ui|
+	  s.ios.deployment_target = '13.0'
+	  s.tvos.deployment_target = '13.0'
+	  s.watchos.deployment_target = '7.0'
 	  ui.public_header_files = 'Fusion/Animation/**/*.h'
 	  ui.source_files = 'Fusion/Animation/**/*.{h,m,swift}'
 	  ui.resources = 'Fusion/Animation/**/*.{xib,xcassets,storyboard}'
 	  ui.dependency 'Fusion/Core'
 	  ui.ios.frameworks = 'UIKit'
 	  ui.watchos.frameworks = 'UIKit'
-	  ui.osx.frameworks = 'AppKit'
 	  ui.tvos.frameworks = 'UIKit'
   end
 end

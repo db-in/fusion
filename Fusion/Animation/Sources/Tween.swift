@@ -192,7 +192,7 @@ public class Tween {
 		currentCycle += 1
 		
 		guard currentCycle <= options.repetitionCount else {
-			stopTween(option: options.endState ?? .current)
+			stopTween(option: options.endState)
 			return
 		}
 		

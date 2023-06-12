@@ -4,30 +4,30 @@
   "summary": "Micro Feature",
   "description": "Fusion is resposible for ...",
   "homepage": "https://fusion.com",
-  "documentation_url": "https://dineybomfim.github.io/fusion/",
+  "documentation_url": "https://db-in.github.io/fusion/",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
   },
   "authors": "Diney Bomfim",
   "source": {
-    "git": "git@github.com:dineybomfim/fusion.git",
+    "git": "git@github.com:db-in/fusion.git",
     "tag": "Fusion-v1.0.0",
     "submodules": true
   },
   "swift_versions": "5.0",
   "requires_arc": true,
-  "platforms": {
-    "ios": "13.0",
-    "osx": "10.0",
-    "tvos": "13.0",
-    "watchos": "7.0"
-  },
   "user_target_xcconfig": {
     "GENERATE_INFOPLIST_FILE": "YES"
   },
   "pod_target_xcconfig": {
     "GENERATE_INFOPLIST_FILE": "YES"
+  },
+  "platforms": {
+    "ios": "13.0",
+    "osx": "11.0",
+    "tvos": "13.0",
+    "watchos": "7.0"
   },
   "subspecs": [
     {
@@ -51,9 +51,6 @@
       },
       "watchos": {
         "frameworks": "UIKit"
-      },
-      "osx": {
-        "frameworks": "AppKit"
       },
       "tvos": {
         "frameworks": "UIKit"

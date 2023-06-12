@@ -20,7 +20,7 @@ end
 #target 'Sample macOS' do
 #	project 'Fusion'
 #	pod 'LocalServer'
-#	pod 'Fusion', :path => './'
+#	pod 'Fusion/Core', :path => './'
 #end
 #
 #target 'Sample tvOS' do

@@ -5,7 +5,7 @@ PODS:
   - Fusion/Animation (1.0.0):
     - Fusion/Core
   - Fusion/Core (1.0.0)
-  - LocalServer (2.0.0)
+  - LocalServer (2.1.0)
 
 DEPENDENCIES:
   - Fusion (from `./`)
@@ -20,9 +20,9 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
-  Fusion: 80a0205bf48fd6d8d2dbd7df47767f069dad2716
-  LocalServer: 4d18247bcf3ca3bfc933bde034119f283a8b6b5d
+  Fusion: b97114f56b4169a497babc1c6717569f6d46727a
+  LocalServer: bd698f3963afea4aedb2ea34c00e60735f6fc3cf
 
-PODFILE CHECKSUM: 5317584c8af89edfaf18e9d4daf74819c585da98
+PODFILE CHECKSUM: 70d7d5fdd9e623ebadc050fb63095f3f437eef12
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.12.1
