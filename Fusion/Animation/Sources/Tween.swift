@@ -2,7 +2,8 @@
 //  Created by Diney Bomfim on 5/2/23.
 //
 
-import Foundation
+#if os(iOS) || os(tvOS)
+import UIKit
 
 // MARK: - Definitions -
 
@@ -416,3 +417,4 @@ public extension Tween {
 		tweens(withName: name).forEach { $0.stopTween(option: option) }
 	}
 }
+#endif
