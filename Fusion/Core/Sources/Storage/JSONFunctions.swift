@@ -14,7 +14,6 @@ public func != <T, V: Equatable>(lhs: KeyPath<T, V>, rhs: V) -> (T) -> Bool { { 
 
 public extension DateFormatter {
 	
-//	static var validFormats = ["E MMM d yyyy HH:mm:ss 'GMT'Z (zzz)"]
 	public static var validFormats = ["yyyy-MM-dd'T'HH:mm:ss.SSSZ", "yyyy-MM-dd'T'HH:mm:ssZ"]
 	
 	static var utc: DateFormatter {
@@ -62,6 +61,7 @@ public extension JSONDecoder.DateDecodingStrategy {
 // MARK: - Extension - DateEncodingStrategy
 
 public extension JSONEncoder.DateEncodingStrategy {
+	
 	static var standardDates: JSONEncoder.DateEncodingStrategy {
 		return .custom({ (date, encoder) in
 			var container = encoder.singleValueContainer()
@@ -70,27 +70,24 @@ public extension JSONEncoder.DateEncodingStrategy {
 	}
 }
 
-
 // MARK: - Extension - JSONDecoder
 
 public extension JSONDecoder {
 	
-	static var standard: JSONDecoder {
+	static var standard: JSONDecoder = {
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .standardDates
-		decoder.keyDecodingStrategy = .convertFromSnakeCase
 		return decoder
-	}
+	}()
 }
 
 // MARK: - Extension - JSONEncoder
 
 public extension JSONEncoder {
 	
-	static let standard: JSONEncoder = {
+	static var standard: JSONEncoder = {
 		let encoder = JSONEncoder()
 		encoder.dateEncodingStrategy = .standardDates
-		encoder.keyEncodingStrategy = .convertToSnakeCase
 		return encoder
 	}()
 }
