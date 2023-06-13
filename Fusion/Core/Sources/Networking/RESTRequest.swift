@@ -33,10 +33,32 @@ public enum RESTError : Error {
 	case unkown(Data?)
 }
 
+public extension Result {
+	
+	/// Tries to transform the received error into a codable model.
+	///
+	/// - Returns: The error model or `nil` if it fails to parse.
+	func error<T : Codable>() -> T? {
+		guard
+			case let .failure(error) = self,
+			let apiError = error as? RESTError,
+			case let .unkown(data) = apiError,
+			let validData = data
+		else { return nil }
+		
+		return T.self.load(data: validData)
+	}
+}
+
 public extension URLResponse {
 	
+	/// The possible `HTTPURLResponse` in this response.
 	var http: HTTPURLResponse? { self as? HTTPURLResponse }
+	
+	/// The possible HTTP Status Code.
 	var httpStatusCode: Int { http?.statusCode ?? 0 }
+	
+	/// The possible HTTP header in the response.
 	var httpHeaders: Headers { (http?.allHeaderFields as? Headers) ?? [:] }
 }
 

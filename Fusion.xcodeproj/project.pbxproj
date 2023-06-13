@@ -124,6 +124,7 @@
 		60A859C72A06DB9500D3B283 /* Sample-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Sample-iOS-Info.plist"; sourceTree = SOURCE_ROOT; };
 		60A859C92A0816FF00D3B283 /* JSONFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONFunctions.swift; sourceTree = "<group>"; };
 		60A859CC2A08229700D3B283 /* JSONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTests.swift; sourceTree = "<group>"; };
+		60CFD2C22A38AB2400C96629 /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		B50DDFB92A3305710027AD8F /* EncryptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionTests.swift; sourceTree = "<group>"; };
 		B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotificationTests.swift; sourceTree = "<group>"; };
 		B51DDE532A306C6600E0BCB1 /* Storageable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storageable.swift; sourceTree = "<group>"; };
@@ -406,6 +407,7 @@
 			isa = PBXGroup;
 			children = (
 				60A859BD2A06D84B00D3B283 /* Constants.swift */,
+				60CFD2C22A38AB2400C96629 /* Localization.swift */,
 				60A859BE2A06D84B00D3B283 /* Math.swift */,
 				60A859C42A06D84B00D3B283 /* TimerControl.swift */,
 			);
