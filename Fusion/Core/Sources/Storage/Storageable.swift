@@ -73,14 +73,14 @@ public extension DataPersistable {
 	///   - completion: The response closure to be received.
 	/// - Returns: A new response closure encapsulating the logic.
 	static func map<T : Codable>(_ key: Key, nonDestructive: Bool = true, to completion: Response<T>? = nil) -> Response<T> {
-		return { result in
+		return { result, response in
 			let value = try? result.get()
 			
 			if !nonDestructive || value != nil {
 				set(value, forKey: key)
 			}
 			
-			asyncResponse(completion)(result)
+			asyncResponse(completion)(result, response)
 		}
 	}
 }

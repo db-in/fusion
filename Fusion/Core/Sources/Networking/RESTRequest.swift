@@ -6,7 +6,8 @@ import Foundation
 
 // MARK: - Definitions -
 
-public typealias Response<T> = (Result<T, Error>) -> Void
+public typealias Response<T> = (Result<T, Error>, URLResponse?) -> Void
+public typealias Headers = [String : String]
 
 @inlinable public func asyncMain(_ callback: @escaping () -> Void) {
 	DispatchQueue.main.async { callback() }
@@ -16,8 +17,8 @@ public typealias Response<T> = (Result<T, Error>) -> Void
 	DispatchQueue.main.asyncAfter(deadline: .now() + after) { callback() }
 }
 
-@inlinable public func asyncResponse<T>(_ response: Response<T>?) -> Response<T> {
-	{ result in asyncMain { response?(result) } }
+@inlinable public func asyncResponse<T>(_ callback: Response<T>?) -> Response<T> {
+	{ result, response in asyncMain { callback?(result, response) } }
 }
 
 public enum HTTPMethod : String {
@@ -30,6 +31,13 @@ public enum HTTPMethod : String {
 
 public enum RESTError : Error {
 	case unkown(Data?)
+}
+
+public extension URLResponse {
+	
+	var http: HTTPURLResponse? { self as? HTTPURLResponse }
+	var httpStatusCode: Int { http?.statusCode ?? 0 }
+	var httpHeaders: Headers { (http?.allHeaderFields as? Headers) ?? [:] }
 }
 
 // MARK: - Extension - URLRequest Logs
@@ -99,22 +107,22 @@ public extension URLRequest {
 			}
 			
 			HTTPCookieStorage.appGroup.sync()
-			completion?(result)
+			completion?(result, response)
 		}.resume()
 	}
 	
 	func mapJSONResponse<T : Codable>(to completion: Response<T>?) {
-		mapDataResponse { result in
+		mapDataResponse { result, response in
 			switch result {
 			case .failure(let error):
-				completion?(.failure(error))
+				completion?(.failure(error), response)
 			case .success(let data):
 				do {
 					let result = try JSONDecoder.standard.decode(T.self, from: data)
-					completion?(.success(result))
+					completion?(.success(result), response)
 				} catch {
 					self.debugLog(error: error)
-					completion?(.failure(RESTError.unkown(nil)))
+					completion?(.failure(RESTError.unkown(nil)), response)
 				}
 			}
 		}
@@ -131,10 +139,10 @@ public extension URLRequest {
 			
 			if let validError = error {
 				self.debugLog(error: validError)
-				completion?(.failure(validError))
+				completion?(.failure(validError), response)
 			} else {
 				self.debugLog(data: data ?? Data())
-				completion?(.success(data))
+				completion?(.success(data), response)
 			}
 		}.resume()
 	}

@@ -79,7 +79,7 @@ class NetworkingTests: XCTestCase {
 	func testFullNetworking_WithMockRequest_ShouldPerformLocalStubServerAndPersistResultDataLocally() {
 		let expectation = expectation(description: #function)
 		
-		MockService.mockSuccess { result in
+		MockService.mockSuccess { result, _ in
 			let value = try! result.get()
 			XCTAssertEqual(value.url, "https://httpbin.org/get")
 			XCTAssertEqual(MockModelStorage.localMode?.url, value.url)
@@ -92,7 +92,7 @@ class NetworkingTests: XCTestCase {
 	func testFullNetworking_WithMockFailRequest_ShouldFail() {
 		let expectation = expectation(description: #function)
 		
-		MockService.mockFail { result in
+		MockService.mockFail { result, _ in
 			switch result {
 			case .failure(_):
 				expectation.fulfill()
@@ -107,7 +107,7 @@ class NetworkingTests: XCTestCase {
 	func testFullNetworking_WithBodyMockRequest_ShouldSucceed() {
 		let expectation = expectation(description: #function)
 		
-		MockService.mockBody(body: "foo") { result in
+		MockService.mockBody(body: "foo") { result, _ in
 			let value = try! result.get()
 			XCTAssertEqual(value.url, "https://httpbin.org/get")
 			XCTAssertEqual(MockModelStorage.localMode?.url, value.url)
@@ -120,7 +120,7 @@ class NetworkingTests: XCTestCase {
 	func testFullNetworking_WithUploadMockRequest_ShouldSucceed() {
 		let expectation = expectation(description: #function)
 		
-		MockService.mockUpload { result in
+		MockService.mockUpload { result, _ in
 			let value = try! result.get()
 			XCTAssertNotEqual(value?.count, 0)
 			expectation.fulfill()

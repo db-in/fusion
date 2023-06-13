@@ -85,7 +85,7 @@ public struct RESTBuilder<T> where T : Codable {
 	///   - body: A body, data or codable as a JSON
 	///   - headers: A custom header. The standard header will be used if none is provided
 	///   - completion: The result block
-	public func execute<U : Codable>(body: U, headers: [String : String] = [:], then completion: Response<T>?) {
+	public func execute<U : Codable>(body: U, headers: Headers = [:], then completion: Response<T>?) {
 		
 		var request = buildRequest()
 		let data = (body as? Data) ?? (try? JSONEncoder.standard.encode(body))
@@ -109,7 +109,7 @@ public struct RESTBuilder<T> where T : Codable {
 	/// - Parameters:
 	///   - headers: A custom header. The standard header will be used if none is provided
 	///   - completion: The result block
-	public func execute(headers: [String : String] = [:], then completion: Response<T>?) {
+	public func execute(headers: Headers = [:], then completion: Response<T>?) {
 		var request = buildRequest()
 		request.allHTTPHeaderFields = headers
 		
@@ -124,7 +124,7 @@ public struct RESTBuilder<T> where T : Codable {
 	/// - Parameters:
 	///   - data: The data to be uploaded
 	///   - completion: The result block
-	public func upload(data: Data, headers: [String : String] = [:], then completion: Response<Data?>?) {
+	public func upload(data: Data, headers: Headers = [:], then completion: Response<Data?>?) {
 		var request = buildRequest()
 		request.allHTTPHeaderFields = headers
 		request.mapUpload(data: data, to: completion)

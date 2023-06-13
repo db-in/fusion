@@ -100,12 +100,12 @@ class StoregeableTests: XCTestCase {
 	func testDataPersistable_WithMapPreservingCache_ShouldNotOverrideLocalData() {
 		let expectation = expectation(description: #function)
 		
-		let callback1 = MockStorage.map(.mapTest) { (result: Result<String, Error>) in
+		let callback1 = MockStorage.map(.mapTest) { (result: Result<String, Error>, _) in
 			let newValue = try! result.get()
 			XCTAssertEqual(newValue, self.value)
 			XCTAssertEqual(MockStorage.value(forKey: .mapTest), self.value)
 			
-			let callback2 = MockStorage.map(.mapTest, nonDestructive: true) { (result: Result<String, Error>) in
+			let callback2 = MockStorage.map(.mapTest, nonDestructive: true) { (result: Result<String, Error>, _) in
 				let newValue: String? = try? result.get()
 				let oldValue: String? = MockStorage.value(forKey: .mapTest)
 				XCTAssertNil(newValue)
@@ -113,10 +113,10 @@ class StoregeableTests: XCTestCase {
 				expectation.fulfill()
 			}
 			
-			callback2(.failure(MockError.ordinary))
+			callback2(.failure(MockError.ordinary), nil)
 		}
 		
-		callback1(.success(value))
+		callback1(.success(value), nil)
 		
 		wait(for: [expectation], timeout: 0.2)
 	}
@@ -124,12 +124,12 @@ class StoregeableTests: XCTestCase {
 	func testDataPersistable_WithMapDiscardingCache_ShouldOverrideLocalData() {
 		let expectation = expectation(description: #function)
 		
-		let callback1 = MockStorage.map(.mapTest) { (result: Result<String, Error>) in
+		let callback1 = MockStorage.map(.mapTest) { (result: Result<String, Error>, _) in
 			let newValue = try! result.get()
 			XCTAssertEqual(newValue, self.value)
 			XCTAssertEqual(MockStorage.value(forKey: .mapTest), self.value)
 			
-			let callback2 = MockStorage.map(.mapTest, nonDestructive: false) { (result: Result<String, Error>) in
+			let callback2 = MockStorage.map(.mapTest, nonDestructive: false) { (result: Result<String, Error>, _) in
 				let newValue: String? = try? result.get()
 				let oldValue: String? = MockStorage.value(forKey: .mapTest)
 				XCTAssertNil(newValue)
@@ -137,10 +137,10 @@ class StoregeableTests: XCTestCase {
 				expectation.fulfill()
 			}
 			
-			callback2(.failure(MockError.ordinary))
+			callback2(.failure(MockError.ordinary), nil)
 		}
 		
-		callback1(.success(value))
+		callback1(.success(value), nil)
 		
 		wait(for: [expectation], timeout: 0.2)
 	}
