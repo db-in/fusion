@@ -13,7 +13,7 @@ public struct MockModel: Codable {
 	public let url: String
 }
 
-public struct MockModelStorage : DataPersistable {
+public struct MockModelStorage : DataManageable {
 	
 	public typealias Storage = FileManager
 	

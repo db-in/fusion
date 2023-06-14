@@ -36,7 +36,7 @@ fileprivate extension Data {
 	}
 }
 
-fileprivate struct LogStorage : DataPersistable {
+fileprivate struct LogStorage : DataManageable {
 	
 	fileprivate typealias Storage = FileManager
 	

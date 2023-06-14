@@ -15,7 +15,7 @@ class StoregeableTests: XCTestCase {
 		case ordinary
 	}
 	
-	class MockStorage: DataPersistable {
+	class MockStorage: DataManageable {
 		typealias Storage = StateStorage
 		
 		enum Key : String {
@@ -38,7 +38,7 @@ class StoregeableTests: XCTestCase {
 
 // MARK: - Protected Methods
 
-	func testDataPersistable_WithSet_ShouldSaveValueAndNotifyBinds() {
+	func testDataManageable_WithSet_ShouldSaveValueAndNotifyBinds() {
 		let expectation = expectation(description: #function)
 		
 		MockStorage.bind(key: .singleTest, cancellable: self) { newValue in
@@ -53,7 +53,7 @@ class StoregeableTests: XCTestCase {
 		wait(for: [expectation], timeout: 0.1)
 	}
 	
-	func testDataPersistable_WithSeveralBindCombinations_ShouldProperlyCallAssignedClosure() {
+	func testDataManageable_WithSeveralBindCombinations_ShouldProperlyCallAssignedClosure() {
 		let expectation = expectation(description: #function)
 		expectation.expectedFulfillmentCount = 4
 		
@@ -84,12 +84,12 @@ class StoregeableTests: XCTestCase {
 		wait(for: [expectation], timeout: 0.2)
 	}
 
-	func testDataPersistable_WithValue_ShouldRetrieveTheValueCorrectly() {
+	func testDataManageable_WithValue_ShouldRetrieveTheValueCorrectly() {
 		MockStorage.set(value, forKey: .singleTest)
 		XCTAssertEqual(MockStorage.value(forKey: .singleTest), value)
 	}
 
-	func testDataPersistable_WithRemoveMultipleKeys_ShouldRemoveTheKeys() {
+	func testDataManageable_WithRemoveMultipleKeys_ShouldRemoveTheKeys() {
 		MockStorage.set(value, forKey: .singleTest)
 		MockStorage.set(value, forKey: .dualTest)
 		MockStorage.remove(keys: [.singleTest, .dualTest])
@@ -97,7 +97,7 @@ class StoregeableTests: XCTestCase {
 		XCTAssertNotEqual(MockStorage.value(forKey: .dualTest), value)
 	}
 
-	func testDataPersistable_WithMapPreservingCache_ShouldNotOverrideLocalData() {
+	func testDataManageable_WithMapPreservingCache_ShouldNotOverrideLocalData() {
 		let expectation = expectation(description: #function)
 		
 		let callback1 = MockStorage.map(.mapTest) { (result: Result<String, Error>, _) in
@@ -121,7 +121,7 @@ class StoregeableTests: XCTestCase {
 		wait(for: [expectation], timeout: 0.2)
 	}
 	
-	func testDataPersistable_WithMapDiscardingCache_ShouldOverrideLocalData() {
+	func testDataManageable_WithMapDiscardingCache_ShouldOverrideLocalData() {
 		let expectation = expectation(description: #function)
 		
 		let callback1 = MockStorage.map(.mapTest) { (result: Result<String, Error>, _) in
@@ -145,7 +145,7 @@ class StoregeableTests: XCTestCase {
 		wait(for: [expectation], timeout: 0.2)
 	}
 
-	func testDataPersistable_WithRemoveAllKeys_ShouldRemoveAllKindsAndNotifyBinds() {
+	func testDataManageable_WithRemoveAllKeys_ShouldRemoveAllKindsAndNotifyBinds() {
 		let expectation = expectation(description: #function)
 		
 		MockStorage.bind(key: .dualTest, cancellable: self) { (newValue: String?) in

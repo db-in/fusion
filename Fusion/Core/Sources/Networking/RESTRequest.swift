@@ -35,6 +35,14 @@ public enum RESTError : Error {
 
 public extension Result {
 	
+	/// Quick result check based on its enum.
+	var isSuccess: Bool {
+		switch self {
+		case .success: return true
+		case .failure: return false
+		}
+	}
+	
 	/// Tries to transform the received error into a codable model.
 	///
 	/// - Returns: The error model or `nil` if it fails to parse.

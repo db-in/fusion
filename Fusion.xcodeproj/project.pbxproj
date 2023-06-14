@@ -87,6 +87,7 @@
 		601B18B62A2289940050644B /* MathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathTests.swift; sourceTree = "<group>"; };
 		601CFFB02A169B8300B12DE2 /* Person.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Person.json; sourceTree = "<group>"; };
 		601CFFB22A1B71BD00B12DE2 /* TweenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweenViewController.swift; sourceTree = "<group>"; };
+		6085F3392A39E4EC0021C621 /* DataManageable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManageable.swift; sourceTree = "<group>"; };
 		60A8595B2A06BB2500D3B283 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60A8595D2A06BB2500D3B283 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60A8595F2A06BB2500D3B283 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -127,7 +128,7 @@
 		60CFD2C22A38AB2400C96629 /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		B50DDFB92A3305710027AD8F /* EncryptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionTests.swift; sourceTree = "<group>"; };
 		B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotificationTests.swift; sourceTree = "<group>"; };
-		B51DDE532A306C6600E0BCB1 /* Storageable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storageable.swift; sourceTree = "<group>"; };
+		B51DDE532A306C6600E0BCB1 /* DataStorageable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStorageable.swift; sourceTree = "<group>"; };
 		B51DDE542A306FF700E0BCB1 /* LocalNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotification.swift; sourceTree = "<group>"; };
 		B51DDE572A3070D500E0BCB1 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		B51DDE582A30735500E0BCB1 /* InMemoryCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryCache.swift; sourceTree = "<group>"; };
@@ -394,11 +395,12 @@
 			isa = PBXGroup;
 			children = (
 				B51DDE592A30736B00E0BCB1 /* DataBindable.swift */,
+				6085F3392A39E4EC0021C621 /* DataManageable.swift */,
+				B51DDE532A306C6600E0BCB1 /* DataStorageable.swift */,
 				B51DDE582A30735500E0BCB1 /* InMemoryCache.swift */,
 				60A859C92A0816FF00D3B283 /* JSONFunctions.swift */,
 				B51DDE572A3070D500E0BCB1 /* Keychain.swift */,
 				B51DDE542A306FF700E0BCB1 /* LocalNotification.swift */,
-				B51DDE532A306C6600E0BCB1 /* Storageable.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
