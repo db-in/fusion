@@ -56,6 +56,21 @@ public extension Result {
 		
 		return T.self.load(data: validData)
 	}
+	
+	/// Maps the success result to a given non-optional outcome.
+	/// This function can be used to unwraps keypaths and properties inside a successfull response, while failing for `nil` outcomes.
+	///
+	/// - Parameter transform: The transformation closure.
+	/// - Returns: The new result with a generic error.
+	@inlinable public func mapAndUnwrap<T>(_ transform: (Success) -> T?) -> Result<T, Error> {
+		switch self {
+		case .success(let value):
+			guard let unwrapped = transform(value) else { return .failure(NSError()) }
+			return .success(unwrapped)
+		case .failure(let error):
+			return .failure(error)
+		}
+	}
 }
 
 public extension URLResponse {
