@@ -17,10 +17,10 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
   
   s.subspec 'Core' do |co|
-	  s.osx.deployment_target = '11.0'
-	  s.ios.deployment_target = '13.0'
-	  s.tvos.deployment_target = '13.0'
-	  s.watchos.deployment_target = '7.0'
+	  co.osx.deployment_target = '11.0'
+	  co.ios.deployment_target = '13.0'
+	  co.tvos.deployment_target = '13.0'
+	  co.watchos.deployment_target = '7.0'
 	  co.public_header_files = 'Fusion/Core/**/*.h'
 	  co.source_files = 'Fusion/Core/**/*.{h,m,swift}'
 	  co.frameworks = 'Foundation'
@@ -30,12 +30,12 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'UI' do |ui|
-	  s.ios.deployment_target = '13.0'
-	  s.tvos.deployment_target = '13.0'
-	  s.watchos.deployment_target = '7.0'
+	  ui.ios.deployment_target = '13.0'
+	  ui.tvos.deployment_target = '13.0'
+	  ui.watchos.deployment_target = '7.0'
 	  ui.public_header_files = 'Fusion/UI/**/*.h'
 	  ui.source_files = 'Fusion/UI/**/*.{h,m,swift}'
-#	  ui.resources = 'Fusion/UI/**/*.{xib,xcassets,ttf,storyboard,json,lproj}'
+	  ui.resources = 'Fusion/UI/**/*.{xib,xcassets,ttf,storyboard,json,lproj}'
 	  ui.dependency 'Fusion/Core'
 	  ui.ios.frameworks = 'UIKit'
 	  ui.watchos.frameworks = 'UIKit'
