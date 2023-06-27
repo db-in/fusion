@@ -10,8 +10,6 @@
 #endif
 #endif
 
-#import "Forge3DAnimation.h"
-#import "Forge3DCore.h"
 
 FOUNDATION_EXPORT double FusionVersionNumber;
 FOUNDATION_EXPORT const unsigned char FusionVersionString[];

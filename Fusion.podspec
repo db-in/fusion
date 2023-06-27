@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "Fusion"
-  s.version = "1.0.5"
+  s.version = "1.0.6"
   s.summary = "Micro Feature"
   s.description = <<-DESC
                   Fusion is resposible for ...
@@ -29,13 +29,13 @@ Pod::Spec.new do |s|
 	  co.frameworks = 'UserNotifications'
   end
 
-  s.subspec 'Animation' do |ui|
+  s.subspec 'UI' do |ui|
 	  s.ios.deployment_target = '13.0'
 	  s.tvos.deployment_target = '13.0'
 	  s.watchos.deployment_target = '7.0'
-	  ui.public_header_files = 'Fusion/Animation/**/*.h'
-	  ui.source_files = 'Fusion/Animation/**/*.{h,m,swift}'
-#	  ui.resources = 'Fusion/Animation/**/*.{xib,xcassets,storyboard}'
+	  ui.public_header_files = 'Fusion/UI/**/*.h'
+	  ui.source_files = 'Fusion/UI/**/*.{h,m,swift}'
+	  ui.resources = 'Fusion/UI/**/*.{xib,xcassets,ttf,storyboard,json,lproj}'
 	  ui.dependency 'Fusion/Core'
 	  ui.ios.frameworks = 'UIKit'
 	  ui.watchos.frameworks = 'UIKit'

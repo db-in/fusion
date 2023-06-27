@@ -80,6 +80,9 @@
 /* Begin PBXFileReference section */
 		115F0FA20218E0D1327CB942 /* Pods_FusionTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FusionTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		26946DD7E45CE6C5385967FF /* Pods_Sample_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sample_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6001CE0E2A4B44E500E168CC /* Tween.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tween.swift; sourceTree = "<group>"; };
+		6001CE0F2A4B44E500E168CC /* Ease.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ease.swift; sourceTree = "<group>"; };
+		6001CE112A4B44E500E168CC /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
 		600A7C802A0038C1003B0093 /* FusionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FusionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		600E5E822A23D9B8001810AE /* ios.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = ios.yml; sourceTree = "<group>"; };
 		600E5E832A24CD72001810AE /* Fusion.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.xctestplan; sourceTree = "<group>"; };
@@ -115,13 +118,9 @@
 		60A859B12A06BBD400D3B283 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		60A859B72A06BBD400D3B283 /* publishing.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = publishing.sh; sourceTree = "<group>"; };
 		60A859B82A06BC7600D3B283 /* Fusion.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		60A859BB2A06D84B00D3B283 /* FusionCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FusionCore.h; sourceTree = "<group>"; };
 		60A859BD2A06D84B00D3B283 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		60A859BE2A06D84B00D3B283 /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
-		60A859C12A06D84B00D3B283 /* FusionAnimation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FusionAnimation.h; sourceTree = "<group>"; };
-		60A859C32A06D84B00D3B283 /* Tween.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tween.swift; sourceTree = "<group>"; };
 		60A859C42A06D84B00D3B283 /* TimerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerControl.swift; sourceTree = "<group>"; };
-		60A859C62A06D84B00D3B283 /* Ease.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ease.swift; sourceTree = "<group>"; };
 		60A859C72A06DB9500D3B283 /* Sample-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Sample-iOS-Info.plist"; sourceTree = SOURCE_ROOT; };
 		60A859C92A0816FF00D3B283 /* JSONFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONFunctions.swift; sourceTree = "<group>"; };
 		60A859CC2A08229700D3B283 /* JSONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTests.swift; sourceTree = "<group>"; };
@@ -198,6 +197,40 @@
 				C6A01613DB4F7EE9FB342B1B /* Pods-Sample iOS.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		6001CE0B2A4B44E500E168CC /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				6001CE0C2A4B44E500E168CC /* Sources */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		6001CE0C2A4B44E500E168CC /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				6001CE0D2A4B44E500E168CC /* Animation */,
+				6001CE102A4B44E500E168CC /* Styling */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		6001CE0D2A4B44E500E168CC /* Animation */ = {
+			isa = PBXGroup;
+			children = (
+				6001CE0E2A4B44E500E168CC /* Tween.swift */,
+				6001CE0F2A4B44E500E168CC /* Ease.swift */,
+			);
+			path = Animation;
+			sourceTree = "<group>";
+		};
+		6001CE102A4B44E500E168CC /* Styling */ = {
+			isa = PBXGroup;
+			children = (
+				6001CE112A4B44E500E168CC /* Fonts.swift */,
+			);
+			path = Styling;
 			sourceTree = "<group>";
 		};
 		600A7C6C2A0038C1003B0093 = {
@@ -339,8 +372,8 @@
 		60A859B92A06D84B00D3B283 /* Fusion */ = {
 			isa = PBXGroup;
 			children = (
-				60A859C02A06D84B00D3B283 /* Animation */,
 				60A859BA2A06D84B00D3B283 /* Core */,
+				6001CE0B2A4B44E500E168CC /* UI */,
 			);
 			path = Fusion;
 			sourceTree = "<group>";
@@ -348,7 +381,6 @@
 		60A859BA2A06D84B00D3B283 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				60A859BB2A06D84B00D3B283 /* FusionCore.h */,
 				60A859BC2A06D84B00D3B283 /* Sources */,
 			);
 			path = Core;
@@ -360,24 +392,6 @@
 				B51DDE562A30706D00E0BCB1 /* Controls */,
 				B51DDE5C2A3073D900E0BCB1 /* Networking */,
 				B51DDE552A30700600E0BCB1 /* Storage */,
-			);
-			path = Sources;
-			sourceTree = "<group>";
-		};
-		60A859C02A06D84B00D3B283 /* Animation */ = {
-			isa = PBXGroup;
-			children = (
-				60A859C12A06D84B00D3B283 /* FusionAnimation.h */,
-				60A859C22A06D84B00D3B283 /* Sources */,
-			);
-			path = Animation;
-			sourceTree = "<group>";
-		};
-		60A859C22A06D84B00D3B283 /* Sources */ = {
-			isa = PBXGroup;
-			children = (
-				60A859C32A06D84B00D3B283 /* Tween.swift */,
-				60A859C62A06D84B00D3B283 /* Ease.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";

@@ -1,6 +1,6 @@
 {
   "name": "Fusion",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "summary": "Micro Feature",
   "description": "Fusion is resposible for ...",
   "homepage": "https://fusion.com",
@@ -12,7 +12,7 @@
   "authors": "Diney Bomfim",
   "source": {
     "git": "git@github.com:db-in/fusion.git",
-    "tag": "Fusion-v1.0.4",
+    "tag": "Fusion-v1.0.6",
     "submodules": true
   },
   "swift_versions": "5.0",
@@ -26,7 +26,7 @@
   "platforms": {
     "ios": "13.0",
     "osx": "11.0",
-    "tvos": "13.0",
+    "tvos": "17.0",
     "watchos": "7.0"
   },
   "subspecs": [
@@ -37,9 +37,10 @@
       "frameworks": "UserNotifications"
     },
     {
-      "name": "Animation",
-      "public_header_files": "Fusion/Animation/**/*.h",
-      "source_files": "Fusion/Animation/**/*.{h,m,swift}",
+      "name": "UI",
+      "public_header_files": "Fusion/UI/**/*.h",
+      "source_files": "Fusion/UI/**/*.{h,m,swift}",
+      "resources": "Fusion/UI/**/*.{xib,xcassets,ttf,storyboard,json,lproj}",
       "dependencies": {
         "Fusion/Core": [
 
