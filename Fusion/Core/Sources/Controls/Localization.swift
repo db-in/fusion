@@ -96,7 +96,7 @@ public extension Locale {
 	
 	/// Returns true if the given locale has a language code that belong to right to left direction.
 	var isRTL: Bool {
-		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
 			return language.characterDirection != .leftToRight
 		} else {
 			return Locale.characterDirection(forLanguage: languageCode ?? "") != .leftToRight

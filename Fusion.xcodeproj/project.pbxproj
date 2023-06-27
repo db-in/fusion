@@ -126,7 +126,6 @@
 		60A859822A06BB2500D3B283 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		60A859842A06BB2600D3B283 /* Sample_macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sample_macOS.entitlements; sourceTree = "<group>"; };
 		60A8599A2A06BBD200D3B283 /* codecov.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = codecov.yml; sourceTree = "<group>"; };
-		60A8599B2A06BBD200D3B283 /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .travis.yml; sourceTree = "<group>"; };
 		60A859A72A06BBD300D3B283 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		60A859A82A06BBD300D3B283 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		60A859AB2A06BBD300D3B283 /* package.xcworkspace */ = {isa = PBXFileReference; lastKnownFileType = wrapper.workspace; path = package.xcworkspace; sourceTree = "<group>"; };
@@ -209,7 +208,6 @@
 				60A859B12A06BBD400D3B283 /* .gitignore */,
 				60A859AD2A06BBD300D3B283 /* .swiftlint.yml */,
 				60A859A92A06BBD300D3B283 /* .swiftpm */,
-				60A8599B2A06BBD200D3B283 /* .travis.yml */,
 				60A8599A2A06BBD200D3B283 /* codecov.yml */,
 				7CAA202712D022EFB547D8CA /* Frameworks */,
 				606E5BF82A4B64F200A69B31 /* Fusion */,
