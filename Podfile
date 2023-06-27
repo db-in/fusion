@@ -20,12 +20,12 @@ target 'Sample iOS' do
 	local
 end
 
-target 'Sample macOS' do
-	project 'Fusion'
-	local
-end
-
-target 'Sample tvOS' do
-	project 'Fusion'
-	local
-end
+#target 'Sample macOS' do
+#	project 'Fusion'
+#	local
+#end
+#
+#target 'Sample tvOS' do
+#	project 'Fusion'
+#	local
+#end
