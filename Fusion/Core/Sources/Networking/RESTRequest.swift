@@ -62,7 +62,7 @@ public extension Result {
 	///
 	/// - Parameter transform: The transformation closure.
 	/// - Returns: The new result with a generic error.
-	@inlinable public func mapAndUnwrap<T>(_ transform: (Success) -> T?) -> Result<T, Error> {
+	@inlinable func mapAndUnwrap<T>(_ transform: (Success) -> T?) -> Result<T, Error> {
 		switch self {
 		case .success(let value):
 			guard let unwrapped = transform(value) else { return .failure(NSError()) }

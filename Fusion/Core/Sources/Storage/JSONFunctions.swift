@@ -14,7 +14,7 @@ public func != <T, V: Equatable>(lhs: KeyPath<T, V>, rhs: V) -> (T) -> Bool { { 
 
 public extension DateFormatter {
 	
-	public static var validFormats = ["yyyy-MM-dd'T'HH:mm:ss.SSSZ", "yyyy-MM-dd'T'HH:mm:ssZ"]
+	static var validFormats = ["yyyy-MM-dd'T'HH:mm:ss.SSSZ", "yyyy-MM-dd'T'HH:mm:ssZ"]
 	
 	static var utc: DateFormatter {
 		let formatter = DateFormatter()

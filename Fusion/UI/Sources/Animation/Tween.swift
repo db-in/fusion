@@ -89,12 +89,12 @@ public protocol TweenDelegate {
 }
 
 public extension TweenDelegate {
-	public func tweenWillStart(_ tween: Tween) { }
-	public func tweenWillRepeat(_ tween: Tween) { }
-	public func tweenWillFinish(_ tween: Tween) { }
-	public func tweenDidStart(_ tween: Tween) { }
-	public func tweenDidRepeat(_ tween: Tween) { }
-	public func tweenDidFinish(_ tween: Tween) { }
+	func tweenWillStart(_ tween: Tween) { }
+	func tweenWillRepeat(_ tween: Tween) { }
+	func tweenWillFinish(_ tween: Tween) { }
+	func tweenDidStart(_ tween: Tween) { }
+	func tweenDidRepeat(_ tween: Tween) { }
+	func tweenDidFinish(_ tween: Tween) { }
 }
 
 // MARK: - Type -

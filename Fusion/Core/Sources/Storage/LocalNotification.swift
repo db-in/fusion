@@ -43,7 +43,7 @@ public extension DateComponents {
 
 public extension UNNotificationRequest {
 	
-	public struct Keys {
+	struct Keys {
 		static let url: String = "url"
 	}
 	

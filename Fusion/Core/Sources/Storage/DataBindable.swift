@@ -114,7 +114,7 @@ public extension DataBindable {
 		let wrapper = TargetWrapper(cancellable, callback: callback)
 		let nameKey = namespace(key)
 		
-		if var item = Wrapper.all[nameKey] {
+		if let item = Wrapper.all[nameKey] {
 			if let index = item.firstIndex(of: wrapper) {
 				item[index].binds.append(callback)
 			} else {

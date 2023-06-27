@@ -21,7 +21,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		04FF4231614CD3D0F23B66DB /* Pods_FusionTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 115F0FA20218E0D1327CB942 /* Pods_FusionTests.framework */; };
 		601B18B42A210E8D0050644B /* TweenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601B18B32A210E8D0050644B /* TweenTests.swift */; };
 		601B18B52A224C730050644B /* TimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A859AF2A06BBD300D3B283 /* TimerTests.swift */; };
 		601B18B72A2289940050644B /* MathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601B18B62A2289940050644B /* MathTests.swift */; };
@@ -39,7 +38,6 @@
 		60A859802A06BB2500D3B283 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A8597F2A06BB2500D3B283 /* MainViewController.swift */; };
 		60A859832A06BB2500D3B283 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 60A859812A06BB2500D3B283 /* Main.storyboard */; };
 		60A859CD2A08229700D3B283 /* JSONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A859CC2A08229700D3B283 /* JSONTests.swift */; };
-		765121AE9B1D81141B7C8488 /* Pods_Sample_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26946DD7E45CE6C5385967FF /* Pods_Sample_iOS.framework */; };
 		B50DDFBA2A3305710027AD8F /* EncryptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50DDFB92A3305710027AD8F /* EncryptionTests.swift */; };
 		B50DDFBC2A330C0C0027AD8F /* LocalNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */; };
 		B51DDE652A30BEB500E0BCB1 /* InMemoryCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51DDE642A30BEB500E0BCB1 /* InMemoryCacheTests.swift */; };
@@ -78,8 +76,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		115F0FA20218E0D1327CB942 /* Pods_FusionTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FusionTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		26946DD7E45CE6C5385967FF /* Pods_Sample_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sample_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		600A7C802A0038C1003B0093 /* FusionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FusionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		600E5E822A23D9B8001810AE /* ios.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = ios.yml; sourceTree = "<group>"; };
 		600E5E832A24CD72001810AE /* Fusion.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.xctestplan; sourceTree = "<group>"; };
@@ -125,12 +121,10 @@
 		60A8597F2A06BB2500D3B283 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		60A859822A06BB2500D3B283 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		60A859842A06BB2600D3B283 /* Sample_macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sample_macOS.entitlements; sourceTree = "<group>"; };
-		60A8599A2A06BBD200D3B283 /* codecov.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = codecov.yml; sourceTree = "<group>"; };
 		60A859A72A06BBD300D3B283 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		60A859A82A06BBD300D3B283 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		60A859AB2A06BBD300D3B283 /* package.xcworkspace */ = {isa = PBXFileReference; lastKnownFileType = wrapper.workspace; path = package.xcworkspace; sourceTree = "<group>"; };
 		60A859AC2A06BBD300D3B283 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		60A859AD2A06BBD300D3B283 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		60A859AF2A06BBD300D3B283 /* TimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerTests.swift; sourceTree = "<group>"; };
 		60A859B02A06BBD300D3B283 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		60A859B12A06BBD400D3B283 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -161,7 +155,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04FF4231614CD3D0F23B66DB /* Pods_FusionTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,7 +162,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				765121AE9B1D81141B7C8488 /* Pods_Sample_iOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -206,10 +198,7 @@
 			children = (
 				600E5E802A23D9B8001810AE /* .github */,
 				60A859B12A06BBD400D3B283 /* .gitignore */,
-				60A859AD2A06BBD300D3B283 /* .swiftlint.yml */,
 				60A859A92A06BBD300D3B283 /* .swiftpm */,
-				60A8599A2A06BBD200D3B283 /* codecov.yml */,
-				7CAA202712D022EFB547D8CA /* Frameworks */,
 				606E5BF82A4B64F200A69B31 /* Fusion */,
 				60A859B82A06BC7600D3B283 /* Fusion.podspec */,
 				600E5E832A24CD72001810AE /* Fusion.xctestplan */,
@@ -436,15 +425,6 @@
 				60A859B72A06BBD400D3B283 /* publishing.sh */,
 			);
 			path = Scripts;
-			sourceTree = "<group>";
-		};
-		7CAA202712D022EFB547D8CA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				115F0FA20218E0D1327CB942 /* Pods_FusionTests.framework */,
-				26946DD7E45CE6C5385967FF /* Pods_Sample_iOS.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		B5D0AB712A32F39A008F6DA0 /* Data Models */ = {

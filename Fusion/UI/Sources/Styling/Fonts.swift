@@ -21,7 +21,7 @@ private extension UIFontDescriptor {
 
 public extension UIFont.TextStyle {
 	
-	public var font: UIFont {
+	var font: UIFont {
 		let loader = UIFont.customFont[self]?.font
 		let finalFont = loader ?? UIFont.preferredFont(forTextStyle: self)
 		let metrics = UIFontMetrics(forTextStyle: self)
