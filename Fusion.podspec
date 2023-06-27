@@ -17,8 +17,8 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
   
   s.subspec 'Core' do |co|
-	  s.ios.deployment_target = '13.0'
 	  s.osx.deployment_target = '11.0'
+	  s.ios.deployment_target = '13.0'
 	  s.tvos.deployment_target = '13.0'
 	  s.watchos.deployment_target = '7.0'
 	  co.public_header_files = 'Fusion/Core/**/*.h'

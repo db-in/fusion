@@ -1,0 +1,3 @@
+${PODS_ROOT}/Target Support Files/Pods-Sample tvOS/Pods-Sample tvOS-frameworks.sh
+${BUILT_PRODUCTS_DIR}/Fusion/Fusion.framework
+${BUILT_PRODUCTS_DIR}/LocalServer/LocalServer.framework

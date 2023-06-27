@@ -2,6 +2,7 @@
 //  Created by Diney Bomfim on 5/3/23.
 //
 
+#if os(iOS) || os(tvOS)
 import UIKit
 
 // MARK: - Definitions -
@@ -40,7 +41,9 @@ public extension UIFont {
 	
 	var monospacedDigit: UIFont { UIFont(descriptor: fontDescriptor.monospacedDigit, size: 0) }
 	
+#if os(iOS)
 	static var largeTitle: UIFont = .TextStyle.largeTitle.font
+#endif
 	static var title1: UIFont = .TextStyle.title1.font
 	static var title2: UIFont = .TextStyle.title2.font
 	static var title3: UIFont = .TextStyle.title3.font
@@ -55,7 +58,9 @@ public extension UIFont {
 	/// Defines custom fonts for each ``UIFont.TextStyle``
 	static var customFont: [UIFont.TextStyle : FontLoader] = [:] {
 		didSet {
+#if os(iOS)
 			largeTitle = .TextStyle.largeTitle.font
+#endif
 			title1 = .TextStyle.title1.font
 			title2 = .TextStyle.title2.font
 			title3 = .TextStyle.title3.font
@@ -113,3 +118,4 @@ public struct FontLoader {
 		return fontName
 	}
 }
+#endif
