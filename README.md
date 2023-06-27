@@ -1,12 +1,12 @@
 # Account
 
-[![iOS Pipeline](https://github.com/db-in/fusion/actions/workflows/ios.yml/badge.svg)](https://github.com/db-in/fusion/actions/workflows/ios.yml)
-[![codecov](https://codecov.io/gh/db-in/fusion/branch/master/graph/badge.svg)](https://codecov.io/gh/db-in/fusion)
-[![codebeat badge](https://codebeat.co/badges/36b686b3-92d6-4b93-ac7c-37f959ed8f3b)](https://codebeat.co/projects/github-com-db-in-fusion-master)
 ![Version](https://img.shields.io/badge/swift-5-red.svg)
-[![Platform](https://img.shields.io/cocoapods/p/Fusion.svg?style=flat)](https://github.com/db-in/fusion)
+[![Swift Package Manager Compatible](https://img.shields.io/endpoint?url=https://swiftpackageindex.com/api/packages/db-in/Fusion/badge?type=platforms)](https://github.com/apple/swift-package-manager)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Fusion.svg)](https://img.shields.io/cocoapods/v/Fusion.svg)
-[![Swift Package Manager Compatible](https://img.shields.io/badge/Swift-Package-Manager-compatible-brightgreen.svg)](https://github.com/apple/swift-package-manager)
+[![Platform](https://img.shields.io/cocoapods/p/Fusion.svg)](https://github.com/db-in/fusion)
+[![iOS Pipeline](https://github.com/db-in/fusion/actions/workflows/ios.yml/badge.svg)](https://github.com/db-in/fusion/actions/workflows/ios.yml)
+<!--[![codecov](https://codecov.io/gh/db-in/fusion/branch/master/graph/badge.svg)](https://codecov.io/gh/db-in/fusion)-->
+[![codebeat badge](https://codebeat.co/badges/36b686b3-92d6-4b93-ac7c-37f959ed8f3b)](https://codebeat.co/projects/github-com-db-in-fusion-master)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 ## Description
