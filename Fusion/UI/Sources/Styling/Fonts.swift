@@ -99,9 +99,8 @@ public struct FontLoader {
 	
 	private func generateName() -> String {
 		
-		let url = Assets.url(forFileNamed: file)
-		
 		guard
+			let url = Bundle.allAvailable.firstMap({ $0.url(forResource: file, withExtension: "") }),
 			let data = try? Data(contentsOf: url),
 			let provider = CGDataProvider(data: data as CFData),
 			let font = CGFont(provider),

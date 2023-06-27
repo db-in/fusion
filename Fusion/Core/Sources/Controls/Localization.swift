@@ -36,7 +36,8 @@ public extension Bundle {
 	
 	private static var cachedBundles: [String : Bundle] = [:]
 	
-	private static var allAvailable: [Bundle] { allBundles + allFrameworks }
+	/// Returns a combined collection of ``allBundles`` + ``allFrameworks``
+	public static var allAvailable: [Bundle] { allBundles + allFrameworks }
 	
 	/// Defines a set of bundle targets for each language.
 	/// For example:
