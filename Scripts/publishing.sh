@@ -23,5 +23,5 @@ else
 	git push origin -v "refs/tags/${TAG}"
 
 	echo "- 📦 Publishing version $VERSION -"
-	pod trunk push "${FILE}" --allow-warnings
+	pod trunk push "${FILE}" --allow-warnings --verbose
 fi
