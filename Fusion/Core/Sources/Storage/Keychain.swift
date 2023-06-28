@@ -24,7 +24,7 @@ fileprivate extension String {
 
 // MARK: - Type -
 
-/// Keychain is a key-value storage for ``Data`` types. Each instance can be configured differently,
+/// Keychain is a key-value storage. Each instance can be configured differently,
 /// although the underlaying data persistence is the same. The Keychain store is attached to the
 /// main bundle.
 ///

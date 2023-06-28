@@ -36,7 +36,7 @@ public extension Bundle {
 	
 	private static var cachedBundles: [String : Bundle] = [:]
 	
-	/// Returns a combined collection of ``allBundles`` + ``allFrameworks``
+	/// Returns a combined collection of `Bundle.allBundles` + `Bundle.allFrameworks`
 	static var allAvailable: [Bundle] { allBundles + allFrameworks }
 	
 	/// Defines a set of bundle targets for each language.
@@ -86,7 +86,7 @@ public extension Locale {
 
 // MARK: - Properties
 	
-	private static var preferredLanguage: String { Locale.preferredLanguages.first ?? Locale.autoupdatingCurrent.languageCode ?? "en" }
+	private static var preferredLanguage: String { Locale.preferredLanguages.first ?? "en" }
 	
 	/// Standard UTC/GMT locale.
 	static var utc: Locale { Locale(identifier: "UTC") }

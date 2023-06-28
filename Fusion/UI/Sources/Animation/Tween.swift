@@ -149,7 +149,7 @@ public class Tween {
 	/// - Parameters:
 	///   - target: The tween target which will have its values changed.
 	///   - duration: The duration in seconds.
-	///   - options: The tween options. See ``TweenKey``.
+	///   - options: The tween options. See ``TweenOption``.
 	///   - fromValues: A dictionary defining the values from where the tween will start. If none is provided, the current values will be used.
 	///   - toValues: A dictionary defining the values to where the ween will end.
 	@discardableResult public init(target: UIView,
@@ -173,7 +173,7 @@ public class Tween {
 		currentCycle = 0
 		resetTime()
 		
-		Self.tweensQueue.sync(flags: .barrier) {
+		_ = Self.tweensQueue.sync(flags: .barrier) {
 			Self.tweens.insert(self)
 		}
 		
@@ -352,7 +352,7 @@ public class Tween {
 			break
 		}
 		
-		Self.tweensQueue.sync(flags: .barrier) {
+		_ = Self.tweensQueue.sync(flags: .barrier) {
 			Self.tweens.remove(self)
 		}
 		

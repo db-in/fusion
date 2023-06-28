@@ -1,6 +1,6 @@
 {
   "name": "Fusion",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "summary": "Micro Feature",
   "description": "Fusion is resposible for ...",
   "homepage": "https://fusion.com",
@@ -12,7 +12,7 @@
   "authors": "Diney Bomfim",
   "source": {
     "git": "git@github.com:db-in/fusion.git",
-    "tag": "Fusion-v1.0.9",
+    "tag": "Fusion-v1.0.10",
     "submodules": true
   },
   "swift_versions": "5.0",
@@ -40,7 +40,6 @@
       "name": "UI",
       "public_header_files": "Fusion/UI/**/*.h",
       "source_files": "Fusion/UI/**/*.{h,m,swift}",
-      "resources": "Fusion/UI/**/*.{xib,xcassets,ttf,storyboard,json,lproj}",
       "dependencies": {
         "Fusion/Core": [
 

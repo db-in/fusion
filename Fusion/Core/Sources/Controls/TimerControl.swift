@@ -15,7 +15,7 @@ public typealias TimerCallback = () -> Void
 
 // MARK: - Type -
 
-/// This class creates a single unique loop running with the interval defined by the constant ``Constant.maxFps``.
+/// This class creates a single unique loop running with the interval defined by the constant ``Constant/maxFps``.
 final public class TimerControl {
 
 // MARK: - Properties

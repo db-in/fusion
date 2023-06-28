@@ -48,11 +48,23 @@ public class RESTAuthenticator : NSObject, URLSessionDelegate {
 		
 		var secresult: CFError?
 		let status = SecTrustEvaluateWithError(serverTrust, &secresult)
+		let certificate: SecCertificate?
 		
-		if status, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+		if #available(iOS 15.0, *) {
+			let chain = (SecTrustCopyCertificateChain(serverTrust) as NSArray?)?.firstObject as? AnyObject
+			if CFGetTypeID(chain) == SecCertificateGetTypeID() {
+				certificate = (chain?.firstObject as! SecCertificate)
+			} else {
+				certificate = nil
+			}
+		} else {
+			certificate = SecTrustGetCertificateAtIndex(serverTrust, 0)
+		}
+		
+		if status, let validCert = certificate {
 			
 			guard
-				let publicKey = SecCertificateCopyKey(certificate),
+				let publicKey = SecCertificateCopyKey(validCert),
 				let publicKeyData: NSData = SecKeyCopyExternalRepresentation(publicKey, nil)
 			else {
 				completionHandler(.performDefaultHandling, nil)

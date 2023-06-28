@@ -55,7 +55,7 @@ public extension UIFont {
 	static var caption1: UIFont = .TextStyle.caption1.font
 	static var caption2: UIFont = .TextStyle.caption2.font
 	
-	/// Defines custom fonts for each ``UIFont.TextStyle``
+	/// Defines custom fonts loaders for each style.
 	static var customFont: [UIFont.TextStyle : FontLoader] = [:] {
 		didSet {
 #if os(iOS)

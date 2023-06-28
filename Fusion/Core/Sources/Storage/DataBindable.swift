@@ -7,7 +7,7 @@ import Foundation
 // MARK: - Definitions -
 
 private struct Keys {
-	static var deinitCallbackKey = "deinitCallback"
+	static var deinitCallbackKey: UInt8 = 0
 }
 
 private struct Wrapper {
