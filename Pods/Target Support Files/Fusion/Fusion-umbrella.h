@@ -10,6 +10,8 @@
 #endif
 #endif
 
+#import "FusionCore.h"
+#import "FusionUI.h"
 
 FOUNDATION_EXPORT double FusionVersionNumber;
 FOUNDATION_EXPORT const unsigned char FusionVersionString[];
