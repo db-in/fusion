@@ -23,7 +23,7 @@ public extension HTTPCookie {
 
 public extension HTTPCookieStorage {
 	
-	static var appGroup: HTTPCookieStorage { .sharedCookieStorage(forGroupContainerIdentifier: Bundle.main.appGroup) }
+	static var appGroup: HTTPCookieStorage { .sharedCookieStorage(forGroupContainerIdentifier: Bundle.appGroup) }
 	
 	var hasCookies: Bool { cookies?.isEmpty == false }
 	

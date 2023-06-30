@@ -11,25 +11,43 @@ import UIKit
 
 public extension UIImage {
 	
-//	enum Catalogue: String, CaseIterable {
-//
-//		public var image: UIImage { image() }
-//		
-//		private func image(named name: String, compatibleWith: UITraitCollection? = nil) -> UIImage? {
-//			Bundle.allAvailable.firstMap { UIImage(named: name, in: $0, compatibleWith: compatibleWith) }
-//		}
-//		
-//		public func image(with style: UIUserInterfaceStyle? = nil) -> UIImage {
-//			guard let validStyle = style else {
-//				return image(named: rawValue) ?? .init(systemName: rawValue)?.withRenderingMode(.alwaysTemplate) ?? .init()
-//			}
-//			let trait = UITraitCollection(userInterfaceStyle: validStyle)
-//			return image(named: rawValue, compatibleWith: trait) ?? .init(systemName: rawValue, compatibleWith: trait)?.withRenderingMode(.alwaysTemplate) ?? .init()
-//		}
-//	}
+// MARK: - Properties
+	
+	static let photoPlaceholder: UIImage = .anyImage(named: "photo")
+	
+	static let starFilled: UIImage = .anyImage(named: "star.fill")
+	
+	/// Returns the image with `alwaysTemplate` mode.
+	var template: UIImage { withRenderingMode(.alwaysTemplate) }
+	
+// MARK: - Constructors
+	
+	/// Returns an image object with the specified name and style from any available bundle. If there are multiple bundles with the same
+	/// valid image name, only the first is returned with application bundles as priority over frameworks.
+	///
+	/// - Parameters:
+	///   - named: The name of the image resource.
+	///   - style: The style of the user interface (optional).
+	/// - Returns: An image object, if available; otherwise, a system image or an empty image.
+	static func anyImage(named: String, style: UIUserInterfaceStyle? = nil) -> UIImage {
+		var trait: UITraitCollection?
+		
+		if let validStyle = style {
+			trait = .init(userInterfaceStyle: validStyle)
+		}
+		
+		let bundleImage = Bundle.allAvailable.firstMap { UIImage(named: named, in: $0, compatibleWith: trait) }
+		return bundleImage ?? .init(systemName: named, compatibleWith: trait)?.template ?? .init()
+	}
+
+// MARK: - Protected Methods
 	
 // MARK: - Exposed Methods
 	
+	/// Tints the image with the specified color.
+	///
+	/// - Parameter color: The color to tint the image with.
+	/// - Returns: A new image with the applied tint color.
 	func tinted(_ color: UIColor) -> UIImage {
 		guard let graphicImage = cgImage else { return self }
 		let rect = CGRect(origin: .zero, size: size)
@@ -48,10 +66,18 @@ public extension UIImage {
 		return newImage
 	}
 	
+	/// Resizes the image by adding the specified dimensions to its original size.
+	///
+	/// - Parameter newSize: The size to add to the original image size.
+	/// - Returns: A resized image.
 	func resized(by newSize: CGSize) -> UIImage {
-		resized(to: size + newSize)
+		resized(to: .init(width: size.width + newSize.width, height: size.height + newSize.height))
 	}
 	
+	/// Resizes the image to the specified size.
+	///
+	/// - Parameter newSize: The new size for the image.
+	/// - Returns: A resized image.
 	func resized(to newSize: CGSize) -> UIImage {
 		let renderer = UIGraphicsImageRenderer(size: newSize)
 		let image = renderer.image { _ in self.draw(in: CGRect(origin: .zero, size: newSize)) }
@@ -62,9 +88,19 @@ public extension UIImage {
 		return newImage
 	}
 	
+	/// Creates a new image by combining the original image with a shape background of the specified color.
+	///
+	/// - Parameters:
+	///   - color: The color of the shape background.
+	///   - shapeSize: The size of the shape background.
+	///   - iconSize: The size of the icon image.
+	///   - cornerRadius: The corner radius of the shape background (default: 0).
+	///   - borderWidth: The width of the shape background's border (optional).
+	///   - borderColor: The color of the shape background's border (optional).
+	/// - Returns: A new image with the combined shape and original image.
 	func shapped(with color: UIColor,
-				 shapeSize: CGSize = .standardSquare,
-				 iconSize: CGSize = .standardSquare.half,
+				 shapeSize: CGSize,
+				 iconSize: CGSize,
 				 cornerRadius: CGFloat = 0,
 				 borderWidth: CGFloat? = nil,
 				 borderColor: UIColor? = nil) -> UIImage {
@@ -86,48 +122,32 @@ public extension UIImage {
 		return newImage
 	}
 	
-	func grayShapped(cornerRadius: CGFloat = 8) -> UIImage {
-		shapped(with: .onSurfaceInkSubdued, cornerRadius: cornerRadius)
+	/// Creates a circular image by tinting the specified image with the given tint color
+	/// and shaping it within a circular background.
+	///
+	/// - Parameters:
+	///   - image: The image to be tinted and shaped (default: .starFilled).
+	///   - tintColor: The tint color to apply to the image (default: .white).
+	///   - backgroundColor: The color of the circular background (default: .red).
+	///   - iconSize: The size of the icon image (default: CGSize(width: 12, height: 12)).
+	///   - shapeSize: The size of the circular shape background (default: CGSize(width: 20, height: 20)).
+	/// - Returns: A new circular image.
+	static func circular(_ image: UIImage = .starFilled,
+						 tintColor: UIColor = .white,
+						 backgroundColor: UIColor = .red,
+						 iconSize: CGSize = .init(width: 12, height: 12),
+						 shapeSize: CGSize = .init(width: 20, height: 20)) -> UIImage {
+		image.tinted(tintColor).shapped(with: backgroundColor, shapeSize: shapeSize, iconSize: iconSize, cornerRadius: shapeSize.width * 0.5)
 	}
 	
-	func circular(shapeColor: UIColor = .onSurfaceInk, iconColor: UIColor = .surface, insets: CGSize = .init(squared: 16)) -> UIImage {
-		let fullSize = (size + insets).squared
-		return tinted(iconColor).shapped(with: shapeColor, shapeSize: fullSize, iconSize: size, cornerRadius: fullSize.half.width)
-	}
-	
-	func circularSmall(color: UIColor) -> UIImage {
-		circular(shapeColor: color, iconColor: .surfaceBackground, insets: .init(squared: 8))
-	}
-	
-	func circular(color: UIColor) -> UIImage {
-		circular(shapeColor: color, iconColor: .onSurfaceInk, insets: .init(squared: 20)).resized(to: .dynamicSquare - .init(squared: 12))
-	}
-	
-	func grayCircular(size: CGSize = .smallSquare) -> UIImage {
-		let newImage = resized(to: size)
-			.circular(shapeColor: .onSurfaceInkSubdued, iconColor: .onSurfaceInk, insets: .init(squared: 10))
-			.withRenderingMode(.alwaysOriginal)
-		
-		newImage.accessibilityIdentifier = accessibilityIdentifier
-		
-		return newImage
-	}
-	
-	static func badge(_ image: UIImage = .Catalogue.favoriteFilled.image) -> UIImage {
-		let iconSize = CGSize(squared: 12)
-		let shapeSize = CGSize(squared: 20)
-		let favorite = image.tinted(.surface)
-		
-		return favorite.shapped(with: .onSurfaceInk,
-								shapeSize: shapeSize,
-								iconSize: iconSize,
-								cornerRadius: shapeSize.half.width,
-								borderWidth: 1,
-								borderColor: .surface)
-	}
-	
+	/// Adds a badge to the image by overlaying another image on top of it.
+	///
+	/// - Parameters:
+	///   - image: The badge image to overlay on top of the original image.
+	///   - proportion: The scaling proportion of the badge image (default: 0.5).
+	/// - Returns: The image with the added badge.
 	func addBadge(_ image: UIImage, proportion: CGFloat = 0.5) -> UIImage {
-		let scaledSize = size * proportion
+		let scaledSize = CGSize(width: size.width * proportion, height: size.height * proportion)
 		let scaledRect = CGRect(origin: .zero, size: scaledSize)
 		
 		UIGraphicsBeginImageContext(.init(width: size.width + scaledSize.width * 0.25, height: size.height + scaledSize.height * 0.25))
@@ -142,7 +162,14 @@ public extension UIImage {
 		return newImage
 	}
 	
-	static func solid(color: UIColor, size: CGSize = .smallest, corner: CGFloat = 0) -> UIImage {
+	/// Creates a solid color image with the specified color, size, and corner radius.
+	///
+	/// - Parameters:
+	///   - color: The color of the solid image.
+	///   - size: The size of the solid image (default: CGSize(width: 1, height: 1)).
+	///   - corner: The corner radius of the solid image (default: 0).
+	/// - Returns: A solid color image.
+	static func solid(color: UIColor, size: CGSize = .init(width: 1, height: 1), corner: CGFloat = 0) -> UIImage {
 		
 		let rect = CGRect(origin: .zero, size: size)
 		UIGraphicsBeginImageContext(rect.size)
@@ -160,13 +187,24 @@ public extension UIImage {
 		return image ?? UIImage()
 	}
 	
-	static func gradient(colors: [UIColor], size: CGSize = .smallest) -> UIImage {
+	/// Creates a gradient image with the specified colors, size, start point, and end point.
+	///
+	/// - Parameters:
+	///   - colors: The colors to use in the gradient.
+	///   - size: The size of the gradient image (default: CGSize(width: 1, height: 1)).
+	///   - start: The start point of the gradient (default: CGPoint(x: 0, y: 0.5)).
+	///   - end: The end point of the gradient (default: CGPoint(x: 1.0, y: 0.5)).
+	/// - Returns: A gradient image.
+	static func gradient(colors: [UIColor],
+						 size: CGSize = .init(width: 1, height: 1),
+						 start: CGPoint = .init(x: 0, y: 0.5),
+						 end: CGPoint = .init(x: 1.0, y: 0.5)) -> UIImage {
 		
 		let gradientLayer = CAGradientLayer()
 		gradientLayer.frame = CGRect(origin: .zero, size: size)
 		gradientLayer.colors = colors.map(\.cgColor)
-		gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
-		gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.5)
+		gradientLayer.startPoint = start
+		gradientLayer.endPoint = end
 		
 		let rect = CGRect(origin: .zero, size: size)
 		UIGraphicsBeginImageContext(rect.size)
@@ -295,7 +333,7 @@ public extension UIImage {
 								   at: ReferenceWritableKeyPath<T, UIImage?>,
 								   allowsBadge: Bool = true,
 								   storage: URL? = nil,
-								   placeholder: UIImage? = .Catalogue.placeholder.image) {
+								   placeholder: UIImage? = .photoPlaceholder) {
 		guard let url = source as? String ?? (source as? URL)?.absoluteString else {
 			if let image = source as? UIImage {
 				object[keyPath: at] = image
@@ -312,7 +350,7 @@ public extension UIImage {
 			let finalImage = image ?? placeholder
 
 			if let badge = associated[url], allowsBadge {
-				object?[keyPath: at] = finalImage.addBadge(badge)
+				object?[keyPath: at] = finalImage?.addBadge(badge)
 			} else {
 				object?[keyPath: at] = finalImage
 			}

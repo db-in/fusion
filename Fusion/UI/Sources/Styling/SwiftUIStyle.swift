@@ -2,7 +2,7 @@
 //  Created by Diney Bomfim on 6/30/23.
 //
 
-#if canImport(UIKit)
+#if canImport(UIKit) && canImport(SwiftUI)
 import UIKit
 import SwiftUI
 

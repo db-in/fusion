@@ -79,3 +79,110 @@ public extension ClosedRange {
 	/// - Returns: The final result.
 	func looped(_ value: Bound) -> Bound { value < lowerBound ? upperBound : (value > upperBound ? lowerBound : value) }
 }
+
+public extension ClosedRange where Bound == CGFloat {
+	
+	/// Converts a value within the range to a percentage based on its position relative to the lower and upper bounds.
+	///
+	/// - Parameters:
+	///   - value: The value within the range.
+	///   - normalizeBelow: A threshold value below which the result is considered as 0 (optional, default is 0.001).
+	/// - Returns: The percentage value of the input value within the range.
+	func percent(_ value: Bound, normalizeBelow: CGFloat = 0.001) -> Bound {
+		let percent = (clamped(value) - lowerBound) / (upperBound - lowerBound)
+		return percent > normalizeBelow ? percent : 0
+	}
+	
+	/// Converts a percentage value to the corresponding value within the range.
+	///
+	/// - Parameter percent: The percentage value.
+	/// - Returns: The value within the range corresponding to the given percentage.
+	func value(from percent: CGFloat) -> Bound {
+		lowerBound + ((upperBound - lowerBound) * percent)
+	}
+}
+
+// MARK: - Extension - CGPoint
+
+public extension CGPoint {
+	static func + (lhs: Self, rhs: Self) -> Self { .init(x: lhs.x + rhs.x, y: lhs.y + rhs.y) }
+	static func - (lhs: Self, rhs: Self) -> Self { .init(x: lhs.x - rhs.x, y: lhs.y - rhs.y) }
+}
+
+// MARK: - Extension - CGSize
+
+public extension CGSize {
+	
+	/// The size where width and height are both set to the minimum of the original width and height.
+	var squared: CGSize { .init(squared: min(width, height)) }
+	
+	/// The size where width and height are both set to the maximum of the original width and height.
+	var squaredByMax: CGSize { .init(squared: max(width, height)) }
+	
+	/// The size halved by dividing both width and height by 2.
+	var half: CGSize { self * 0.5 }
+	
+	/// The size represented as a `CGPoint` where `x` is the width and `y` is the height.
+	var point: CGPoint { .init(x: width, y: height) }
+	
+	/// Initializes a square `CGSize` with equal width and height.
+	///
+	/// - Parameter squared: The length of the sides of the square.
+	init(squared: CGFloat) { self.init(width: squared, height: squared) }
+	
+	static func + (lhs: Self, rhs: Self) -> Self { .init(width: lhs.width + rhs.width, height: lhs.height + rhs.height) }
+	static func - (lhs: Self, rhs: Self) -> Self { .init(width: lhs.width - rhs.width, height: lhs.height - rhs.height) }
+	static func * (lhs: Self, rhs: CGFloat) -> Self { .init(width: lhs.width * rhs, height: lhs.height * rhs) }
+	static func / (lhs: Self, rhs: CGFloat) -> Self { .init(width: lhs.width / rhs, height: lhs.height / rhs) }
+}
+
+// MARK: - Extension - CGRect
+
+public extension CGRect {
+	
+	enum Alignment {
+		case min
+		case mid
+		case max
+	}
+	
+	/// Returns the point representing the center of the rectangle.
+	var center: CGPoint { CGPoint(x: midX, y: midY) }
+	
+	/// Returns a new `CGRect` by aligning the current `CGRect` in another given `CGRect` with a given criteria.
+	///
+	/// - Parameters:
+	///   - rect: The target rectangle in which the borders will be consider for alignment.
+	///   - x: The X axis alignment.
+	///   - y: The Y axis alignment.
+	/// - Returns: A new `CGRect`.
+	func align(in rect: CGRect, x: Alignment, y: Alignment) -> CGRect {
+		.init(x: x == .min ? rect.minX : (x == .mid ? rect.midX - (width * 0.5) : rect.maxX - width),
+			  y: y == .min ? rect.minY : (y == .mid ? rect.midY - (height * 0.5) : rect.maxY - height),
+			  width: width,
+			  height: height)
+	}
+	
+	/// Similar to `insetBy` but safer, this function avoids resulting in negative size.
+	/// - Parameters:
+	///   - dx: The X axis insets on both sides.
+	///   - dy: The Y axis insets on both sides.
+	/// - Returns: A new `CGRect`.
+	func insetSafelyBy(dx: CGFloat, dy: CGFloat) -> CGRect {
+		let normalizedX = dx * 2 > size.width ? 0 : dx
+		let normalizedY = dy * 2 > size.height ? 0 : dy
+		return insetBy(dx: normalizedX, dy: normalizedY)
+	}
+	
+	/// Returns a new `CGRect` by expanding the edges of the current `CGRect` with a given criteria.
+	///
+	/// - Parameters:
+	///   - top: The top expansion.
+	///   - left: The left expansion.
+	///   - bottom: The bottom expansion.
+	///   - right: The right expansion.
+	/// - Returns: A new `CGRect`.
+	func expand(top: CGFloat = 0, left: CGFloat = 0, bottom: CGFloat = 0, right: CGFloat = 0) -> CGRect {
+		.init(x: minX - left, y: minY - top, width: width + right + left, height: height + bottom + top)
+	}
+}
