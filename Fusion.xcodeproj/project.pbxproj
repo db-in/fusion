@@ -66,6 +66,10 @@
 		60A859802A06BB2500D3B283 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A8597F2A06BB2500D3B283 /* MainViewController.swift */; };
 		60A859832A06BB2500D3B283 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 60A859812A06BB2500D3B283 /* Main.storyboard */; };
 		60A859CD2A08229700D3B283 /* JSONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A859CC2A08229700D3B283 /* JSONTests.swift */; };
+		60CC2E292A4F5DA700E43713 /* SwiftUIStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E272A4F5DA700E43713 /* SwiftUIStyle.swift */; };
+		60CC2E2A2A4F5DA700E43713 /* UIViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E282A4F5DA700E43713 /* UIViewStyle.swift */; };
+		60CC2E2D2A4F617200E43713 /* Images.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E2B2A4F617200E43713 /* Images.swift */; };
+		60CC2E2E2A4F617200E43713 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E2C2A4F617200E43713 /* Colors.swift */; };
 		B50DDFBA2A3305710027AD8F /* EncryptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50DDFB92A3305710027AD8F /* EncryptionTests.swift */; };
 		B50DDFBC2A330C0C0027AD8F /* LocalNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */; };
 		B51DDE652A30BEB500E0BCB1 /* InMemoryCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51DDE642A30BEB500E0BCB1 /* InMemoryCacheTests.swift */; };
@@ -191,6 +195,10 @@
 		60A859B82A06BC7600D3B283 /* Fusion.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		60A859C72A06DB9500D3B283 /* Sample-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Sample-iOS-Info.plist"; sourceTree = SOURCE_ROOT; };
 		60A859CC2A08229700D3B283 /* JSONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTests.swift; sourceTree = "<group>"; };
+		60CC2E272A4F5DA700E43713 /* SwiftUIStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftUIStyle.swift; sourceTree = "<group>"; };
+		60CC2E282A4F5DA700E43713 /* UIViewStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewStyle.swift; sourceTree = "<group>"; };
+		60CC2E2B2A4F617200E43713 /* Images.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Images.swift; sourceTree = "<group>"; };
+		60CC2E2C2A4F617200E43713 /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		776AD69210D859E7E6009DD8 /* Pods_Sample_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sample_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B50DDFB92A3305710027AD8F /* EncryptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionTests.swift; sourceTree = "<group>"; };
 		B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotificationTests.swift; sourceTree = "<group>"; };
@@ -364,7 +372,11 @@
 		609484292A4C5A70008E21A1 /* Styling */ = {
 			isa = PBXGroup;
 			children = (
+				60CC2E2C2A4F617200E43713 /* Colors.swift */,
 				6094842A2A4C5A70008E21A1 /* Fonts.swift */,
+				60CC2E2B2A4F617200E43713 /* Images.swift */,
+				60CC2E272A4F5DA700E43713 /* SwiftUIStyle.swift */,
+				60CC2E282A4F5DA700E43713 /* UIViewStyle.swift */,
 			);
 			path = Styling;
 			sourceTree = "<group>";
@@ -861,11 +873,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60CC2E292A4F5DA700E43713 /* SwiftUIStyle.swift in Sources */,
 				609484582A4C5A70008E21A1 /* Localization.swift in Sources */,
 				6094844A2A4C5A70008E21A1 /* Logger.swift in Sources */,
 				609484562A4C5A70008E21A1 /* Constants.swift in Sources */,
 				609484592A4C5A70008E21A1 /* TimerControl.swift in Sources */,
 				609484442A4C5A70008E21A1 /* Tween.swift in Sources */,
+				60CC2E2A2A4F5DA700E43713 /* UIViewStyle.swift in Sources */,
 				609484552A4C5A70008E21A1 /* InMemoryCache.swift in Sources */,
 				609484462A4C5A70008E21A1 /* Fonts.swift in Sources */,
 				6094844F2A4C5A70008E21A1 /* JSONFunctions.swift in Sources */,
@@ -880,7 +894,9 @@
 				609484452A4C5A70008E21A1 /* Ease.swift in Sources */,
 				609484492A4C5A70008E21A1 /* RESTRequest.swift in Sources */,
 				609484502A4C5A70008E21A1 /* DataManageable.swift in Sources */,
+				60CC2E2E2A4F617200E43713 /* Colors.swift in Sources */,
 				6094845A2A4C5A70008E21A1 /* Dates.swift in Sources */,
+				60CC2E2D2A4F617200E43713 /* Images.swift in Sources */,
 				6094844C2A4C5A70008E21A1 /* Encryption.swift in Sources */,
 				609484542A4C5A70008E21A1 /* Keychain.swift in Sources */,
 			);

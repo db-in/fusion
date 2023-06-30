@@ -251,7 +251,7 @@ public extension FileManager {
 	}
 	
 	var appGroup: URL {
-		let directory = containerURL(forSecurityApplicationGroupIdentifier: Bundle.main.appGroup) ?? temporaryDirectory
+		let directory = containerURL(forSecurityApplicationGroupIdentifier: Bundle.appGroup) ?? temporaryDirectory
 		guard Constant.isDebug else { return directory }
 		
 		let debugFolder = directory.appendingPathComponent("Debug")
@@ -285,10 +285,6 @@ public extension FileManager {
 
 public extension Bundle {
 	
-	@objc static var appGroup: String = ""
-	
-	@objc var appGroup: String { Self.appGroup }
-	
 	var appName: String { infoDictionary?["CFBundleName"] as? String ?? "" }
 	
 	var displayName: String { infoDictionary?["CFBundleDisplayName"] as? String ?? "" }
@@ -298,6 +294,8 @@ public extension Bundle {
 	var shortVersion: String { infoDictionary?["CFBundleShortVersionString"] as? String ?? "" }
 	
 	var fullVersion: String { "v \(shortVersion) (\(buildNumber))" }
+	
+	@objc static var appGroup: String = ""
 }
 
 // MARK: - Extension - URLCache

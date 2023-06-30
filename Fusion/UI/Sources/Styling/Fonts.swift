@@ -2,20 +2,10 @@
 //  Created by Diney Bomfim on 5/3/23.
 //
 
-#if os(iOS) || os(tvOS)
+#if canImport(UIKit)
 import UIKit
 
 // MARK: - Definitions -
-
-private extension UIFontDescriptor {
-
-	var monospacedDigit: UIFontDescriptor {
-		let settings = [[UIFontDescriptor.FeatureKey.featureIdentifier : kNumberSpacingType,
-						 UIFontDescriptor.FeatureKey.typeIdentifier : kMonospacedNumbersSelector]]
-		let attributes = [UIFontDescriptor.AttributeName.featureSettings: settings]
-		return addingAttributes(attributes)
-	}
-}
 
 // MARK: - Extension - UIFont.TextStyle
 
@@ -38,8 +28,6 @@ public extension UIFont {
 // MARK: - Properties
 	
 	var style: String { (fontDescriptor.object(forKey: .textStyle) as? String) ?? fontDescriptor.postscriptName }
-	
-	var monospacedDigit: UIFont { UIFont(descriptor: fontDescriptor.monospacedDigit, size: 0) }
 	
 #if os(iOS)
 	static var largeTitle: UIFont = .TextStyle.largeTitle.font

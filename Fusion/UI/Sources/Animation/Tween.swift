@@ -2,7 +2,7 @@
 //  Created by Diney Bomfim on 5/2/23.
 //
 
-#if os(iOS) || os(tvOS)
+#if canImport(UIKit)
 import UIKit
 
 // MARK: - Definitions -

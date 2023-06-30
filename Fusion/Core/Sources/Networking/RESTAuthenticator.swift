@@ -25,7 +25,7 @@ public class RESTAuthenticator : NSObject, URLSessionDelegate {
 		config.requestCachePolicy = .reloadIgnoringLocalCacheData
 		config.httpCookieStorage = storage
 		config.timeoutIntervalForRequest = 30
-		config.sharedContainerIdentifier = Bundle.main.appGroup
+		config.sharedContainerIdentifier = Bundle.appGroup
 		
 		return .init(configuration: config, delegate: RESTAuthenticator.shared, delegateQueue: nil)
 	}()
