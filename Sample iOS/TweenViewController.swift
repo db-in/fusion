@@ -98,11 +98,6 @@ class TweenSampleCell : UICollectionViewCell {
 	fileprivate func updateColors() {
 		lineLayer.strokeColor = UIColor.label.withAlphaComponent(0.5).cgColor
 	}
-	
-	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-		super.traitCollectionDidChange(previousTraitCollection)
-		updateColors()
-	}
 }
 
 extension Ease {
