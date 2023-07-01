@@ -77,6 +77,18 @@
 		60CC2E3B2A506ACD00E43713 /* UIControlFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E362A506ACD00E43713 /* UIControlFunctions.swift */; };
 		60CC2E3C2A506ACD00E43713 /* HapticControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E372A506ACD00E43713 /* HapticControl.swift */; };
 		60CC2E3D2A506ACD00E43713 /* TextFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E382A506ACD00E43713 /* TextFunctions.swift */; };
+		60CC2E9E2A50C5CC00E43713 /* Sample_watchOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E9D2A50C5CC00E43713 /* Sample_watchOSApp.swift */; };
+		60CC2EA02A50C5CC00E43713 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E9F2A50C5CC00E43713 /* ContentView.swift */; };
+		60CC2EA22A50C5CC00E43713 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60CC2EA12A50C5CC00E43713 /* Assets.xcassets */; };
+		60CC2EA52A50C5CC00E43713 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60CC2EA42A50C5CC00E43713 /* Preview Assets.xcassets */; };
+		60CC2EB62A50C61B00E43713 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = 60CC2EB52A50C61B00E43713 /* RealityKitContent */; };
+		60CC2EB82A50C61B00E43713 /* Sample_visionOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2EB72A50C61B00E43713 /* Sample_visionOSApp.swift */; };
+		60CC2EBA2A50C61B00E43713 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2EB92A50C61B00E43713 /* ContentView.swift */; };
+		60CC2EBC2A50C61B00E43713 /* ImmersiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2EBB2A50C61B00E43713 /* ImmersiveView.swift */; };
+		60CC2EBE2A50C61B00E43713 /* ImageBasedLight.exr in Resources */ = {isa = PBXBuildFile; fileRef = 60CC2EBD2A50C61B00E43713 /* ImageBasedLight.exr */; };
+		60CC2EC02A50C61B00E43713 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60CC2EBF2A50C61B00E43713 /* Assets.xcassets */; };
+		60CC2EC32A50C61B00E43713 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60CC2EC22A50C61B00E43713 /* Preview Assets.xcassets */; };
+		60CC2ECC2A50CEFA00E43713 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2ECB2A50CEFA00E43713 /* ImageLoader.swift */; };
 		B50DDFBA2A3305710027AD8F /* EncryptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50DDFB92A3305710027AD8F /* EncryptionTests.swift */; };
 		B50DDFBC2A330C0C0027AD8F /* LocalNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */; };
 		B51DDE652A30BEB500E0BCB1 /* InMemoryCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51DDE642A30BEB500E0BCB1 /* InMemoryCacheTests.swift */; };
@@ -106,6 +118,20 @@
 			remoteInfo = Fusion;
 		};
 		60CC2E3F2A509D4A00E43713 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 600A7C6D2A0038C1003B0093 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 609484012A4C5766008E21A1;
+			remoteInfo = Fusion;
+		};
+		60CC2EC72A50C80B00E43713 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 600A7C6D2A0038C1003B0093 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 609484012A4C5766008E21A1;
+			remoteInfo = Fusion;
+		};
+		60CC2EC92A50C81000E43713 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 600A7C6D2A0038C1003B0093 /* Project object */;
 			proxyType = 1;
@@ -220,6 +246,20 @@
 		60CC2E362A506ACD00E43713 /* UIControlFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIControlFunctions.swift; sourceTree = "<group>"; };
 		60CC2E372A506ACD00E43713 /* HapticControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HapticControl.swift; sourceTree = "<group>"; };
 		60CC2E382A506ACD00E43713 /* TextFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFunctions.swift; sourceTree = "<group>"; };
+		60CC2E982A50C5CB00E43713 /* Sample watchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sample watchOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		60CC2E9D2A50C5CC00E43713 /* Sample_watchOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sample_watchOSApp.swift; sourceTree = "<group>"; };
+		60CC2E9F2A50C5CC00E43713 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		60CC2EA12A50C5CC00E43713 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		60CC2EA42A50C5CC00E43713 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		60CC2EB12A50C61A00E43713 /* Sample visionOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sample visionOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		60CC2EB42A50C61B00E43713 /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
+		60CC2EB72A50C61B00E43713 /* Sample_visionOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sample_visionOSApp.swift; sourceTree = "<group>"; };
+		60CC2EB92A50C61B00E43713 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		60CC2EBB2A50C61B00E43713 /* ImmersiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveView.swift; sourceTree = "<group>"; };
+		60CC2EBD2A50C61B00E43713 /* ImageBasedLight.exr */ = {isa = PBXFileReference; lastKnownFileType = file; path = ImageBasedLight.exr; sourceTree = "<group>"; };
+		60CC2EBF2A50C61B00E43713 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		60CC2EC22A50C61B00E43713 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		60CC2ECB2A50CEFA00E43713 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		776AD69210D859E7E6009DD8 /* Pods_Sample_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sample_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B50DDFB92A3305710027AD8F /* EncryptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionTests.swift; sourceTree = "<group>"; };
 		B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotificationTests.swift; sourceTree = "<group>"; };
@@ -278,6 +318,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		60CC2E952A50C5CB00E43713 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		60CC2EAE2A50C61A00E43713 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60CC2EB62A50C61B00E43713 /* RealityKitContent in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -314,6 +369,7 @@
 				60A859AE2A06BBD300D3B283 /* FusionTests */,
 				60A859B02A06BBD300D3B283 /* LICENSE */,
 				60A859A82A06BBD300D3B283 /* Package.swift */,
+				60CC2EB32A50C61B00E43713 /* Packages */,
 				60A859A72A06BBD300D3B283 /* Podfile */,
 				3D91A4166374BB81532630B2 /* Pods */,
 				600A7C772A0038C1003B0093 /* Products */,
@@ -321,6 +377,8 @@
 				60A8595C2A06BB2500D3B283 /* Sample iOS */,
 				60A8597C2A06BB2500D3B283 /* Sample macOS */,
 				60A8596C2A06BB2500D3B283 /* Sample tvOS */,
+				60CC2EB22A50C61A00E43713 /* Sample visionOS */,
+				60CC2E9C2A50C5CC00E43713 /* Sample watchOS */,
 				60A859B52A06BBD400D3B283 /* Scripts */,
 			);
 			sourceTree = "<group>";
@@ -333,6 +391,8 @@
 				60A8596B2A06BB2500D3B283 /* Sample.app */,
 				60A8597B2A06BB2500D3B283 /* Sample.app */,
 				609484022A4C5766008E21A1 /* Fusion.framework */,
+				60CC2E982A50C5CB00E43713 /* Sample watchOS.app */,
+				60CC2EB12A50C61A00E43713 /* Sample visionOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -556,6 +616,7 @@
 			children = (
 				60CC2E342A506ACD00E43713 /* ControlAction.swift */,
 				60CC2E372A506ACD00E43713 /* HapticControl.swift */,
+				60CC2ECB2A50CEFA00E43713 /* ImageLoader.swift */,
 				60CC2E382A506ACD00E43713 /* TextFunctions.swift */,
 				60CC2E362A506ACD00E43713 /* UIControlFunctions.swift */,
 				60CC2E352A506ACD00E43713 /* UIScrollViewFunctions.swift */,
@@ -563,6 +624,54 @@
 				60CC2E2F2A50190800E43713 /* ViewHierarchy.swift */,
 			);
 			path = Controls;
+			sourceTree = "<group>";
+		};
+		60CC2E9C2A50C5CC00E43713 /* Sample watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				60CC2E9D2A50C5CC00E43713 /* Sample_watchOSApp.swift */,
+				60CC2E9F2A50C5CC00E43713 /* ContentView.swift */,
+				60CC2EA12A50C5CC00E43713 /* Assets.xcassets */,
+				60CC2EA32A50C5CC00E43713 /* Preview Content */,
+			);
+			path = "Sample watchOS";
+			sourceTree = "<group>";
+		};
+		60CC2EA32A50C5CC00E43713 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				60CC2EA42A50C5CC00E43713 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		60CC2EB22A50C61A00E43713 /* Sample visionOS */ = {
+			isa = PBXGroup;
+			children = (
+				60CC2EB72A50C61B00E43713 /* Sample_visionOSApp.swift */,
+				60CC2EB92A50C61B00E43713 /* ContentView.swift */,
+				60CC2EBB2A50C61B00E43713 /* ImmersiveView.swift */,
+				60CC2EBD2A50C61B00E43713 /* ImageBasedLight.exr */,
+				60CC2EBF2A50C61B00E43713 /* Assets.xcassets */,
+				60CC2EC12A50C61B00E43713 /* Preview Content */,
+			);
+			path = "Sample visionOS";
+			sourceTree = "<group>";
+		};
+		60CC2EB32A50C61B00E43713 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				60CC2EB42A50C61B00E43713 /* RealityKitContent */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		60CC2EC12A50C61B00E43713 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				60CC2EC22A50C61B00E43713 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		B5D0AB712A32F39A008F6DA0 /* Data Models */ = {
@@ -686,6 +795,45 @@
 			productReference = 60A8597B2A06BB2500D3B283 /* Sample.app */;
 			productType = "com.apple.product-type.application";
 		};
+		60CC2E972A50C5CB00E43713 /* Sample watchOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 60CC2EAB2A50C5CC00E43713 /* Build configuration list for PBXNativeTarget "Sample watchOS" */;
+			buildPhases = (
+				60CC2E942A50C5CB00E43713 /* Sources */,
+				60CC2E952A50C5CB00E43713 /* Frameworks */,
+				60CC2E962A50C5CB00E43713 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				60CC2EC82A50C80B00E43713 /* PBXTargetDependency */,
+			);
+			name = "Sample watchOS";
+			productName = "Sample watchOS Watch App";
+			productReference = 60CC2E982A50C5CB00E43713 /* Sample watchOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		60CC2EB02A50C61A00E43713 /* Sample visionOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 60CC2EC42A50C61B00E43713 /* Build configuration list for PBXNativeTarget "Sample visionOS" */;
+			buildPhases = (
+				60CC2EAD2A50C61A00E43713 /* Sources */,
+				60CC2EAE2A50C61A00E43713 /* Frameworks */,
+				60CC2EAF2A50C61A00E43713 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				60CC2ECA2A50C81000E43713 /* PBXTargetDependency */,
+			);
+			name = "Sample visionOS";
+			packageProductDependencies = (
+				60CC2EB52A50C61B00E43713 /* RealityKitContent */,
+			);
+			productName = "Sample visionOS";
+			productReference = 60CC2EB12A50C61A00E43713 /* Sample visionOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -713,6 +861,12 @@
 					60A8597A2A06BB2500D3B283 = {
 						CreatedOnToolsVersion = 14.2;
 					};
+					60CC2E972A50C5CB00E43713 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					60CC2EB02A50C61A00E43713 = {
+						CreatedOnToolsVersion = 15.0;
+					};
 					60CFD2892A37384F00C96629 = {
 						CreatedOnToolsVersion = 14.3.1;
 					};
@@ -736,6 +890,8 @@
 				60A8595A2A06BB2500D3B283 /* Sample iOS */,
 				60A8596A2A06BB2500D3B283 /* Sample tvOS */,
 				60A8597A2A06BB2500D3B283 /* Sample macOS */,
+				60CC2E972A50C5CB00E43713 /* Sample watchOS */,
+				60CC2EB02A50C61A00E43713 /* Sample visionOS */,
 				60CFD2892A37384F00C96629 /* Publishing */,
 			);
 		};
@@ -781,6 +937,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				60A859832A06BB2500D3B283 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		60CC2E962A50C5CB00E43713 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60CC2EA52A50C5CC00E43713 /* Preview Assets.xcassets in Resources */,
+				60CC2EA22A50C5CC00E43713 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		60CC2EAF2A50C61A00E43713 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60CC2EC02A50C61B00E43713 /* Assets.xcassets in Resources */,
+				60CC2EC32A50C61B00E43713 /* Preview Assets.xcassets in Resources */,
+				60CC2EBE2A50C61B00E43713 /* ImageBasedLight.exr in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -938,6 +1113,7 @@
 				609484502A4C5A70008E21A1 /* DataManageable.swift in Sources */,
 				60CC2E2E2A4F617200E43713 /* Colors.swift in Sources */,
 				60CC2E3A2A506ACD00E43713 /* UIScrollViewFunctions.swift in Sources */,
+				60CC2ECC2A50CEFA00E43713 /* ImageLoader.swift in Sources */,
 				6094845A2A4C5A70008E21A1 /* Dates.swift in Sources */,
 				60CC2E2D2A4F617200E43713 /* Images.swift in Sources */,
 				6094844C2A4C5A70008E21A1 /* Encryption.swift in Sources */,
@@ -974,6 +1150,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		60CC2E942A50C5CB00E43713 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60CC2EA02A50C5CC00E43713 /* ContentView.swift in Sources */,
+				60CC2E9E2A50C5CC00E43713 /* Sample_watchOSApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		60CC2EAD2A50C61A00E43713 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60CC2EBA2A50C61B00E43713 /* ContentView.swift in Sources */,
+				60CC2EB82A50C61B00E43713 /* Sample_visionOSApp.swift in Sources */,
+				60CC2EBC2A50C61B00E43713 /* ImmersiveView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -984,6 +1179,7 @@
 		};
 		609484612A4C6448008E21A1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 609484012A4C5766008E21A1 /* Fusion */;
 			targetProxy = 609484602A4C6448008E21A1 /* PBXContainerItemProxy */;
 		};
@@ -991,6 +1187,16 @@
 			isa = PBXTargetDependency;
 			target = 609484012A4C5766008E21A1 /* Fusion */;
 			targetProxy = 60CC2E3F2A509D4A00E43713 /* PBXContainerItemProxy */;
+		};
+		60CC2EC82A50C80B00E43713 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 609484012A4C5766008E21A1 /* Fusion */;
+			targetProxy = 60CC2EC72A50C80B00E43713 /* PBXContainerItemProxy */;
+		};
+		60CC2ECA2A50C81000E43713 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 609484012A4C5766008E21A1 /* Fusion */;
+			targetProxy = 60CC2EC92A50C81000E43713 /* PBXContainerItemProxy */;
 		};
 		60CFD28F2A373F6500C96629 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1360,9 +1566,13 @@
 				PRODUCT_NAME = Sample;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,7";
 			};
 			name = Debug;
 		};
@@ -1394,9 +1604,13 @@
 				PRODUCT_NAME = Sample;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,7";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1518,6 +1732,138 @@
 			};
 			name = Release;
 		};
+		60CC2EA92A50C5CC00E43713 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Sample watchOS/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Sample watchOS";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.fusion.Sample;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fusion.Sample.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
+		60CC2EAA2A50C5CC00E43713 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Sample watchOS/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Sample watchOS";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.fusion.Sample;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fusion.Sample.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		60CC2EC52A50C61B00E43713 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Sample visionOS/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Sample-visionOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = xros;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+			};
+			name = Debug;
+		};
+		60CC2EC62A50C61B00E43713 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Sample visionOS/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Sample-visionOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = xros;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		60CFD28A2A37384F00C96629 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1595,6 +1941,24 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		60CC2EAB2A50C5CC00E43713 /* Build configuration list for PBXNativeTarget "Sample watchOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				60CC2EA92A50C5CC00E43713 /* Debug */,
+				60CC2EAA2A50C5CC00E43713 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		60CC2EC42A50C61B00E43713 /* Build configuration list for PBXNativeTarget "Sample visionOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				60CC2EC52A50C61B00E43713 /* Debug */,
+				60CC2EC62A50C61B00E43713 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		60CFD28C2A37384F00C96629 /* Build configuration list for PBXAggregateTarget "Publishing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1605,6 +1969,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		60CC2EB52A50C61B00E43713 /* RealityKitContent */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RealityKitContent;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 600A7C6D2A0038C1003B0093 /* Project object */;
 }

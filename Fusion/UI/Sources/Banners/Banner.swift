@@ -37,7 +37,7 @@ struct Banner: View {
 	}
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct Banner_Previews: PreviewProvider {
 	static var previews: some View {
 		Banner(fullImageURL: "https://thispersondoesnotexist.com/", link: "")
 	}

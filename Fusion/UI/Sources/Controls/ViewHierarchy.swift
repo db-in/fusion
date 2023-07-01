@@ -2,7 +2,7 @@
 //  Created by Diney Bomfim on 5/3/23.
 //
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
 import UIKit
 
 // MARK: - Extension - CGSize
@@ -25,7 +25,7 @@ private class StatusBarViewController : UIViewController {
 	
 	private static func generateWindow() -> UIWindow {
 		let topWindow = UIWindow.createWindowOverScene()
-		topWindow.frame = UIScreen.main.bounds
+		topWindow.frame = UIWindow.key?.bounds ?? .zero
 		topWindow.backgroundColor = .clear
 		topWindow.isUserInteractionEnabled = false
 		topWindow.rootViewController = StatusBarViewController()
@@ -370,7 +370,7 @@ public extension UIModalPresentationStyle {
 
 public extension UIWindow {
 	
-#if os(iOS)
+#if os(iOS) && !os(xrOS)
 	/// The frame of the status bar.
 	var statusBarFrame: CGRect {
 		guard #available(iOS 13.0, *) else { return UIApplication.main?.statusBarFrame ?? .zero }

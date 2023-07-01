@@ -2,7 +2,7 @@
 //  Created by Diney Bomfim on 5/3/23.
 //
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
 import UIKit
 
 // MARK: - Definitions -
@@ -126,23 +126,13 @@ public extension UIScrollView {
 	}
 	
 	var indicatorInsets: UIEdgeInsets {
-		get {
-			if #available(iOS 13.0, *) {
-				return verticalScrollIndicatorInsets + horizontalScrollIndicatorInsets
-			} else {
-				return scrollIndicatorInsets
-			}
-		}
+		get { verticalScrollIndicatorInsets + horizontalScrollIndicatorInsets }
 		set {
-			if #available(iOS 13.0, *) {
-				verticalScrollIndicatorInsets = newValue
-				horizontalScrollIndicatorInsets = newValue
-			} else {
-				scrollIndicatorInsets = newValue
-			}
+			verticalScrollIndicatorInsets = newValue
+			horizontalScrollIndicatorInsets = newValue
 		}
 	}
-
+	
 // MARK: - Constructors
 
 // MARK: - Protected Methods

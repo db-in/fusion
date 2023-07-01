@@ -2,7 +2,7 @@
 //  Created by Diney Bomfim on 5/2/23.
 //
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
 import UIKit
 
 // MARK: - Definitions -
