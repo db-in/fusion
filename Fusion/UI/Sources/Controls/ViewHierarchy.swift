@@ -13,21 +13,15 @@ public extension CGSize {
 	static var dynamicSquare: CGSize { .init(squared: 36.67) }
 }
 
-// MARK: - Extension - Notification.Name
-
-public extension Notification.Name {
-	
-	static let keyboardShow = UIResponder.keyboardWillShowNotification
-	static let keyboardHide = UIResponder.keyboardWillHideNotification
-}
-
 // MARK: - Type - StatusBarViewController
 
 private class StatusBarViewController : UIViewController {
 	
 	private static var window: UIWindow?
 	
+#if os(iOS)
 	override var prefersStatusBarHidden: Bool { true }
+#endif
 	
 	private static func generateWindow() -> UIWindow {
 		let topWindow = UIWindow.createWindowOverScene()
@@ -376,11 +370,13 @@ public extension UIModalPresentationStyle {
 
 public extension UIWindow {
 	
+#if os(iOS)
 	/// The frame of the status bar.
 	var statusBarFrame: CGRect {
 		guard #available(iOS 13.0, *) else { return UIApplication.main?.statusBarFrame ?? .zero }
 		return windowScene?.statusBarManager?.statusBarFrame ?? .zero
 	}
+#endif
 	
 	/// The frame of the dynamic island, if it exists.
 	var dynamicIslandFrame: CGRect? {
@@ -582,13 +578,26 @@ public extension UIViewController {
 		self as? UINavigationController ?? UINavigationController(rootViewController: self)
 	}
 	
+	/// Instantiates the view controller from a storyboard with the specified name.
+	///
+	/// - Parameter storyboardName: The name of the storyboard.
+	/// - Returns: The instantiated view controller.
+	class func instantiate(storyboardName: String) -> Self? {
+		let bundle: Bundle = Bundle(for: self)
+		let storybaord = UIStoryboard(name: storyboardName, bundle: bundle)
+		return storybaord.instantiateViewController(withIdentifier: name) as? Self
+	}
+	
+#if os(iOS)
 	/// Registers the current view controller for keyboard show and hide notifications.
 	func registerForKeyboardNotifications() {
 		let center = NotificationCenter.default
-		center.removeObserver(self, name: .keyboardShow, object: nil)
-		center.removeObserver(self, name: .keyboardHide, object: nil)
-		center.addObserver(self, selector: #selector(keyboard(notification:)), name: .keyboardShow, object: nil)
-		center.addObserver(self, selector: #selector(keyboard(notification:)), name: .keyboardHide, object: nil)
+		let keyboardShow = UIResponder.keyboardWillShowNotification
+		let keyboardHide = UIResponder.keyboardWillHideNotification
+		center.removeObserver(self, name: keyboardShow, object: nil)
+		center.removeObserver(self, name: keyboardHide, object: nil)
+		center.addObserver(self, selector: #selector(keyboard(notification:)), name: keyboardShow, object: nil)
+		center.addObserver(self, selector: #selector(keyboard(notification:)), name: keyboardHide, object: nil)
 	}
 	
 	/// Handles the keyboard notifications and adjusts the additional safe area insets of the view controller's view.
@@ -615,16 +624,7 @@ public extension UIViewController {
 			break
 		}
 	}
-	
-	/// Instantiates the view controller from a storyboard with the specified name.
-	///
-	/// - Parameter storyboardName: The name of the storyboard.
-	/// - Returns: The instantiated view controller.
-	class func instantiate(storyboardName: String) -> Self? {
-		let bundle: Bundle = Bundle(for: self)
-		let storybaord = UIStoryboard(name: storyboardName, bundle: bundle)
-		return storybaord.instantiateViewController(withIdentifier: name) as? Self
-	}
+#endif
 }
 
 // MARK: - Extension - UIGestureRecognizer

@@ -5,6 +5,7 @@
 #if canImport(UIKit)
 import UIKit
 
+#if os(iOS)
 // MARK: - Extension - [UIActivity.ActivityType]
 
 public extension Array where Element == UIActivity.ActivityType {
@@ -29,7 +30,7 @@ public extension Array {
 		target.present(activity, animated: true)
 	}
 }
-
+#endif
 // MARK: - Type -
 
 public typealias ControlHandler = (ControlAction) -> Void
