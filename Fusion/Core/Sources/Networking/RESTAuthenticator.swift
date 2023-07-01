@@ -50,7 +50,7 @@ public class RESTAuthenticator : NSObject, URLSessionDelegate {
 		let status = SecTrustEvaluateWithError(serverTrust, &secresult)
 		let certificate: SecCertificate?
 		
-		if #available(iOS 15.0, *) {
+		if #available(iOS 15.0, macOS 12.0, *) {
 			let chain = (SecTrustCopyCertificateChain(serverTrust) as NSArray?)?.firstObject as? AnyObject
 			if CFGetTypeID(chain) == SecCertificateGetTypeID() {
 				certificate = (chain?.firstObject as! SecCertificate)

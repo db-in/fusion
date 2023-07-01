@@ -328,12 +328,12 @@ public extension UIImage {
 	///   - allowsBadge: Indicates if badges are allowed. The default is `true`.
 	///   - storage: Defines an alternative storage, which will be used to save the image or load from it in case `URLCache` is not available.
 	///   - placeholder: The placeholder image to be used when redaction is not allowed in the target object.
-	static func load<T: AnyObject>(_ source: Any?,
-								   for object: T,
-								   at: ReferenceWritableKeyPath<T, UIImage?>,
-								   allowsBadge: Bool = true,
-								   storage: URL? = nil,
-								   placeholder: UIImage? = .photoPlaceholder) {
+	static func load<T>(_ source: Any?,
+						for object: T,
+						at: ReferenceWritableKeyPath<T, UIImage?>,
+						allowsBadge: Bool = true,
+						storage: URL? = nil,
+						placeholder: UIImage? = .photoPlaceholder) {
 		guard let url = source as? String ?? (source as? URL)?.absoluteString else {
 			if let image = source as? UIImage {
 				object[keyPath: at] = image
@@ -346,13 +346,13 @@ public extension UIImage {
 		}
 		
 		object[keyPath: at] = placeholder
-		download(url: url, storage: storage) { [weak object] image in
+		download(url: url, storage: storage) { image in
 			let finalImage = image ?? placeholder
 
 			if let badge = associated[url], allowsBadge {
-				object?[keyPath: at] = finalImage?.addBadge(badge)
+				object[keyPath: at] = finalImage?.addBadge(badge)
 			} else {
-				object?[keyPath: at] = finalImage
+				object[keyPath: at] = finalImage
 			}
 		}
 	}
