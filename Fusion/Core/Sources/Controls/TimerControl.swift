@@ -61,7 +61,7 @@ final public class TimerControl {
 
 // MARK: - Protected Methods
 	
-	private func newDispatch(fps: Float = Constant.maxFps) -> DispatchSourceTimer {
+	private func newDispatch(fps: FPoint = Constant.maxFps) -> DispatchSourceTimer {
 		let source = DispatchSource.makeTimerSource(queue: timerQueue)
 		source.schedule(deadline: .now(), repeating: Double(1.0 / fps))
 		source.setEventHandler(handler: handleTimerTick)

@@ -5,6 +5,13 @@
 import Foundation
 import CommonCrypto
 
+// MARK: - Extension - String.CompareOptions
+
+public extension String.CompareOptions {
+	
+	static var regEx: Self = [.regularExpression, .caseInsensitive]
+}
+
 // MARK: - Extension - String Encryption
 
 public extension String {
@@ -17,7 +24,12 @@ public extension String {
 	}
 	
 	func encryptBase64(by: Int) -> String { (1...by).reduce(self) { result, _ in result.encryptBase64 } }
+	
 	func decryptBase64(by: Int) -> String { (1...by).reduce(self) { result, _ in result.decryptBase64 } }
+	
+	func hasMatch(regex: String) -> Bool { range(of: regex, options: .regEx) != nil }
+	
+	func replacing(regex: String, with: String) -> Self { replacingOccurrences(of: regex, with: with, options: .regEx) }
 }
 
 // MARK: - Extension - Sequence Encryption

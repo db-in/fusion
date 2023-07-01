@@ -248,14 +248,14 @@ public extension UIView {
 	func embededInView(edges: UIEdgeInsets = .zero) -> UIView {
 		let view = UIView(frame: bounds.expand(top: edges.top, left: edges.left, bottom: edges.bottom, right: edges.right))
 		view.addSubview(self)
-//		view.setConstraintsFitting(child: self, edges: edges)
+		view.setConstraintsFitting(child: self, edges: edges)
 		return view
 	}
 	
 	static func spacer(width: CGFloat? = nil, height: CGFloat? = nil, backgroundColor: UIColor? = nil) -> UIView {
 		let view = UIView(frame: .init(x: 0, y: 0, width: width ?? 0, height: height ?? 0))
 		view.backgroundColor = backgroundColor
-//		view.setConstraints(width: width, height: height)
+		view.setConstraints(width: width, height: height)
 		return view
 	}
 }

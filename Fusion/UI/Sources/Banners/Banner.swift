@@ -5,6 +5,7 @@
 //  Created by DINEY B ALVES on 6/28/23.
 //
 
+#if canImport(SwiftUI)
 import SwiftUI
 
 struct Banner: View {
@@ -18,3 +19,4 @@ struct ContentView_Previews: PreviewProvider {
 		Banner()
 	}
 }
+#endif

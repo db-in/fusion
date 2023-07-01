@@ -76,13 +76,11 @@ public extension Constant {
 
 public extension Constant {
 	
-	static let nsec: UInt64 = 1000000000
-	static let usec: UInt64 = 1000000
-	static let maxFps: Float = 60.0
-	static let cycle: Float = 1.0 / maxFps
-	static let cycleUsec: UInt64 = UInt64(cycle * Float(usec))
-	static let cycleNsec: UInt64 = UInt64(cycle * Float(nsec))
-	static let timeResize: Float = 0.3
+	static let duration: FPoint = 0.3
+	static let maxFps: FPoint = 60.0
+	static let cycle: FPoint = 1.0 / maxFps
+	static let cycleUsec: UInt64 = UInt64(cycle * 1000000.0)
+	static let cycleNsec: UInt64 = UInt64(cycle * 1000000000.0)
 }
 
 // MARK: - Extension - Constant Mode

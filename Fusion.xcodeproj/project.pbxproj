@@ -70,6 +70,13 @@
 		60CC2E2A2A4F5DA700E43713 /* UIViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E282A4F5DA700E43713 /* UIViewStyle.swift */; };
 		60CC2E2D2A4F617200E43713 /* Images.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E2B2A4F617200E43713 /* Images.swift */; };
 		60CC2E2E2A4F617200E43713 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E2C2A4F617200E43713 /* Colors.swift */; };
+		60CC2E302A50190800E43713 /* ViewHierarchy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E2F2A50190800E43713 /* ViewHierarchy.swift */; };
+		60CC2E322A504B1F00E43713 /* UserFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E312A504B1F00E43713 /* UserFlow.swift */; };
+		60CC2E392A506ACD00E43713 /* ControlAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E342A506ACD00E43713 /* ControlAction.swift */; };
+		60CC2E3A2A506ACD00E43713 /* UIScrollViewFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E352A506ACD00E43713 /* UIScrollViewFunctions.swift */; };
+		60CC2E3B2A506ACD00E43713 /* UIControlFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E362A506ACD00E43713 /* UIControlFunctions.swift */; };
+		60CC2E3C2A506ACD00E43713 /* HapticControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E372A506ACD00E43713 /* HapticControl.swift */; };
+		60CC2E3D2A506ACD00E43713 /* TextFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E382A506ACD00E43713 /* TextFunctions.swift */; };
 		B50DDFBA2A3305710027AD8F /* EncryptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50DDFB92A3305710027AD8F /* EncryptionTests.swift */; };
 		B50DDFBC2A330C0C0027AD8F /* LocalNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */; };
 		B51DDE652A30BEB500E0BCB1 /* InMemoryCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51DDE642A30BEB500E0BCB1 /* InMemoryCacheTests.swift */; };
@@ -199,6 +206,13 @@
 		60CC2E282A4F5DA700E43713 /* UIViewStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewStyle.swift; sourceTree = "<group>"; };
 		60CC2E2B2A4F617200E43713 /* Images.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Images.swift; sourceTree = "<group>"; };
 		60CC2E2C2A4F617200E43713 /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		60CC2E2F2A50190800E43713 /* ViewHierarchy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewHierarchy.swift; sourceTree = "<group>"; };
+		60CC2E312A504B1F00E43713 /* UserFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserFlow.swift; sourceTree = "<group>"; };
+		60CC2E342A506ACD00E43713 /* ControlAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlAction.swift; sourceTree = "<group>"; };
+		60CC2E352A506ACD00E43713 /* UIScrollViewFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIScrollViewFunctions.swift; sourceTree = "<group>"; };
+		60CC2E362A506ACD00E43713 /* UIControlFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIControlFunctions.swift; sourceTree = "<group>"; };
+		60CC2E372A506ACD00E43713 /* HapticControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HapticControl.swift; sourceTree = "<group>"; };
+		60CC2E382A506ACD00E43713 /* TextFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFunctions.swift; sourceTree = "<group>"; };
 		776AD69210D859E7E6009DD8 /* Pods_Sample_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sample_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B50DDFB92A3305710027AD8F /* EncryptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionTests.swift; sourceTree = "<group>"; };
 		B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotificationTests.swift; sourceTree = "<group>"; };
@@ -355,6 +369,7 @@
 			children = (
 				609484262A4C5A70008E21A1 /* Animation */,
 				6094845D2A4C620B008E21A1 /* Banners */,
+				60CC2E332A506ACD00E43713 /* Controls */,
 				609484292A4C5A70008E21A1 /* Styling */,
 			);
 			path = Sources;
@@ -527,6 +542,20 @@
 				60A859B72A06BBD400D3B283 /* publishing.sh */,
 			);
 			path = Scripts;
+			sourceTree = "<group>";
+		};
+		60CC2E332A506ACD00E43713 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				60CC2E342A506ACD00E43713 /* ControlAction.swift */,
+				60CC2E372A506ACD00E43713 /* HapticControl.swift */,
+				60CC2E382A506ACD00E43713 /* TextFunctions.swift */,
+				60CC2E362A506ACD00E43713 /* UIControlFunctions.swift */,
+				60CC2E352A506ACD00E43713 /* UIScrollViewFunctions.swift */,
+				60CC2E312A504B1F00E43713 /* UserFlow.swift */,
+				60CC2E2F2A50190800E43713 /* ViewHierarchy.swift */,
+			);
+			path = Controls;
 			sourceTree = "<group>";
 		};
 		B5D0AB712A32F39A008F6DA0 /* Data Models */ = {
@@ -881,9 +910,14 @@
 				609484442A4C5A70008E21A1 /* Tween.swift in Sources */,
 				60CC2E2A2A4F5DA700E43713 /* UIViewStyle.swift in Sources */,
 				609484552A4C5A70008E21A1 /* InMemoryCache.swift in Sources */,
+				60CC2E3C2A506ACD00E43713 /* HapticControl.swift in Sources */,
+				60CC2E302A50190800E43713 /* ViewHierarchy.swift in Sources */,
 				609484462A4C5A70008E21A1 /* Fonts.swift in Sources */,
 				6094844F2A4C5A70008E21A1 /* JSONFunctions.swift in Sources */,
 				609484532A4C5A70008E21A1 /* LocalNotification.swift in Sources */,
+				60CC2E3D2A506ACD00E43713 /* TextFunctions.swift in Sources */,
+				60CC2E392A506ACD00E43713 /* ControlAction.swift in Sources */,
+				60CC2E322A504B1F00E43713 /* UserFlow.swift in Sources */,
 				6094844D2A4C5A70008E21A1 /* HTTPCookieHelper.swift in Sources */,
 				6094844B2A4C5A70008E21A1 /* RESTAuthenticator.swift in Sources */,
 				609484522A4C5A70008E21A1 /* DataBindable.swift in Sources */,
@@ -895,9 +929,11 @@
 				609484492A4C5A70008E21A1 /* RESTRequest.swift in Sources */,
 				609484502A4C5A70008E21A1 /* DataManageable.swift in Sources */,
 				60CC2E2E2A4F617200E43713 /* Colors.swift in Sources */,
+				60CC2E3A2A506ACD00E43713 /* UIScrollViewFunctions.swift in Sources */,
 				6094845A2A4C5A70008E21A1 /* Dates.swift in Sources */,
 				60CC2E2D2A4F617200E43713 /* Images.swift in Sources */,
 				6094844C2A4C5A70008E21A1 /* Encryption.swift in Sources */,
+				60CC2E3B2A506ACD00E43713 /* UIControlFunctions.swift in Sources */,
 				609484542A4C5A70008E21A1 /* Keychain.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
