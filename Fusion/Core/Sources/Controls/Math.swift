@@ -157,10 +157,28 @@ public extension CGRect {
 	///   - y: The Y axis alignment.
 	/// - Returns: A new `CGRect`.
 	func align(in rect: CGRect, x: Alignment, y: Alignment) -> CGRect {
-		.init(x: x == .min ? rect.minX : (x == .mid ? rect.midX - (width * 0.5) : rect.maxX - width),
-			  y: y == .min ? rect.minY : (y == .mid ? rect.midY - (height * 0.5) : rect.maxY - height),
-			  width: width,
-			  height: height)
+		let newX: CGFloat
+		let newY: CGFloat
+		
+		switch x {
+		case .min:
+			newX = rect.origin.x
+		case .mid:
+			newX = rect.midX - (width * 0.5)
+		case .max:
+			newX = rect.maxX - width
+		}
+		
+		switch y {
+		case .min:
+			newY = rect.origin.y
+		case .mid:
+			newY = rect.midY - (height * 0.5)
+		case .max:
+			newY = rect.maxY - height
+		}
+		
+		return .init(x: newX, y: newY, width: width, height: height)
 	}
 	
 	/// Similar to `insetBy` but safer, this function avoids resulting in negative size.
@@ -183,6 +201,8 @@ public extension CGRect {
 	///   - right: The right expansion.
 	/// - Returns: A new `CGRect`.
 	func expand(top: CGFloat = 0, left: CGFloat = 0, bottom: CGFloat = 0, right: CGFloat = 0) -> CGRect {
-		.init(x: minX - left, y: minY - top, width: width + right + left, height: height + bottom + top)
+		let newOrigin = CGPoint(x: origin.x - left, y: origin.y - top)
+		let newSize = CGSize(width: width + right + left, height: height + bottom + top)
+		return .init(origin: newOrigin, size: newSize)
 	}
 }
