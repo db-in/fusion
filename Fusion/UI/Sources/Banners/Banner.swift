@@ -5,7 +5,7 @@
 //  Created by DINEY B ALVES on 6/28/23.
 //
 
-#if canImport(UIKit) && canImport(SwiftUI)
+#if canImport(UIKit) && canImport(SwiftUI) && !os(watchOS)
 import UIKit
 import SwiftUI
 
