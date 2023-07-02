@@ -138,71 +138,71 @@ public extension CGSize {
 
 // MARK: - Extension - CGRect
 
-public extension CGRect {
-	
-	enum Alignment {
-		case min
-		case mid
-		case max
-	}
-	
-	/// Returns the point representing the center of the rectangle.
-	var center: CGPoint { CGPoint(x: midX, y: midY) }
-	
-	/// Returns a new `CGRect` by aligning the current `CGRect` in another given `CGRect` with a given criteria.
-	///
-	/// - Parameters:
-	///   - rect: The target rectangle in which the borders will be consider for alignment.
-	///   - x: The X axis alignment.
-	///   - y: The Y axis alignment.
-	/// - Returns: A new `CGRect`.
-	func align(in rect: CGRect, x: Alignment, y: Alignment) -> CGRect {
-		let newX: CGFloat
-		let newY: CGFloat
-		
-		switch x {
-		case .min:
-			newX = rect.origin.x
-		case .mid:
-			newX = rect.midX - (width * 0.5)
-		case .max:
-			newX = rect.maxX - width
-		}
-		
-		switch y {
-		case .min:
-			newY = rect.origin.y
-		case .mid:
-			newY = rect.midY - (height * 0.5)
-		case .max:
-			newY = rect.maxY - height
-		}
-		
-		return .init(x: newX, y: newY, width: width, height: height)
-	}
-	
-	/// Similar to `insetBy` but safer, this function avoids resulting in negative size.
-	/// - Parameters:
-	///   - dx: The X axis insets on both sides.
-	///   - dy: The Y axis insets on both sides.
-	/// - Returns: A new `CGRect`.
-	func insetSafelyBy(dx: CGFloat, dy: CGFloat) -> CGRect {
-		let normalizedX = dx * 2 > size.width ? 0 : dx
-		let normalizedY = dy * 2 > size.height ? 0 : dy
-		return insetBy(dx: normalizedX, dy: normalizedY)
-	}
-	
-	/// Returns a new `CGRect` by expanding the edges of the current `CGRect` with a given criteria.
-	///
-	/// - Parameters:
-	///   - top: The top expansion.
-	///   - left: The left expansion.
-	///   - bottom: The bottom expansion.
-	///   - right: The right expansion.
-	/// - Returns: A new `CGRect`.
-	func expand(top: CGFloat = 0, left: CGFloat = 0, bottom: CGFloat = 0, right: CGFloat = 0) -> CGRect {
-		let newOrigin = CGPoint(x: origin.x - left, y: origin.y - top)
-		let newSize = CGSize(width: width + right + left, height: height + bottom + top)
-		return .init(origin: newOrigin, size: newSize)
-	}
-}
+//public extension CGRect {
+//	
+//	enum Alignment {
+//		case min
+//		case mid
+//		case max
+//	}
+//	
+//	/// Returns the point representing the center of the rectangle.
+//	var center: CGPoint { CGPoint(x: midX, y: midY) }
+//	
+//	/// Returns a new `CGRect` by aligning the current `CGRect` in another given `CGRect` with a given criteria.
+//	///
+//	/// - Parameters:
+//	///   - rect: The target rectangle in which the borders will be consider for alignment.
+//	///   - x: The X axis alignment.
+//	///   - y: The Y axis alignment.
+//	/// - Returns: A new `CGRect`.
+//	func align(in rect: CGRect, x: Alignment, y: Alignment) -> CGRect {
+//		let newX: CGFloat
+//		let newY: CGFloat
+//		
+//		switch x {
+//		case .min:
+//			newX = rect.origin.x
+//		case .mid:
+//			newX = rect.midX - (width * 0.5)
+//		case .max:
+//			newX = rect.maxX - width
+//		}
+//		
+//		switch y {
+//		case .min:
+//			newY = rect.origin.y
+//		case .mid:
+//			newY = rect.midY - (height * 0.5)
+//		case .max:
+//			newY = rect.maxY - height
+//		}
+//		
+//		return .init(x: newX, y: newY, width: width, height: height)
+//	}
+//	
+//	/// Similar to `insetBy` but safer, this function avoids resulting in negative size.
+//	/// - Parameters:
+//	///   - dx: The X axis insets on both sides.
+//	///   - dy: The Y axis insets on both sides.
+//	/// - Returns: A new `CGRect`.
+//	func insetSafelyBy(dx: CGFloat, dy: CGFloat) -> CGRect {
+//		let normalizedX = dx * 2 > size.width ? 0 : dx
+//		let normalizedY = dy * 2 > size.height ? 0 : dy
+//		return insetBy(dx: normalizedX, dy: normalizedY)
+//	}
+//	
+//	/// Returns a new `CGRect` by expanding the edges of the current `CGRect` with a given criteria.
+//	///
+//	/// - Parameters:
+//	///   - top: The top expansion.
+//	///   - left: The left expansion.
+//	///   - bottom: The bottom expansion.
+//	///   - right: The right expansion.
+//	/// - Returns: A new `CGRect`.
+//	func expand(top: CGFloat = 0, left: CGFloat = 0, bottom: CGFloat = 0, right: CGFloat = 0) -> CGRect {
+//		let newOrigin = CGPoint(x: origin.x - left, y: origin.y - top)
+//		let newSize = CGSize(width: width + right + left, height: height + bottom + top)
+//		return .init(origin: newOrigin, size: newSize)
+//	}
+//}
