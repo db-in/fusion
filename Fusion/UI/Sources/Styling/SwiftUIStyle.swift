@@ -93,6 +93,16 @@ public extension Image {
 	}
 }
 
+// MARK: - Extension - UIColor
+
+public extension UIColor {
+	
+	func sColor(theme: UIUserInterfaceStyle? = UIWindow.key?.interfaceStyle) -> SwiftUI.Color {
+		let ciColor = CIColor(color: resolved(with: theme))
+		return Color(.sRGB, red: ciColor.red, green: ciColor.green, blue: ciColor.blue, opacity: ciColor.alpha)
+	}
+}
+
 // MARK: - Extension - UIFont
 
 public extension UIFont {
