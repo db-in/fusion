@@ -26,7 +26,7 @@ public extension UIView {
 
 public extension View {
 	
-	var uiView: UIView {
+	var suiView: UIView {
 		guard let view = UIHostingController(rootView: self).view else { return .init() }
 		view.backgroundColor = .clear
 		return view
@@ -95,7 +95,7 @@ public extension Image {
 
 public extension UIColor {
 	
-	func sColor(theme: UIUserInterfaceStyle? = UIWindow.key?.interfaceStyle) -> SwiftUI.Color {
+	func suiColor(theme: UIUserInterfaceStyle? = UIWindow.key?.interfaceStyle) -> SwiftUI.Color {
 		let ciColor = CIColor(color: resolved(with: theme))
 		return Color(.sRGB, red: ciColor.red, green: ciColor.green, blue: ciColor.blue, opacity: ciColor.alpha)
 	}
@@ -105,22 +105,22 @@ public extension UIColor {
 
 public extension UIFont {
 	
-	var sFont: SwiftUI.Font { .init(self as CTFont) }
+	var suiFont: SwiftUI.Font { .init(self as CTFont) }
 }
 
 // MARK: - Extension - Font
 
 public extension Font {
 	
-	static var title1: Font = UIFont.title1.sFont
-	static var title2: Font = UIFont.title2.sFont
-	static var title3: Font = UIFont.title3.sFont
-	static var headline: Font = UIFont.headline.sFont
-	static var subheadline: Font = UIFont.subheadline.sFont
-	static var body: Font = UIFont.body.sFont
-	static var callout: Font = UIFont.callout.sFont
-	static var footnote: Font = UIFont.footnote.sFont
-	static var caption1: Font = UIFont.caption1.sFont
-	static var caption2: Font = UIFont.caption2.sFont
+	static var title1: Font = UIFont.title1.suiFont
+	static var title2: Font = UIFont.title2.suiFont
+	static var title3: Font = UIFont.title3.suiFont
+	static var headline: Font = UIFont.headline.suiFont
+	static var subheadline: Font = UIFont.subheadline.suiFont
+	static var body: Font = UIFont.body.suiFont
+	static var callout: Font = UIFont.callout.suiFont
+	static var footnote: Font = UIFont.footnote.suiFont
+	static var caption1: Font = UIFont.caption1.suiFont
+	static var caption2: Font = UIFont.caption2.suiFont
 }
 #endif
