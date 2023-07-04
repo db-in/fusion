@@ -95,8 +95,8 @@ public extension Image {
 
 public extension UIColor {
 	
-	func suiColor(theme: UIUserInterfaceStyle? = UIWindow.key?.interfaceStyle) -> SwiftUI.Color {
-		let ciColor = CIColor(color: resolved(with: theme))
+	var suiColor: SwiftUI.Color {
+		let ciColor = CIColor(color: self)
 		return Color(.sRGB, red: ciColor.red, green: ciColor.green, blue: ciColor.blue, opacity: ciColor.alpha)
 	}
 }
