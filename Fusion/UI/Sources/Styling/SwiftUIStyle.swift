@@ -27,9 +27,7 @@ public extension UIView {
 public extension View {
 	
 	var uiView: UIView {
-		guard let view = UIHostingController(rootView: self).view else {
-			return UIView()
-		}
+		guard let view = UIHostingController(rootView: self).view else { return .init() }
 		view.backgroundColor = .clear
 		return view
 	}
@@ -58,7 +56,7 @@ struct UIViewPreview<T : UIView>: UIViewRepresentable {
 	}
 	
 	func updateUIView(_ view: UIView, context: Context) {
-//		view.superview?.setConstraintsFitting(child: view)
+		view.superview?.setConstraintsFitting(child: view)
 	}
 }
 
