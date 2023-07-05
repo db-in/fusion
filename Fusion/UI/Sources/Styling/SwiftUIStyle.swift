@@ -91,6 +91,13 @@ public extension Image {
 	}
 }
 
+// MARK: - Extension - UIImage
+
+public extension UIImage {
+	
+	var suiImage: SwiftUI.Image { .init(uiImage: self) }
+}
+
 // MARK: - Extension - UIColor
 
 public extension UIColor {
