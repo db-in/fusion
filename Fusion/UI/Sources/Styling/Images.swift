@@ -38,7 +38,7 @@ public extension UIImage {
 		}
 		
 		guard allowCache else { return getImage() ?? .init() }
-		return InMemoryCache.getOrSet(key: "\(Self.name)\(named)", newValue: getImage()) ?? .init()
+		return InMemoryCache.getOrSet(key: "\(Self.self)\(named)", newValue: getImage()) ?? .init()
 	}
 	
 	/// Creates a solid color image with the specified color, size, and corner radius.
