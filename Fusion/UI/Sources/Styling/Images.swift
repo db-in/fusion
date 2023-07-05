@@ -19,20 +19,27 @@ public extension UIImage {
 	var template: UIImage { withRenderingMode(.alwaysTemplate) }
 	
 // MARK: - Constructors
-	
-	/// Returns an image object with the specified name and style from any available bundle. If there are multiple bundles with the same
-	/// valid image name, only the first is returned with application bundles as priority over frameworks.
-	///
-	/// - Parameter named: The name of the image resource.
-	/// - Returns: An image object, if available; otherwise, a system image or an empty image.
-	static func anyImage(named: String) -> UIImage {
-		let bundleImage = Bundle.allAvailable.firstMap { UIImage(named: named, in: $0, with: nil) }
-		return bundleImage ?? .init(systemName: named)?.template ?? .init()
-	}
 
 // MARK: - Protected Methods
 	
 // MARK: - Exposed Methods
+	
+	/// Returns an image object with the specified name and style from any available bundle. If there are multiple bundles with the same
+	/// valid image name, only the first is returned with application bundles as priority over frameworks.
+	///
+	/// - Parameters:
+	///   - named: The name of the image resource.
+	///   - allowCache: Indicates if cache can be used to optimize loading. The default value is `true`.
+	/// - Returns: An image object, if available; otherwise, a system image or an empty image.
+	static func anyImage(named: String, allowCache: Bool = true) -> UIImage {
+		let getImage = {
+			let bundleImage = Bundle.allAvailable.firstMap { UIImage(named: named, in: $0, with: nil) }
+			return bundleImage ?? .init(systemName: named)?.template
+		}
+		
+		guard allowCache else { return getImage() ?? .init() }
+		return InMemoryCache.getOrSet(key: "\(Self.name)\(named)", newValue: getImage()) ?? .init()
+	}
 	
 	/// Creates a solid color image with the specified color, size, and corner radius.
 	///
