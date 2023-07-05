@@ -26,7 +26,7 @@ public extension UIView {
 
 public extension View {
 	
-	var suiView: UIView {
+	var uiView: UIView {
 		guard let view = UIHostingController(rootView: self).view else { return .init() }
 		view.backgroundColor = .clear
 		return view
