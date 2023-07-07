@@ -43,18 +43,21 @@ public extension Result {
 		}
 	}
 	
-	/// Tries to transform the received error into a codable model.
+	/// Tries to get a possible failure and cast it as a given type.
+	/// If the type conforms to Codable then tries to parse it as such.
 	///
-	/// - Returns: The error model or `nil` if it fails to parse.
-	func error<T : Codable>() -> T? {
+	/// - Returns: The error type or `nil` in case of cast failure. Codable failure also return `nil`, so as successful result.
+	func error<T>() -> T? {
+		guard case let .failure(error) = self else { return nil }
+
 		guard
-			case let .failure(error) = self,
+			let codableType = T.self as? Codable.Type,
 			let apiError = error as? RESTError,
 			case let .unkown(data) = apiError,
 			let validData = data
-		else { return nil }
+		else { return error as? T }
 		
-		return T.self.load(data: validData)
+		return codableType.load(data: validData) as? T
 	}
 	
 	/// Maps the success result to a given non-optional outcome.
