@@ -158,9 +158,9 @@ class BundleExtensionsTests: XCTestCase {
 	
 	func testAppGroup_ReturnsAppGroupIdentifier() {
 		Bundle.appGroup = "group.test"
-		XCTAssertEqual(bundle.appGroup, "group.test")
+		XCTAssertEqual(Bundle.appGroup, "group.test")
 		Bundle.appGroup = ""
-		XCTAssertEqual(bundle.appGroup, "")
+		XCTAssertEqual(Bundle.appGroup, "")
 	}
 	
 	func testAppName_InfoDictionaryContainsCFBundleName_ReturnsAppName() {
