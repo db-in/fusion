@@ -27,6 +27,11 @@ public extension UIFont {
 	
 // MARK: - Properties
 	
+	var bold: UIFont {
+		guard let descriptor = fontDescriptor.withSymbolicTraits(.traitBold) else { return self }
+		return .init(descriptor: descriptor, size: pointSize)
+	}
+	
 	var style: String { (fontDescriptor.object(forKey: .textStyle) as? String) ?? fontDescriptor.postscriptName }
 	
 #if os(iOS)

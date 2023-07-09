@@ -1,4 +1,6 @@
-# Account
+# Fusion
+
+[![Fusion](logo.png)]()
 
 ![Version](https://img.shields.io/badge/swift-5-red.svg)
 [![Swift Package Manager Compatible](https://img.shields.io/endpoint?url=https://swiftpackageindex.com/api/packages/db-in/Fusion/badge?type=platforms)](https://github.com/apple/swift-package-manager)
