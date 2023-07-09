@@ -94,6 +94,14 @@ public extension Locale {
 	/// Returns the current langauge code in lower case. For example `"en"`.
 	static var currentLanguage: String { "\(preferredLanguage.prefix(2))".lowercased() }
 	
+	var languageCodeISO2: String {
+		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
+			return language.languageCode?.identifier.prefix(2).lowercased() ?? ""
+		} else {
+			return languageCode?.prefix(2).lowercased() ?? ""
+		}
+	}
+	
 	/// Returns true if the given locale has a language code that belong to right to left direction.
 	var isRTL: Bool {
 		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
@@ -118,7 +126,9 @@ public extension Locale {
 	/// - Parameter currencyCode: The currency code to use for initializing the Locale.
 	/// - Returns: A Locale instance that matches the provided currency code, or nil if no match is found.
 	init?(currencyCode: String) {
-		guard let locale = Locale.currencyGroups[currencyCode.uppercased()]?.first else { return nil }
+		let userLanguage = Locale.currentLanguage
+		let locales = Locale.currencyGroups[currencyCode.uppercased()]
+		guard let locale = locales?.first(where: { $0.languageCodeISO2 == userLanguage }) ?? locales?.first else { return nil }
 		self = locale
 	}
 }
