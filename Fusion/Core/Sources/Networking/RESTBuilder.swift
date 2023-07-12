@@ -32,6 +32,9 @@ public extension URL {
 
 public extension Data {
 	
+	/// Returns the by count into a given readable format.
+	var byteCount: String { ByteCountFormatter().string(fromByteCount: Int64(count)) }
+	
 	/// Prepare some extra data to be appended into the very next request.
 	/// The data will be automatically flushed after used, until there it's retained.
 	static var dataToAppend: [String : Any]?

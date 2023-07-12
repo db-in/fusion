@@ -137,20 +137,15 @@ public extension UIView {
 		set { layer.borderColor = newValue?.cgResolved(with: interfaceStyle) }
 	}
 	
-	func makeRoundedBox(background: UIColor, radius: CGFloat = 8.0) {
-		backgroundColor = background
-		cornerRadius = radius
-	}
-	
-	func makeOutlinedBox(border: UIColor?, thickness: CGFloat = 1.0) {
+	func make(border: UIColor?, thickness: CGFloat = 1.0) {
 		borderColor = border
 		borderWidth = thickness
 	}
 	
-	func makeRoundedOutlinedBox(border: UIColor?, thickness: CGFloat = 1.0, radius: CGFloat = 8.0) {
+	func makeCapsule(border: UIColor? = nil, thickness: CGFloat = 1.0) {
 		borderColor = border
 		borderWidth = thickness
-		cornerRadius = radius
+		cornerRadius = frame.height * 0.5
 	}
 	
 	func makeDashedBorder(_ pattern: [Int], border: UIColor?, thickness: CGFloat = 1.0, radius: CGFloat = 8.0) {

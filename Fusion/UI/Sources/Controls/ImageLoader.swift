@@ -16,6 +16,15 @@ private extension URL {
 	func writeImage(data: Data, withKey: String) {
 		try? data.write(to: appendingPathComponent("image-\(withKey.hash.description)"))
 	}
+	
+	func flushImageCache() {
+		guard let files = try? FileManager.default.contentsOfDirectory(at: self, includingPropertiesForKeys: nil) else { return }
+
+		files.forEach {
+			guard $0.lastPathComponent.hasPrefix("image-") else { return }
+			try? FileManager.default.removeItem(at: $0)
+		}
+	}
 }
 
 // MARK: - Extension - UIImage Loader
@@ -25,6 +34,14 @@ public extension UIImage {
 // MARK: - Private Methods
 	
 	private static var associated: [String : UIImage] = [:]
+	private static var inMemory: [String : UIImage] = [:]
+	
+// MARK: - Protected Methods
+	
+	private func resolve(badge: Bool, key: String) -> UIImage {
+		guard badge, let badgeImage = Self.associated[key] else { return self }
+		return addBadge(badgeImage)
+	}
 	
 // MARK: - Exposed Methods
 	
@@ -70,29 +87,29 @@ public extension UIImage {
 	///   - storage: A fallback storage to be used. This storage will receive a copy of the cache when cache is available.
 	/// - Returns: The final `UIImage`
 	static func loadCache(url: String, allowsBadge: Bool = true, storage: URL? = nil) -> UIImage? {
-		guard let validURL = URL(string: url) else { return nil }
+		if let inMemoryImage = inMemory[url]?.resolve(badge: allowsBadge, key: url) { return inMemoryImage }
+			
+		guard
+			let validURL = URL(string: url),
+			let data = URLCache.shared.cachedResponse(for: .init(url: validURL))?.data ?? storage?.readImageData(withKey: url),
+			let image = UIImage(data: data)
+		else { return nil }
 		
-		let request = URLRequest(url: validURL)
-		let cache = URLCache.shared
-		guard let data = cache.cachedResponse(for: request)?.data ?? storage?.readImageData(withKey: url) else { return nil }
-		let image = UIImage(data: data)
+		inMemory[url] = image
 		storage?.writeImage(data: data, withKey: url)
 		
-		if let badge = associated[url], allowsBadge {
-			return image?.addBadge(badge)
-		} else {
-			return image
-		}
+		return image.resolve(badge: allowsBadge, key: url)
 	}
 	
-	/// Only downloads a given url and caches it locally. It returns immediately if the image is already cached.
-	/// If a storage is provided, it will also receives a copy of the image even if there is no new download.
+	/// Forces the download of a given url and caches it locally. This methods triggers the ``loadCache(url:allowsBadge:storage:)`` once
+	/// the download is completed.
 	///
 	/// - Parameters:
 	///   - url: The url.
-	///   - storage: A fallback storage to be used to save the image or load from it if `URLCache` is not available.
+	///   - allowsBadge: Indicates if associated badges are allowed.
+	///   - storage: A fallback storage to be used. This storage will receive a copy of the cache when cache is available.
 	///   - completion: The completion in which the final image will be sent to.
-	static func download(url: String, storage: URL? = nil, then completion: @escaping (UIImage?) -> Void) {
+	static func download(url: String, allowsBadge: Bool = true, storage: URL? = nil, then completion: @escaping (UIImage?) -> Void) {
 		
 		guard let validURL = URL(string: url) else {
 			completion(nil)
@@ -100,29 +117,17 @@ public extension UIImage {
 		}
 		
 		let request = URLRequest(url: validURL)
-		let cache = URLCache.shared
-		
-		if let data = cache.cachedResponse(for: request)?.data ?? storage?.readImageData(withKey: url) {
-			storage?.writeImage(data: data, withKey: url)
-			completion(UIImage(data: data))
-		} else {
-			URLSession.shared.dataTask(with: request, completionHandler: { (dataResponse, response, error) in
-				let image: UIImage?
-				
-				if let data = dataResponse, let validResponse = response {
-					let cachedData = CachedURLResponse(response: validResponse, data: data)
-					cache.storeCachedResponse(cachedData, for: request)
-					image = UIImage(data: data)
-					storage?.writeImage(data: data, withKey: url)
-				} else {
-					image = nil
-				}
-				
-				asyncMain {
-					completion(image)
-				}
-			}).resume()
+		let task = URLSession.shared.dataTask(with: request) { (dataResponse, response, error) in
+			if let data = dataResponse, let validResponse = response {
+				let cachedData = CachedURLResponse(response: validResponse, data: data)
+				URLCache.shared.storeCachedResponse(cachedData, for: request)
+			}
+			
+			let image = loadCache(url: url, allowsBadge: allowsBadge, storage: storage)
+			asyncMain { completion(image) }
 		}
+		
+		task.resume()
 	}
 	
 	/// Loads an image for an object into a given `keyPath`. This function is able to load from cache or download from the internet.
@@ -135,15 +140,15 @@ public extension UIImage {
 	///   - source: The source to be loaded.
 	///   - object: The target object.
 	///   - at: The mutable `keyPath` that contains the final `UIImage` property.
+	///   - placeholder: The placeholder image to be used when redaction is not allowed in the target object.
 	///   - allowsBadge: Indicates if badges are allowed. The default is `true`.
 	///   - storage: Defines an alternative storage, which will be used to save the image or load from it in case `URLCache` is not available.
-	///   - placeholder: The placeholder image to be used when redaction is not allowed in the target object.
 	static func load<T>(_ source: Any?,
 						for object: T,
 						at: ReferenceWritableKeyPath<T, UIImage?>,
+						placeholder: UIImage? = .photoPlaceholder,
 						allowsBadge: Bool = true,
-						storage: URL? = nil,
-						placeholder: UIImage? = .photoPlaceholder) {
+						storage: URL? = nil) {
 		guard let url = source as? String ?? (source as? URL)?.absoluteString else {
 			if let image = source as? UIImage {
 				object[keyPath: at] = image
@@ -156,52 +161,22 @@ public extension UIImage {
 		}
 		
 		object[keyPath: at] = placeholder
-		download(url: url, storage: storage) { image in
-			let finalImage = image ?? placeholder
-
-			if let badge = associated[url], allowsBadge {
-				object[keyPath: at] = finalImage?.addBadge(badge)
-			} else {
-				object[keyPath: at] = finalImage
+		
+		if let image = loadCache(url: url, allowsBadge: allowsBadge, storage: storage) {
+			object[keyPath: at] = image
+		} else {
+			download(url: url, allowsBadge: allowsBadge, storage: storage) { image in
+				object[keyPath: at] = image ?? placeholder
 			}
 		}
 	}
-}
-
-// MARK: - Extension - Array
-
-public extension Array {
 	
-	/// Loops the array elements taking the `keyPath` of each item and tries to load from cache or download from the internet.
-	///
-	/// - Parameters:
-	///   - keyPath: The `keyPath` of the property to be used as the url.
-	///   - storage: The local path to be used as a storage if the ``URLCache.shared`` is not available.
-	///   - completion: The completion block to be notified on the main thread once the process is completed.
-	func downloadImages(keyPath: KeyPath<Element, String>, storage: URL? = nil, completion: @escaping () -> Void) {
-		let group = DispatchGroup()
-		
-		forEach {
-			let url = $0[keyPath: keyPath]
-			guard UIImage.loadCache(url: url, storage: storage) == nil else { return }
-			group.enter()
-			UIImage.download(url: url, storage: storage) { _ in
-				group.leave()
-			}
-		}
-		
-		group.notify(queue: .main) {
-			completion()
-		}
-	}
-	
-	/// Loops the array elements taking the `keyPath` of each item and tries to associate a badge with the given property.
-	///
-	/// - Parameters:
-	///   - image: The badge image to be associated.
-	///   - keyPath: The `keyPath` which represents the url.
-	func associateBadge(_ image: UIImage?, keyPath: KeyPath<Element, String>) {
-		forEach { UIImage.associateBadge(image, to: $0[keyPath: keyPath]) }
+	/// Removes all the current cached images.
+	/// - Parameter storage: An alternative storage used to cache.
+	static func flushCache(storage: URL? = nil) {
+		URLCache.shared.removeAllCachedResponses()
+		storage?.flushImageCache()
+		inMemory = [:]
 	}
 }
 #endif

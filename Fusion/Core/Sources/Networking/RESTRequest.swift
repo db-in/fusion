@@ -105,10 +105,7 @@ private extension URLRequest {
 	}
 	
 	func debugLog(data: Data) {
-		let byte = ByteCountFormatter()
-		byte.allowedUnits = [.useKB]
-		byte.countStyle = .file
-		Logger.global.log(basic: "=== 📥 RECEIVED === \(urlString) (\(byte.string(fromByteCount: Int64(data.count))))",
+		Logger.global.log(basic: "=== 📥 RECEIVED === \(urlString) (\(data.byteCount))",
 						  full: "\(String(data: data, encoding: .utf8) ?? "")")
 	}
 	
