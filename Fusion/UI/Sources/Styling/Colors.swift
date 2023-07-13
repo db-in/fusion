@@ -50,6 +50,23 @@ public extension UIColor {
 		resolved(with: UIView.interfaceStyle == .dark ? .light : .dark)
 	}
 	
+// MARK: - Initializers
+	
+	convenience init(hex: String) {
+		var normalized = hex.replacingOccurrences(of: "0x", with: "").replacingOccurrences(of: "#", with: "")
+		
+		if normalized.count < 6 {
+			normalized = normalized.reduce("", { "\($0)\($1)\($1)" })
+		}
+		
+		let hexValue = UInt32(normalized, radix: 16) ?? 0
+		let red = CGFloat((hexValue & 0xFF0000) >> 16) / 255.0
+		let green = CGFloat((hexValue & 0x00FF00) >> 8) / 255.0
+		let blue = CGFloat(hexValue & 0x0000FF) / 255.0
+		
+		self.init(red: red, green: green, blue: blue, alpha: 1.0)
+	}
+	
 // MARK: - Exposed Methods
 	
 	/// Resolves and return a color based on a specified user interface style
