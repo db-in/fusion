@@ -1,4 +1,4 @@
-//  
+//
 //  Created by Diney Bomfim on 5/3/23.
 //
 
@@ -20,8 +20,12 @@ final public class TimerControl {
 
 // MARK: - Properties
 	
+	@ThreadSafe
 	private var items: [String : (callback: TimerCallback, queue: DispatchQueue)] = [:]
+	
+	@ThreadSafe
 	private var timer: DispatchSourceTimer?
+	
 	private lazy var timerQueue: DispatchQueue = { .init(label: "timer.\(UUID().uuidString)", attributes: .concurrent) }()
 	
 	/// Pauses or resumes the cycle.
@@ -30,21 +34,15 @@ final public class TimerControl {
 	public var isPaused: Bool = false {
 		didSet {
 			if isPaused && !oldValue {
-				timerQueue.async(flags: .barrier) { [weak self] in
-					self?.timer?.suspend()
-				}
+				timer?.suspend()
 			} else if !isPaused && oldValue  {
-				timerQueue.async(flags: .barrier) { [weak self] in
-					self?.timer?.resume()
-				}
+				timer?.resume()
 			}
 		}
 	}
 	
 	/// Returns the count for the current number of items.
-	public var itemsCount: Int {
-		timerQueue.sync(flags: .barrier) { items.count }
-	}
+	public var itemsCount: Int { items.count }
 	
 	/// The time passed while in the background. This is only available on the first cycle after resuming activity.
 	public private(set) var backgroundTime: Double = 0.0
@@ -75,18 +73,16 @@ final public class TimerControl {
 	}
 	
 	private func handleTimerTick() {
-		timerQueue.async(flags: .barrier) { [weak self] in
-			self?.items.forEach { item in
-				let callback = item.value.callback
-				let queue = item.value.queue
-				queue.async {
-					guard self?.isPaused == false else { return }
-					callback()
-				}
+		items.forEach { [weak self] item in
+			let callback = item.value.callback
+			let queue = item.value.queue
+			queue.async {
+				guard self?.isPaused == false else { return }
+				callback()
 			}
-			
-			self?.backgroundTime = 0.0
 		}
+		
+		backgroundTime = 0.0
 	}
 	
 	private func setupNotifications() {
@@ -124,26 +120,20 @@ final public class TimerControl {
 	///   - queue: A queue where the callback will be called on. By default this value is ``main``.
 	///   - callback: The callback which will be called on every loop.
 	public func addItem(key: String, queue: DispatchQueue = .main, callback: @escaping TimerCallback) {
-		timerQueue.async(flags: .barrier) { [weak self] in
-			self?.items[key] = (callback, queue)
-		}
+		items[key] = (callback, queue)
 	}
 	
 	/// Removes a callback item from the timer associated with a key.
 	/// - Parameter key: The key associated with the callback.
 	public func removeItem(key: String) {
-		timerQueue.async(flags: .barrier) { [weak self] in
-			self?.items[key] = nil
-			self?.cancelIfNeeded()
-		}
+		items[key] = nil
+		cancelIfNeeded()
 	}
 	
 	/// Removes all the current callbacks from the timer.
 	public func removeAll() {
-		timerQueue.async(flags: .barrier) { [weak self] in
-			self?.items = [:]
-			self?.cancelIfNeeded()
-		}
+		items = [:]
+		cancelIfNeeded()
 	}
 	
 // MARK: - Overridden Methods

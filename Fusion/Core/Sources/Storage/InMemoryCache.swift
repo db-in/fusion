@@ -6,44 +6,6 @@ import Foundation
 
 // MARK: - Definitions -
 
-final class CacheWrapper<Key : Hashable, Value> {
-	
-	private final class WrappedKey: NSObject {
-		let key: Key
-		init(_ key: Key) { self.key = key }
-		override var hash: Int { key.hashValue }
-		override func isEqual(_ object: Any?) -> Bool { (object as? WrappedKey)?.key == key }
-	}
-	
-	private final class Entry {
-		let value: Value
-		init(_ value: Value) { self.value = value }
-	}
-	
-	private var wrapped: [WrappedKey : Entry] = .init()
-	private let queue: DispatchQueue = .init(label: "\(CacheWrapper.self)", attributes: .concurrent)
-	
-	subscript(key: Key) -> Value? {
-		get { queue.sync { wrapped[WrappedKey(key)]?.value } }
-		set {
-			queue.async(flags: .barrier) { [weak self] in
-				guard let value = newValue else {
-					self?.wrapped[WrappedKey(key)] = nil
-					return
-				}
-				
-				self?.wrapped[WrappedKey(key)] = .init(value)
-			}
-		}
-	}
-	
-	func removeAll() {
-		queue.async(flags: .barrier) { [weak self] in
-			self?.wrapped.removeAll()
-		}
-	}
-}
-
 // MARK: - Type -
 
 /// In memory key/value cache that works as a lightening cache layer 2 over any other storage.
@@ -52,8 +14,11 @@ public struct InMemoryCache {
 
 // MARK: - Properties
 	
-	private static var data: CacheWrapper<String, Any> = .init()
-	private static var references: CacheWrapper<String, String?> = .init()
+	@ThreadSafe
+	private static var data: [String : Any] = [:]
+	
+	@ThreadSafe
+	private static var references: [String : String] = [:]
 
 // MARK: - Constructors
 

@@ -32,9 +32,12 @@ private extension URL {
 public extension UIImage {
 	
 // MARK: - Private Methods
-	
-	private static var associated: [String : UIImage] = [:]
+
+	@ThreadSafe
 	private static var inMemory: [String : UIImage] = [:]
+	
+	@ThreadSafe
+	private static var associated: [String : UIImage] = [:]
 	
 // MARK: - Protected Methods
 	

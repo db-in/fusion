@@ -11,7 +11,9 @@ private struct Keys {
 }
 
 private struct Wrapper {
-	static var all: CacheWrapper<String, [TargetWrapper]> = .init()
+	
+	@ThreadSafe
+	static var all: [String : [TargetWrapper]] = [:]
 }
 
 private class DeinitCallback: NSObject {

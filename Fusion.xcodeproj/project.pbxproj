@@ -89,6 +89,7 @@
 		60CC2EC02A50C61B00E43713 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60CC2EBF2A50C61B00E43713 /* Assets.xcassets */; };
 		60CC2EC32A50C61B00E43713 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60CC2EC22A50C61B00E43713 /* Preview Assets.xcassets */; };
 		60CC2ECC2A50CEFA00E43713 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2ECB2A50CEFA00E43713 /* ImageLoader.swift */; };
+		60E31B732A61803E006F62EC /* ThreadSafe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E31B722A61803E006F62EC /* ThreadSafe.swift */; };
 		B50DDFBA2A3305710027AD8F /* EncryptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50DDFB92A3305710027AD8F /* EncryptionTests.swift */; };
 		B50DDFBC2A330C0C0027AD8F /* LocalNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */; };
 		B51DDE652A30BEB500E0BCB1 /* InMemoryCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51DDE642A30BEB500E0BCB1 /* InMemoryCacheTests.swift */; };
@@ -260,6 +261,7 @@
 		60CC2EBF2A50C61B00E43713 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		60CC2EC22A50C61B00E43713 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		60CC2ECB2A50CEFA00E43713 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
+		60E31B722A61803E006F62EC /* ThreadSafe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSafe.swift; sourceTree = "<group>"; };
 		776AD69210D859E7E6009DD8 /* Pods_Sample_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sample_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B50DDFB92A3305710027AD8F /* EncryptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionTests.swift; sourceTree = "<group>"; };
 		B50DDFBB2A330C0C0027AD8F /* LocalNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotificationTests.swift; sourceTree = "<group>"; };
@@ -505,6 +507,7 @@
 				609484372A4C5A70008E21A1 /* JSONFunctions.swift */,
 				6094843C2A4C5A70008E21A1 /* Keychain.swift */,
 				6094843B2A4C5A70008E21A1 /* LocalNotification.swift */,
+				60E31B722A61803E006F62EC /* ThreadSafe.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -1109,6 +1112,7 @@
 				609484512A4C5A70008E21A1 /* DataStorageable.swift in Sources */,
 				6094845C2A4C6206008E21A1 /* Banner.swift in Sources */,
 				609484452A4C5A70008E21A1 /* Ease.swift in Sources */,
+				60E31B732A61803E006F62EC /* ThreadSafe.swift in Sources */,
 				609484492A4C5A70008E21A1 /* RESTRequest.swift in Sources */,
 				609484502A4C5A70008E21A1 /* DataManageable.swift in Sources */,
 				60CC2E2E2A4F617200E43713 /* Colors.swift in Sources */,
