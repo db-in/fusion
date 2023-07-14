@@ -112,7 +112,7 @@ public extension UIImage {
 	static func download(url: String, allowsBadge: Bool = true, storage: URL? = nil, then completion: @escaping (UIImage?) -> Void) {
 		
 		guard let validURL = URL(string: url) else {
-			completion(nil)
+			asyncMain { completion(nil) }
 			return
 		}
 		
@@ -161,12 +161,13 @@ public extension UIImage {
 		}
 		
 		object[keyPath: at] = placeholder
-		
-		if let image = loadCache(url: url, allowsBadge: allowsBadge, storage: storage) {
-			object[keyPath: at] = image
-		} else {
-			download(url: url, allowsBadge: allowsBadge, storage: storage) { image in
-				object[keyPath: at] = image ?? placeholder
+		DispatchQueue.global().async {
+			if let image = loadCache(url: url, allowsBadge: allowsBadge, storage: storage) {
+				asyncMain { object[keyPath: at] = image }
+			} else {
+				download(url: url, allowsBadge: allowsBadge, storage: storage) { image in
+					object[keyPath: at] = image ?? placeholder
+				}
 			}
 		}
 	}
