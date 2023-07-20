@@ -199,5 +199,20 @@ public extension UIImage {
 		
 		return image ?? UIImage()
 	}
+	
+	/// Returns a gausian blurred version of the image on all its dimension.
+	///
+	/// - Parameter radius: The radius of the gaussian blur effect. The default value is 5.0
+	/// - Returns: The blurred new image.
+	func gaussianBlur(radius: CGFloat = 5.0) -> UIImage {
+		guard let ciImage = CIImage(image: self) else { return self }
+		let filter = CIFilter(name: "CIGaussianBlur")!
+		filter.setValue(ciImage, forKey: kCIInputImageKey)
+		filter.setValue(radius, forKey: kCIInputRadiusKey)
+		guard let outputCIImage = filter.outputImage else { return self }
+		let context = CIContext(options: nil)
+		guard let cgImage = context.createCGImage(outputCIImage, from: outputCIImage.extent) else { return self }
+		return UIImage(cgImage: cgImage, scale: self.scale, orientation: self.imageOrientation)
+	}
 }
 #endif

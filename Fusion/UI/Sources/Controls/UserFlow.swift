@@ -57,17 +57,17 @@ public enum PresentationStyle {
 		case .pushWithRepetition:
 			UIWindow.topNavigation?.pushViewController(controller.first, animated: true)
 		case .modal:
-			controller.presentOverWindow(withNavigation: true)
+			controller.embededInNavigation().presentOverWindow()
 		case .modalWithPush:
 			let currentTop = UIWindow.topViewController
 			let navigation = (currentTop as? UINavigationController) ?? currentTop?.navigationController
 			if currentTop?.isPresentingAsModal == true, let validNavigation = navigation {
 				validNavigation.pushViewController(controller, animated: true)
 			} else {
-				controller.presentOverWindow(withNavigation: true)
+				controller.embededInNavigation().presentOverWindow()
 			}
 		case .fullScreen:
-			controller.presentOverWindow(withNavigation: false, style: .fullScreen)
+			controller.presentOverWindow(style: .fullScreen)
 		}
 	}
 }
@@ -176,7 +176,8 @@ public struct UserFlow {
 	///   - withNavigation: Defines it a new navigation controller should be created for it. The default is `false`.
 	///   - style: Defines the modal presentation style. The default valus is `fullScreen`.
 	public func startAsModal(withNavigation: Bool = false, style: UIModalPresentationStyle = .fullScreen) {
-		mapped.presentOverWindow(withNavigation: withNavigation, style: style)
+		let target = withNavigation ? mapped.embededInNavigation() : mapped
+		target.presentOverWindow(style: style)
 	}
 	
 	/// Presents the mapped controller by pushing in the current navigation controller.

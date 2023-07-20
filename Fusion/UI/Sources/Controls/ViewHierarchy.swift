@@ -542,39 +542,10 @@ public extension UIViewController {
 		view.removeFromSuperview()
 	}
 	
-	/// Presents a new view controller on top of this instance.
-	///
-	/// - Parameters:
-	///   - viewController: The new view controller to be presented on top.
-	///   - withNavigation: Defines if a new navigation will be created or this view controller will be used as is.
-	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
-	func presentOver(_ viewController: UIViewController, withNavigation: Bool, style: UIModalPresentationStyle = .none) {
-		let target = withNavigation ? viewController.embededIntoNavigation() : viewController
-		target.modalPresentationStyle = style.isModal ? .custom : style
-		
-		guard let current = presentedViewController else {
-			present(target, animated: true)
-			return
-		}
-		
-		current.dismiss(animated: true) {
-			asyncMain { self.present(target, animated: true) }
-		}
-	}
-	
-	/// Presents this instance over the key window's top view.
-	///
-	/// - Parameters:
-	///   - withNavigation: Defines if a new navigation will be created or this view controller will be used as is.
-	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
-	func presentOverWindow(withNavigation: Bool, style: UIModalPresentationStyle = .none) {
-		UIWindow.topViewController?.presentOver(self, withNavigation: withNavigation, style: style)
-	}
-	
 	/// Embeds the current view controller into a navigation controller if it is not already embedded.
 	///
 	/// - Returns: A navigation controller containing the current view controller.
-	func embededIntoNavigation() -> UINavigationController {
+	func embededInNavigation() -> UINavigationController {
 		self as? UINavigationController ?? UINavigationController(rootViewController: self)
 	}
 	
