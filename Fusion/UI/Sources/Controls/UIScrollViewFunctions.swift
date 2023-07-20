@@ -21,7 +21,7 @@ public extension UIScrollView {
 	enum Overflow {
 		case none
 		case fade(inset: CGFloat = 0)
-		case line(view: UIView = UIView(frame: .init(x: 0, y: 0, width: 1, height: 1)))
+		case line(view: UIView = UIView(frame: .init(x: 0, y: 0, width: 1, height: 1), backgroundColor: .lightGray))
 		
 		func update(_ scrollView: UIScrollView, at: UIRectEdge) {
 			let offset = scrollView.contentOffset.y
@@ -31,8 +31,6 @@ public extension UIScrollView {
 			
 			switch self {
 			case let .line(line):
-				line.backgroundColor = scrollView.backgroundColor?.oppositeStyleMode.withAlphaComponent(0.25)
-				
 				switch at {
 				case .bottom:
 					line.frame = CGRect(x: 0, y: bottomY + safeArea - 0.5, width: width, height: 0.5)
