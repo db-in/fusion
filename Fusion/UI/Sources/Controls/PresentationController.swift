@@ -313,6 +313,7 @@ public extension UIViewController {
 	///   - target: The new view controller to be presented on top.
 	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
 	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none) {
+#if os(iOS)
 		if #available(iOS 15.0, *) {
 			target.modalPresentationStyle = .pageSheet
 			target.transitioningDelegate = nil
@@ -332,6 +333,10 @@ public extension UIViewController {
 			target.modalPresentationStyle = style.isModal ? .custom : style
 			target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
 		}
+#else
+		target.modalPresentationStyle = style.isModal ? .custom : style
+		target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
+#endif
 		
 		guard let current = presentedViewController else {
 			present(target, animated: true)
