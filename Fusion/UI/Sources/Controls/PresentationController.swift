@@ -13,12 +13,13 @@ final public class PresentationController : UIPresentationController {
 // MARK: - Properties
 	
 	private var isDismissing: Bool = false
+	private var isInteracting: Bool = false
 	private var originalHeight: CGFloat = 0
 	private var propertyAnimator: UIViewPropertyAnimator?
 	private var nestedViewController: UIViewController? { (presentedViewController as? UINavigationController)?.viewControllers.last ?? presentedViewController }
 	private var scrollView: UIScrollView? { nestedViewController?.view as? UIScrollView ?? nestedViewController?.view.firstSubviewOf() }
 	private var topOffset: CGFloat { UIWindow.key?.safeAreaInsets.top ?? 0 }
-	private var interactor: UIPercentDrivenInteractiveTransition? { allowsInteraction ? interactiveTransition : nil }
+	private var interactor: UIPercentDrivenInteractiveTransition? { allowsInteraction && isInteracting ? interactiveTransition : nil }
 	private lazy var interactiveTransition: UIPercentDrivenInteractiveTransition = { .init() }()
 	private lazy var grabberView: UIView = {
 		.init(frame: .init(x: 0, y: 0, width: 36, height: 5), backgroundColor: .gray.withAlphaComponent(0.5), corner: 2.5)
@@ -31,8 +32,8 @@ final public class PresentationController : UIPresentationController {
 		}
 	}
 	
-	/// Indicates if the user is allowed to interactively move the presentation. The default value is `false`.
-	public var allowsInteraction: Bool = false
+	/// Indicates if the user is allowed to interactively move the presentation. The default value is `true`.
+	public var allowsInteraction: Bool = true
 	
 	/// Indicates if the user is allowed to dismiss it manually. When set to `false` user won't be albe to tap to dismiss, however it still
 	/// dismissable programatically. The default value is `true`.
@@ -104,9 +105,47 @@ final public class PresentationController : UIPresentationController {
 #endif
 	@objc private func handleDismiss() {
 		presentedView?.endEditing(true)
-		if allowsDismiss {
-			presentedViewController.dismiss(animated: true)
+		guard allowsDismiss else { return }
+		presentedViewController.dismiss(animated: true)
+	}
+	
+	@objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
+		guard
+			allowsInteraction,
+			let containerView = containerView
+		else { return }
+		
+		limitScrollView(gesture)
+		let percent = gesture.translation(in: containerView).y / containerView.bounds.height
+		
+		switch gesture.state {
+		case .began:
+			if !presentedViewController.isBeingDismissed && scrollView?.contentOffset.y ?? 0 <= 0 {
+				isInteracting = true
+				presentedViewController.dismiss(animated: true)
+			}
+		case .changed:
+			interactiveTransition.update(percent)
+		case .cancelled:
+			interactiveTransition.cancel()
+			isInteracting = false
+		case .ended:
+			let velocity = gesture.velocity(in: containerView).y
+			interactiveTransition.completionSpeed = 0.9
+			if percent > 0.3 || velocity > 1600 {
+				interactiveTransition.finish()
+			} else {
+				interactiveTransition.cancel()
+			}
+			isInteracting = false
+		default:
+			break
 		}
+	}
+	
+	private func limitScrollView(_ gesture: UIPanGestureRecognizer) {
+		guard interactiveTransition.percentComplete > 0 else { return }
+		scrollView?.contentOffset.y = -(scrollView?.adjustedContentInset.top ?? 0)
 	}
 	
 // MARK: - Exposed Methods
@@ -134,6 +173,8 @@ final public class PresentationController : UIPresentationController {
 		dimmingView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 		dimmingView.alpha = 0
 		dimmingView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
+		targetView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:))))
+		scrollView?.panGestureRecognizer.addTarget(self, action: #selector(handlePan(_:)))
 		
 		presentedViewController.transitionCoordinator?.animate(alongsideTransition: { [weak self] _ in
 			self?.dimmingView.alpha = 1
@@ -223,7 +264,32 @@ private struct Keys {
 
 public extension UIViewController {
 	
-	fileprivate var preferredHeight: CGFloat { preferredContentSize.height > 0 ? preferredContentSize.height : calculatePreferredHeight() }
+	fileprivate var preferredHeight: CGFloat {
+		let target = (self as? UINavigationController)?.topViewController ?? self
+		let size = target.preferredContentSize
+		guard size.height == 0 else { return size.height }
+		
+		let insets = target.view.safeAreaInsets.top + target.view.safeAreaInsets.bottom
+		var height = max(0, target.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height - insets)
+		
+		if let mainScroll = target.view as? UIScrollView {
+			height += mainScroll.contentSize.height + mainScroll.contentInset.top + mainScroll.contentInset.bottom
+			return height
+		}
+		
+		let scrollViews: [UIScrollView] = target.view.allSubviewOf()
+		target.view.layoutIfNeeded()
+		
+		height += scrollViews.reduce(CGFloat(0), { result, scrollView in
+			if scrollView.intrinsicContentSize.height <= 0 {
+				return result + scrollView.contentSize.height + scrollView.contentInset.top + scrollView.contentInset.bottom - 50
+			} else {
+				return result
+			}
+		})
+		
+		return height
+	}
 	
 	/// Automatically creates and returns the ``PresentationController`` that will be used on the next ``presentOver(_:style:)`` action.
 	/// - Important: This instance will be valid only for one round of presentation. Any changes will be discarded after the presentation is over.
@@ -241,36 +307,31 @@ public extension UIViewController {
 		objc_setAssociatedObject(self, &Keys.presentationKey, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 	}
 	
-	fileprivate func calculatePreferredHeight() -> CGFloat {
-		let insets = view.safeAreaInsets.top + view.safeAreaInsets.bottom
-		var height = max(0, view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height - insets)
-		
-		if let tableView = view as? UITableView {
-			height += tableView.contentSize.height + tableView.contentInset.top + tableView.contentInset.bottom
-			return height
-		}
-		
-		let scrollViews = view.subviews.compactMap { $0 as? UIScrollView }
-		
-		height += scrollViews.reduce(CGFloat(0), { result, scrollView in
-			if scrollView.intrinsicContentSize.height <= 0 {
-				return result + scrollView.contentSize.height + scrollView.contentInset.top + scrollView.contentInset.bottom
-			} else {
-				return result
-			}
-		})
-		
-		return height
-	}
-	
 	/// Presents a new view controller on top of this instance.
 	///
 	/// - Parameters:
 	///   - target: The new view controller to be presented on top.
 	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
 	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none) {
-		target.modalPresentationStyle = style.isModal ? .custom : style
-		target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
+		if #available(iOS 15.0, *) {
+			target.modalPresentationStyle = .pageSheet
+			target.transitioningDelegate = nil
+			let sheet = target.sheetPresentationController
+			if #available(iOS 16.0, *) {
+				let dent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { _ in target.preferredHeight }
+				sheet?.detents = [dent]
+			} else {
+				sheet?.detents = [.large()]
+			}
+			
+			sheet?.preferredCornerRadius = target.presentationController.cornerRadius
+			sheet?.prefersGrabberVisible = target.presentationController.isGrabberVisible
+			sheet?.prefersEdgeAttachedInCompactHeight = true
+			sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
+		} else {
+			target.modalPresentationStyle = style.isModal ? .custom : style
+			target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
+		}
 		
 		guard let current = presentedViewController else {
 			present(target, animated: true)
