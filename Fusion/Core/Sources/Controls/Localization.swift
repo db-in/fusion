@@ -149,7 +149,7 @@ public extension String {
 	/// This property remains the same even after multiple localization processes.
 	/// A `nil` is returned if the original key is the current value
 	var originalKey: String? {
-		get { return objc_getAssociatedObject(self, &String.tableKey) as? String }
+		get { objc_getAssociatedObject(self, &String.tableKey) as? String }
 		set { objc_setAssociatedObject(self, &String.tableKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
 	}
 	

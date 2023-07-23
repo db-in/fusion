@@ -17,7 +17,7 @@ final public class PresentationController : UIPresentationController {
 	private var originalHeight: CGFloat = 0
 	private var propertyAnimator: UIViewPropertyAnimator?
 	private var nestedViewController: UIViewController? { (presentedViewController as? UINavigationController)?.viewControllers.last ?? presentedViewController }
-	private var scrollView: UIScrollView? { nestedViewController?.view as? UIScrollView ?? nestedViewController?.view.firstSubviewOf() }
+	private var scrollView: UIScrollView? { nestedViewController?.view.firstOf() }
 	private var topOffset: CGFloat { UIWindow.key?.safeAreaInsets.top ?? 0 }
 	private var interactor: UIPercentDrivenInteractiveTransition? { allowsInteraction && isInteracting ? interactiveTransition : nil }
 	private lazy var interactiveTransition: UIPercentDrivenInteractiveTransition = { .init() }()
@@ -313,30 +313,30 @@ public extension UIViewController {
 	///   - target: The new view controller to be presented on top.
 	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
 	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none) {
-#if os(iOS)
-		if #available(iOS 15.0, *) {
-			target.modalPresentationStyle = .pageSheet
-			target.transitioningDelegate = nil
-			let sheet = target.sheetPresentationController
-			if #available(iOS 16.0, *) {
-				let dent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { _ in target.preferredHeight }
-				sheet?.detents = [dent]
-			} else {
-				sheet?.detents = [.large()]
-			}
-			
-			sheet?.preferredCornerRadius = target.presentationController.cornerRadius
-			sheet?.prefersGrabberVisible = target.presentationController.isGrabberVisible
-			sheet?.prefersEdgeAttachedInCompactHeight = true
-			sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
-		} else {
-			target.modalPresentationStyle = style.isModal ? .custom : style
-			target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
-		}
-#else
+//#if os(iOS)
+//		if #available(iOS 15.0, *) {
+//			target.modalPresentationStyle = .pageSheet
+//			target.transitioningDelegate = nil
+//			let sheet = target.sheetPresentationController
+//			if #available(iOS 16.0, *) {
+//				let dent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { _ in target.preferredHeight }
+//				sheet?.detents = [dent]
+//			} else {
+//				sheet?.detents = [.large()]
+//			}
+//			
+//			sheet?.preferredCornerRadius = target.presentationController.cornerRadius
+//			sheet?.prefersGrabberVisible = target.presentationController.isGrabberVisible
+//			sheet?.prefersEdgeAttachedInCompactHeight = true
+//			sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
+//		} else {
+//			target.modalPresentationStyle = style.isModal ? .custom : style
+//			target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
+//		}
+//#else
 		target.modalPresentationStyle = style.isModal ? .custom : style
 		target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
-#endif
+//#endif
 		
 		guard let current = presentedViewController else {
 			present(target, animated: true)
