@@ -167,7 +167,7 @@ final public class PresentationController : UIPresentationController {
 		targetView.frame.origin.y = containerBounds.height
 		targetView.layer.masksToBounds = true
 		targetView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-		targetView.setCornerRadius(at: [.topLeft, .topRight], radius: cornerRadius)
+		targetView.makeCornerRadius(at: [.topLeft, .topRight], radius: cornerRadius)
 		
 		dimmingView.frame = containerBounds
 		dimmingView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -313,30 +313,30 @@ public extension UIViewController {
 	///   - target: The new view controller to be presented on top.
 	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
 	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none) {
-//#if os(iOS)
-//		if #available(iOS 15.0, *) {
-//			target.modalPresentationStyle = .pageSheet
-//			target.transitioningDelegate = nil
-//			let sheet = target.sheetPresentationController
-//			if #available(iOS 16.0, *) {
-//				let dent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { _ in target.preferredHeight }
-//				sheet?.detents = [dent]
-//			} else {
-//				sheet?.detents = [.large()]
-//			}
-//			
-//			sheet?.preferredCornerRadius = target.presentationController.cornerRadius
-//			sheet?.prefersGrabberVisible = target.presentationController.isGrabberVisible
-//			sheet?.prefersEdgeAttachedInCompactHeight = true
-//			sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
-//		} else {
-//			target.modalPresentationStyle = style.isModal ? .custom : style
-//			target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
-//		}
-//#else
+#if os(iOS)
+		if #available(iOS 15.0, *) {
+			target.modalPresentationStyle = .pageSheet
+			target.transitioningDelegate = nil
+			let sheet = target.sheetPresentationController
+			if #available(iOS 16.0, *) {
+				let dent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { _ in target.preferredHeight }
+				sheet?.detents = [dent]
+			} else {
+				sheet?.detents = [.large()]
+			}
+			
+			sheet?.preferredCornerRadius = target.presentationController.cornerRadius
+			sheet?.prefersGrabberVisible = target.presentationController.isGrabberVisible
+			sheet?.prefersEdgeAttachedInCompactHeight = true
+			sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
+		} else {
+			target.modalPresentationStyle = style.isModal ? .custom : style
+			target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
+		}
+#else
 		target.modalPresentationStyle = style.isModal ? .custom : style
 		target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
-//#endif
+#endif
 		
 		guard let current = presentedViewController else {
 			present(target, animated: true)

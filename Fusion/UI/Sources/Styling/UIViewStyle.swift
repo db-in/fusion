@@ -112,9 +112,10 @@ public extension UIView {
 	
 // MARK: - Protected Methods
 	
-	func setCornerRadius(at: UIRectCorner, radius: CGFloat) {
+	@discardableResult func makeCornerRadius(at: UIRectCorner, radius: CGFloat) -> Self {
 		cornerRadius = radius
 		layer.maskedCorners = at.maskedCorners
+		return self
 	}
 }
 
@@ -137,20 +138,25 @@ public extension UIView {
 		set { layer.borderColor = newValue?.cgResolved(with: interfaceStyle) }
 	}
 	
-	func make(border: UIColor?, thickness: CGFloat = 1.0) {
+	@discardableResult
+	func make(border: UIColor?, thickness: CGFloat = 1.0) -> Self{
 		borderColor = border
 		borderWidth = thickness
+		return self
 	}
 	
-	func makeCapsule(border: UIColor? = nil, thickness: CGFloat = 1.0) {
+	@discardableResult
+	func makeCapsule(border: UIColor? = nil, thickness: CGFloat = 1.0) -> Self {
 		borderColor = border
 		borderWidth = thickness
 		cornerRadius = frame.height * 0.5
+		return self
 	}
 	
-	func makeDashedBorder(_ pattern: [Int], border: UIColor?, thickness: CGFloat = 1.0, radius: CGFloat = 8.0) {
+	@discardableResult
+	func makeDashedBorder(_ pattern: [Int], border: UIColor?, thickness: CGFloat = 1.0, radius: CGFloat = 8.0) -> Self {
 		borderLayer?.removeFromSuperlayer()
-		guard !pattern.isEmpty else { return }
+		guard !pattern.isEmpty else { return self }
 		let dashed = CAShapeLayer()
 		dashed.strokeColor = border?.cgResolved(with: interfaceStyle)
 		dashed.lineDashPattern = pattern as [NSNumber]
@@ -160,6 +166,7 @@ public extension UIView {
 		dashed.path = UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
 		layer.addSublayer(dashed)
 		borderLayer = dashed
+		return self
 	}
 }
 
@@ -174,13 +181,13 @@ public extension UIView {
 
 	var hasShadow: Bool { (shadowLayer?.shadowOpacity ?? 0) > 0 }
 	
-	func applyShadow(radius: CGFloat = 4.0,
-					 fillColor: UIColor = .black,
-					 shadowColor: UIColor = .black,
-					 opacity: Float = 0.3,
-					 offset: CGSize = .zero,
-					 cornerRadius: CGFloat = 0.0) {
-		
+	@discardableResult
+	func makeShadow(radius: CGFloat = 4.0,
+					fillColor: UIColor = .black,
+					shadowColor: UIColor = .black,
+					opacity: Float = 0.3,
+					offset: CGSize = .zero,
+					cornerRadius: CGFloat = 0.0) -> Self {
 		asyncMain {
 			self.cornerRadius = 0
 			let shadow = self.shadowLayer ?? CALayer()
@@ -198,6 +205,7 @@ public extension UIView {
 			self.layer.cornerRadius = cornerRadius
 			self.shadowLayer = shadow
 		}
+		return self
 	}
 }
 
