@@ -37,7 +37,7 @@ public extension UIFont {
 	
 // MARK: - Properties
 	
-	var monospacedDigit: UIFont { UIFont(descriptor: fontDescriptor.monospacedDigit, size: 0) }
+	var monospacedDigit: UIFont { .init(descriptor: fontDescriptor.monospacedDigit, size: 0) }
 	
 	var bold: UIFont {
 		guard let descriptor = fontDescriptor.withSymbolicTraits(.traitBold) else { return self }
