@@ -21,11 +21,23 @@ public extension UIFont.TextStyle {
 	}
 }
 
+private extension UIFontDescriptor {
+
+	var monospacedDigit: UIFontDescriptor {
+		let settings = [[UIFontDescriptor.FeatureKey.featureIdentifier : kNumberSpacingType,
+						 UIFontDescriptor.FeatureKey.typeIdentifier : kMonospacedNumbersSelector]]
+		let attributes = [UIFontDescriptor.AttributeName.featureSettings: settings]
+		return addingAttributes(attributes)
+	}
+}
+
 // MARK: - Extension - UIFont
 
 public extension UIFont {
 	
 // MARK: - Properties
+	
+	var monospacedDigit: UIFont { UIFont(descriptor: fontDescriptor.monospacedDigit, size: 0) }
 	
 	var bold: UIFont {
 		guard let descriptor = fontDescriptor.withSymbolicTraits(.traitBold) else { return self }
