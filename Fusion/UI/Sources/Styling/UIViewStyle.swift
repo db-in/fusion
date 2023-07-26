@@ -11,6 +11,7 @@ private struct ObjcKeys {
 	
 	static var shadowKey: UInt8 = 1
 	static var borderKey: UInt8 = 2
+	static var gradientKey: UInt8 = 3
 }
 
 // MARK: - Extension - UIRectCorner
@@ -179,15 +180,26 @@ public extension UIView {
 		set { objc_setAssociatedObject(self, &ObjcKeys.shadowKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
 	}
 
+	/// Returns true if there is an existing gradient created by using ``makeShadow(radius:fillColor:shadowColor:opacity:offset:cornerRadius:)``
 	var hasShadow: Bool { (shadowLayer?.shadowOpacity ?? 0) > 0 }
 	
-	@discardableResult
-	func makeShadow(radius: CGFloat = 4.0,
-					fillColor: UIColor = .black,
-					shadowColor: UIColor = .black,
-					opacity: Float = 0.3,
-					offset: CGSize = .zero,
-					cornerRadius: CGFloat = 0.0) -> Self {
+	/// Makes a shadow in the background of the view.
+	/// 
+	/// - Returns: Returns self for nested calls purpose.
+	/// - Important: This routine uses layers to create its effect, changing layers after calling this method may produce undesired effects.
+	/// - Parameters:
+	///   - radius: The shadow radius. The default is `4`.
+	///   - fillColor: The new fill color of the view. The default is `black`.
+	///   - shadowColor: The shadow color. The default is `black`.
+	///   - opacity: The shadow opacity. The default is `0.3.
+	///   - offset: The shadow offset. The default is `zero.
+	///   - cornerRadius: The corner radius of the view. The default is `0.
+	@discardableResult func makeShadow(radius: CGFloat = 4.0,
+									   fillColor: UIColor = .black,
+									   shadowColor: UIColor = .black,
+									   opacity: Float = 0.3,
+									   offset: CGSize = .zero,
+									   cornerRadius: CGFloat = 0.0) -> Self {
 		asyncMain {
 			self.cornerRadius = 0
 			let shadow = self.shadowLayer ?? CALayer()
@@ -205,6 +217,52 @@ public extension UIView {
 			self.layer.cornerRadius = cornerRadius
 			self.shadowLayer = shadow
 		}
+		return self
+	}
+}
+
+// MARK: - Extension - UIView Gradient
+
+extension UIView {
+	
+	private var gradientLayer: CAGradientLayer? {
+		get { objc_getAssociatedObject(self, &ObjcKeys.gradientKey) as? CAGradientLayer }
+		set { objc_setAssociatedObject(self, &ObjcKeys.gradientKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+	}
+	
+	/// Returns true if there is an existing gradient created by using ``makeGradient(colors:start:end:type:)``
+	var hasGradient: Bool { gradientLayer != nil }
+	
+	/// Makes a gradient in the background of the view. Call the method once at every redraw.
+	///
+	/// - Parameters:
+	///   - colors: An array of colors. If empty ([]) any existing gradient is removed.
+	///   - start: The percentual starting point [0-1]. The default is `(x:0,y:0)`.
+	///   - end: The percentual ending point [0-1]. The default is `(x:0,y:1)`.
+	///   - type: The type of gradient. The default is `axial`.
+	/// - Returns: Returns self for nested calls purpose.
+	/// - Important: This routine uses layers to create its effect, changing layers after calling this method may produce undesired effects.
+	@discardableResult func makeGradient(colors: [UIColor],
+										 start: CGPoint = .init(x: 0, y: 0),
+										 end: CGPoint = .init(x: 0, y: 1),
+										 type: CAGradientLayerType = .axial) -> Self {
+		
+		guard !colors.isEmpty else {
+			gradientLayer?.removeFromSuperlayer()
+			gradientLayer = nil
+			return self
+		}
+		
+		let newLayer = gradientLayer ?? CAGradientLayer()
+		newLayer.frame = CGRect(origin: .zero, size: bounds.size)
+		newLayer.colors = colors.map(\.cgColor)
+		newLayer.startPoint = start
+		newLayer.endPoint = end
+		newLayer.type = type
+		newLayer.zPosition = -1000
+		layer.insertSublayer(newLayer, at: 0)
+		gradientLayer = newLayer
+		
 		return self
 	}
 }
@@ -246,7 +304,7 @@ public extension UIView {
 		}
 	}
 	
-	static var interfaceStyle: UIUserInterfaceStyle { .light }//UIWindow.key?.interfaceStyle
+	static var interfaceStyle: UIUserInterfaceStyle { UIWindow.key?.interfaceStyle ?? .light }
 	
 	func embededInView(edges: UIEdgeInsets = .zero) -> UIView {
 		let origin = CGPoint(x: edges.left, y: edges.top)

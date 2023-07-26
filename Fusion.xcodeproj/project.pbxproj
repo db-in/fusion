@@ -28,6 +28,7 @@
 		601B18B72A2289940050644B /* MathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601B18B62A2289940050644B /* MathTests.swift */; };
 		601CFFB12A169B8300B12DE2 /* Person.json in Resources */ = {isa = PBXBuildFile; fileRef = 601CFFB02A169B8300B12DE2 /* Person.json */; };
 		601CFFB32A1B71BD00B12DE2 /* TweenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601CFFB22A1B71BD00B12DE2 /* TweenViewController.swift */; };
+		605F3A942A70F0CC00CB4C97 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605F3A932A70F0CC00CB4C97 /* GradientView.swift */; };
 		609484172A4C5767008E21A1 /* Fusion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 609484022A4C5766008E21A1 /* Fusion.framework */; };
 		609484182A4C5767008E21A1 /* Fusion.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 609484022A4C5766008E21A1 /* Fusion.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		609484442A4C5A70008E21A1 /* Tween.swift in Sources */ = {isa = PBXBuildFile; fileRef = 609484272A4C5A70008E21A1 /* Tween.swift */; };
@@ -186,6 +187,7 @@
 		601B18B62A2289940050644B /* MathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathTests.swift; sourceTree = "<group>"; };
 		601CFFB02A169B8300B12DE2 /* Person.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Person.json; sourceTree = "<group>"; };
 		601CFFB22A1B71BD00B12DE2 /* TweenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweenViewController.swift; sourceTree = "<group>"; };
+		605F3A932A70F0CC00CB4C97 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		609484022A4C5766008E21A1 /* Fusion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fusion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		609484272A4C5A70008E21A1 /* Tween.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tween.swift; sourceTree = "<group>"; };
 		609484282A4C5A70008E21A1 /* Ease.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ease.swift; sourceTree = "<group>"; };
@@ -460,6 +462,7 @@
 			children = (
 				60CC2E2C2A4F617200E43713 /* Colors.swift */,
 				6094842A2A4C5A70008E21A1 /* Fonts.swift */,
+				605F3A932A70F0CC00CB4C97 /* GradientView.swift */,
 				60CC2E2B2A4F617200E43713 /* Images.swift */,
 				60CC2E272A4F5DA700E43713 /* SwiftUIStyle.swift */,
 				60CC2E282A4F5DA700E43713 /* UIViewStyle.swift */,
@@ -1106,6 +1109,7 @@
 				6094844F2A4C5A70008E21A1 /* JSONFunctions.swift in Sources */,
 				609484532A4C5A70008E21A1 /* LocalNotification.swift in Sources */,
 				60CC2E3D2A506ACD00E43713 /* TextFunctions.swift in Sources */,
+				605F3A942A70F0CC00CB4C97 /* GradientView.swift in Sources */,
 				60CC2E392A506ACD00E43713 /* ControlAction.swift in Sources */,
 				60CC2E322A504B1F00E43713 /* UserFlow.swift in Sources */,
 				6094844D2A4C5A70008E21A1 /* HTTPCookieHelper.swift in Sources */,
