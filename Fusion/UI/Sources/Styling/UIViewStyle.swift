@@ -223,7 +223,7 @@ public extension UIView {
 
 // MARK: - Extension - UIView Gradient
 
-extension UIView {
+public extension UIView {
 	
 	private var gradientLayer: CAGradientLayer? {
 		get { objc_getAssociatedObject(self, &ObjcKeys.gradientKey) as? CAGradientLayer }
