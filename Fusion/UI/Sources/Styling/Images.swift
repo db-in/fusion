@@ -169,37 +169,6 @@ public extension UIImage {
 		image.tinted(tintColor).shapped(with: backgroundColor, shapeSize: shapeSize, iconSize: iconSize, cornerRadius: shapeSize.width * 0.5)
 	}
 	
-	/// Creates a gradient image with the specified colors, size, start point, and end point.
-	///
-	/// - Parameters:
-	///   - colors: The colors to use in the gradient.
-	///   - size: The size of the gradient image (default: CGSize(width: 1, height: 1)).
-	///   - start: The start point of the gradient (default: CGPoint(x: 0, y: 0.5)).
-	///   - end: The end point of the gradient (default: CGPoint(x: 1.0, y: 0.5)).
-	/// - Returns: A gradient image.
-	static func gradient(colors: [UIColor],
-						 size: CGSize = .init(width: 1, height: 1),
-						 start: CGPoint = .init(x: 0, y: 0.5),
-						 end: CGPoint = .init(x: 1.0, y: 0.5)) -> UIImage {
-		
-		let gradientLayer = CAGradientLayer()
-		gradientLayer.frame = CGRect(origin: .zero, size: size)
-		gradientLayer.colors = colors.map(\.cgColor)
-		gradientLayer.startPoint = start
-		gradientLayer.endPoint = end
-		
-		let rect = CGRect(origin: .zero, size: size)
-		UIGraphicsBeginImageContext(rect.size)
-		if let context = UIGraphicsGetCurrentContext() {
-			gradientLayer.render(in: context)
-		}
-		
-		let image = UIGraphicsGetImageFromCurrentImageContext()
-		UIGraphicsEndImageContext()
-		
-		return image ?? UIImage()
-	}
-	
 	/// Returns a gausian blurred version of the image on all its dimension.
 	///
 	/// - Parameter radius: The radius of the gaussian blur effect. The default value is 5.0
