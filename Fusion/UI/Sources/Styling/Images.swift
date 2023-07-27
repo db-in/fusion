@@ -15,7 +15,10 @@ public extension UIImage {
 	
 	static let starFilled: UIImage = .anyImage(named: "star.fill")
 	
-	/// Returns the image with `alwaysTemplate` mode.
+	/// Returns the image with `alwaysOriginal` rendering mode.
+	var original: UIImage { withRenderingMode(.alwaysOriginal) }
+	
+	/// Returns the image with `alwaysTemplate` rendering mode.
 	var template: UIImage { withRenderingMode(.alwaysTemplate) }
 	
 // MARK: - Constructors
@@ -30,11 +33,12 @@ public extension UIImage {
 	/// - Parameters:
 	///   - named: The name of the image resource.
 	///   - allowCache: Indicates if cache can be used to optimize loading. The default value is `true`.
+	///   - bundleHint: A given bundle to be the first try for the given resource. Default is `main`.
 	/// - Returns: An image object, if available; otherwise, a system image or an empty image.
-	static func anyImage(named: String, allowCache: Bool = true) -> UIImage {
+	static func anyImage(named: String, allowCache: Bool = true, bundleHint: Bundle = .main) -> UIImage {
 		let getImage = {
-			let bundleImage = Bundle.allAvailable.firstMap { UIImage(named: named, in: $0, with: nil) }
-			return bundleImage ?? .init(systemName: named)?.template
+			let image = UIImage(named: named, in: bundleHint, with: nil) ?? Bundle.allAvailable.firstMap { UIImage(named: named, in: $0, with: nil) }
+			return image ?? .init(systemName: named)?.template
 		}
 		
 		guard allowCache else { return getImage() ?? .init() }
