@@ -225,7 +225,7 @@ public struct UserFlow {
 	
 	/// Simulates a Universal Link navigation inside the application itself.
 	///
-	/// - Parameter link: A valid full url link. Example: `https://www.com/full/path`.
+	/// - Parameter link: An universal link either relative or absolute.
 	public static func universalLink(into link: String) {
 		let finalLink = link.contains("https") ? link : "https://www.com/\(link)"
 		guard let url = URL(string: finalLink) else { return }

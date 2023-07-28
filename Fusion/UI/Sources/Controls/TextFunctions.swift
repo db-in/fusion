@@ -361,7 +361,7 @@ public extension UILabel {
 		minimumScaleFactor = minimumScale
 		numberOfLines = lines
 		textAlignment = isRTL ? aligment.mirror : aligment
-		text?.render(target: self)
+		text.render(target: self)
 	}
 	
 	func sizeToFitContent(maxWidth: CGFloat = .greatestFiniteMagnitude) {
