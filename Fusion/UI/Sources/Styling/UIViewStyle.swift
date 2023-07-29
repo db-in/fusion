@@ -7,11 +7,14 @@ import UIKit
 
 // MARK: - Definitions -
 
-private struct ObjcKeys {
+public extension CALayer {
 	
-	static var shadowKey: UInt8 = 1
-	static var borderKey: UInt8 = 2
-	static var gradientKey: UInt8 = 3
+	func sublayers(named: String) -> [CALayer] { sublayers?.filter(\.name == named) ?? [] }
+}
+
+public extension Array where Element == CALayer {
+	
+	func removeAllFromSuperLayer() { forEach { $0.removeFromSuperlayer() } }
 }
 
 // MARK: - Extension - UIRectCorner
@@ -127,10 +130,7 @@ public extension UIView {
 	
 	typealias Border = (color: UIColor, width: CGFloat)
 	
-	private var borderLayer: CALayer? {
-		get { objc_getAssociatedObject(self, &ObjcKeys.borderKey) as? CALayer }
-		set { objc_setAssociatedObject(self, &ObjcKeys.borderKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
-	}
+	private var borderKey: String { "viewBorderKey" }
 	
 	/// The current border width.
 	@IBInspectable var borderWidth: CGFloat {
@@ -172,17 +172,17 @@ public extension UIView {
 	///   - border: The border settings.
 	/// - Returns: Returns self same instance for convenience.
 	@discardableResult func makeDashedBorder(_ pattern: [Int], border: Border?) -> Self {
-		borderLayer?.removeFromSuperlayer()
+		layer.sublayers(named: borderKey).removeAllFromSuperLayer()
 		guard !pattern.isEmpty else { return self }
-		let dashed = CAShapeLayer()
-		dashed.strokeColor = border?.color.cgResolved(with: interfaceStyle)
-		dashed.lineDashPattern = pattern as [NSNumber]
-		dashed.lineWidth = border?.width ?? 0
-		dashed.frame = bounds
-		dashed.fillColor = nil
-		dashed.path = UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
-		layer.addSublayer(dashed)
-		borderLayer = dashed
+		let shape = CAShapeLayer()
+		shape.strokeColor = border?.color.cgResolved(with: interfaceStyle)
+		shape.lineDashPattern = pattern as [NSNumber]
+		shape.lineWidth = border?.width ?? 0
+		shape.frame = bounds
+		shape.fillColor = nil
+		shape.path = UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
+		shape.name = borderKey
+		layer.addSublayer(shape)
 		return self
 	}
 	
@@ -191,12 +191,12 @@ public extension UIView {
 	/// - Parameter borders: The array of concentrict borders.
 	/// - Returns: Returns self same instance for convenience.
 	@discardableResult func make(borders: [Border]) -> Self {
-		let name = "MultiBorder"
 		let radius = cornerRadius
 		var totalWidth: CGFloat = 0
 		var previous: CGFloat = 0
 		
-		layer.sublayers?.filter(\.name == name).forEach { $0.removeFromSuperlayer() }
+		layer.sublayers(named: borderKey).removeAllFromSuperLayer()
+		layer.sublayers?.filter(\.name == borderKey).forEach { $0.removeFromSuperlayer() }
 		borders.forEach { border in
 			totalWidth += border.width * 0.5
 			let shape = CAShapeLayer()
@@ -214,7 +214,7 @@ public extension UIView {
 				shape.path = UIBezierPath(roundedRect: shapeFrame, byRoundingCorners: corners, cornerRadii: size).cgPath
 			}
 			
-			shape.name = name
+			shape.name = borderKey
 			layer.addSublayer(shape)
 			totalWidth += border.width * 0.5
 			previous = border.width
@@ -228,13 +228,10 @@ public extension UIView {
 
 public extension UIView {
 	
-	private var shadowLayer: CALayer? {
-		get { objc_getAssociatedObject(self, &ObjcKeys.shadowKey) as? CALayer }
-		set { objc_setAssociatedObject(self, &ObjcKeys.shadowKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
-	}
+	private var shadowKey: String { "viewShadowKey" }
 
 	/// Returns true if there is an existing gradient created by using ``makeShadow(radius:fillColor:shadowColor:opacity:offset:cornerRadius:)``
-	var hasShadow: Bool { (shadowLayer?.shadowOpacity ?? 0) > 0 }
+	var hasShadow: Bool { (layer.sublayers(named: shadowKey).first?.shadowOpacity ?? 0) > 0 }
 	
 	/// Makes a shadow in the background of the view.
 	///
@@ -255,7 +252,8 @@ public extension UIView {
 									   cornerRadius: CGFloat = 0.0) -> Self {
 		asyncMain {
 			self.cornerRadius = 0
-			let shadow = self.shadowLayer ?? CALayer()
+			self.layer.sublayers(named: self.shadowKey).removeAllFromSuperLayer()
+			let shadow = CALayer()
 			let interface = self.interfaceStyle
 			
 			shadow.frame = self.bounds
@@ -266,9 +264,9 @@ public extension UIView {
 			shadow.shadowOpacity = opacity
 			shadow.shadowOffset = offset
 			shadow.shadowRadius = radius
+			shadow.name = self.shadowKey
 			self.layer.insertSublayer(shadow, at: 0)
 			self.layer.cornerRadius = cornerRadius
-			self.shadowLayer = shadow
 		}
 		return self
 	}
@@ -278,13 +276,10 @@ public extension UIView {
 
 public extension UIView {
 	
-	private var gradientLayer: CAGradientLayer? {
-		get { objc_getAssociatedObject(self, &ObjcKeys.gradientKey) as? CAGradientLayer }
-		set { objc_setAssociatedObject(self, &ObjcKeys.gradientKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
-	}
+	private var gradientKey: String { "viewGradientKey" }
 	
 	/// Returns true if there is an existing gradient created by using ``makeGradient(colors:start:end:type:)``
-	var hasGradient: Bool { gradientLayer != nil }
+	var hasGradient: Bool { !layer.sublayers(named: gradientKey).isEmpty }
 	
 	/// Makes a gradient in the background of the view. Call the method once at every redraw.
 	///
@@ -300,21 +295,18 @@ public extension UIView {
 										 end: CGPoint = .init(x: 0, y: 1),
 										 type: CAGradientLayerType = .axial) -> Self {
 		
-		guard !colors.isEmpty else {
-			gradientLayer?.removeFromSuperlayer()
-			gradientLayer = nil
-			return self
-		}
+		layer.sublayers(named: gradientKey).removeAllFromSuperLayer()
+		guard !colors.isEmpty else { return self }
+		let gradient = CAGradientLayer()
 		
-		let newLayer = gradientLayer ?? CAGradientLayer()
-		newLayer.frame = CGRect(origin: .zero, size: bounds.size)
-		newLayer.colors = colors.map(\.cgColor)
-		newLayer.startPoint = start
-		newLayer.endPoint = end
-		newLayer.type = type
-		newLayer.zPosition = -1000
-		layer.insertSublayer(newLayer, at: 0)
-		gradientLayer = newLayer
+		gradient.frame = CGRect(origin: .zero, size: bounds.size)
+		gradient.colors = colors.map(\.cgColor)
+		gradient.startPoint = start
+		gradient.endPoint = end
+		gradient.type = type
+		gradient.zPosition = -1000
+		gradient.name = gradientKey
+		layer.insertSublayer(gradient, at: 0)
 		
 		return self
 	}
