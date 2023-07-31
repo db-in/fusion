@@ -29,6 +29,7 @@
 		601CFFB12A169B8300B12DE2 /* Person.json in Resources */ = {isa = PBXBuildFile; fileRef = 601CFFB02A169B8300B12DE2 /* Person.json */; };
 		601CFFB32A1B71BD00B12DE2 /* TweenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601CFFB22A1B71BD00B12DE2 /* TweenViewController.swift */; };
 		605F3A942A70F0CC00CB4C97 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605F3A932A70F0CC00CB4C97 /* GradientView.swift */; };
+		605F3B072A77830D00CB4C97 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605F3B062A77830D00CB4C97 /* AnyCodable.swift */; };
 		609484172A4C5767008E21A1 /* Fusion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 609484022A4C5766008E21A1 /* Fusion.framework */; };
 		609484182A4C5767008E21A1 /* Fusion.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 609484022A4C5766008E21A1 /* Fusion.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		609484442A4C5A70008E21A1 /* Tween.swift in Sources */ = {isa = PBXBuildFile; fileRef = 609484272A4C5A70008E21A1 /* Tween.swift */; };
@@ -188,6 +189,7 @@
 		601CFFB02A169B8300B12DE2 /* Person.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Person.json; sourceTree = "<group>"; };
 		601CFFB22A1B71BD00B12DE2 /* TweenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweenViewController.swift; sourceTree = "<group>"; };
 		605F3A932A70F0CC00CB4C97 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
+		605F3B062A77830D00CB4C97 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
 		609484022A4C5766008E21A1 /* Fusion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fusion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		609484272A4C5A70008E21A1 /* Tween.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tween.swift; sourceTree = "<group>"; };
 		609484282A4C5A70008E21A1 /* Ease.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ease.swift; sourceTree = "<group>"; };
@@ -505,6 +507,7 @@
 		609484362A4C5A70008E21A1 /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				605F3B062A77830D00CB4C97 /* AnyCodable.swift */,
 				6094843A2A4C5A70008E21A1 /* DataBindable.swift */,
 				609484382A4C5A70008E21A1 /* DataManageable.swift */,
 				609484392A4C5A70008E21A1 /* DataStorageable.swift */,
@@ -1121,6 +1124,7 @@
 				6094845C2A4C6206008E21A1 /* Banner.swift in Sources */,
 				609484452A4C5A70008E21A1 /* Ease.swift in Sources */,
 				60E31B732A61803E006F62EC /* ThreadSafe.swift in Sources */,
+				605F3B072A77830D00CB4C97 /* AnyCodable.swift in Sources */,
 				609484492A4C5A70008E21A1 /* RESTRequest.swift in Sources */,
 				609484502A4C5A70008E21A1 /* DataManageable.swift in Sources */,
 				60CC2E2E2A4F617200E43713 /* Colors.swift in Sources */,

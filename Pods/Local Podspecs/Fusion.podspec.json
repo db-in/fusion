@@ -1,6 +1,6 @@
 {
   "name": "Fusion",
-  "version": "1.0.34",
+  "version": "1.0.39",
   "summary": "Micro Feature",
   "description": "Fusion is resposible for ...",
   "homepage": "https://fusion.com",
@@ -12,7 +12,7 @@
   "authors": "Diney Bomfim",
   "source": {
     "git": "git@github.com:db-in/fusion.git",
-    "tag": "Fusion-v1.0.34",
+    "tag": "Fusion-v1.0.39",
     "submodules": true
   },
   "swift_versions": "5.0",
