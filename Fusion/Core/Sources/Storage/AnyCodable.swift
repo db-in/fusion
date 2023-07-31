@@ -102,7 +102,7 @@ extension AnyCodable : Codable {
 
 // MARK: - Extension - Encodable AnyCodable
 
-extension Encodable {
+public extension Encodable {
 	
 	var anyCodable: AnyCodable { .init(object ?? [:]) }
 }
