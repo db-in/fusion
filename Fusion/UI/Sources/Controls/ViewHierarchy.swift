@@ -194,6 +194,21 @@ public extension UIView {
 		return nil
 	}
 	
+	/// Finds and returns the possible associated view controller with this view.
+	///
+	/// - Returns: Returns the view controller if found or nil.
+	func findViewController() -> UIViewController? {
+		var responder: UIResponder? = self
+		
+		while responder != nil {
+			responder = responder?.next
+			guard let viewController = responder as? UIViewController else { continue }
+			return viewController
+		}
+
+		return nil
+	}
+	
 	/// Removes all gesture recognizers of the specified type from the view.
 	///
 	/// - Parameter kind: The type of gesture recognizer to remove.
