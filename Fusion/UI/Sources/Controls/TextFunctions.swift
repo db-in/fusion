@@ -2,64 +2,16 @@
 //  Created by Diney Bomfim on 5/3/23.
 //
 
-#if canImport(UIKit) && !os(watchOS)
-import UIKit
+import Foundation
 
-// MARK: - Definitions -
-
-public extension NSTextAlignment {
-	
-	/// Mirrors the alignment.
-	var mirror: NSTextAlignment {
-		switch self {
-		case .left:
-			return .right
-		case .right:
-			return .left
-		default:
-			return self
-		}
-	}
-}
+// MARK: - Type - Searcheable
 
 public protocol Searcheable {
 	
 	var searchableText: String { get }
 }
 
-public extension Dictionary where Key == NSAttributedString.Key, Value == Any {
-	
-	static func attributed(font: UIFont? = nil,
-						   color: UIColor? = nil,
-						   lineSpacing: CGFloat? = nil,
-						   lineHeight: CGFloat? = nil,
-						   alignment: NSTextAlignment? = nil) -> Self {
-		var attributes = Self()
-		
-		if let newFont = font {
-			attributes[.font] = newFont
-		}
-		
-		if let newColor = color {
-			attributes[.foregroundColor] = newColor
-		}
-		
-		if lineSpacing != nil || lineHeight != nil || alignment != nil {
-			let paragraph = NSMutableParagraphStyle()
-			paragraph.alignment = alignment ?? .natural
-			paragraph.lineSpacing = lineSpacing ?? 0
-			paragraph.lineHeightMultiple = lineHeight ?? 0
-			paragraph.lineBreakMode = .byTruncatingTail
-			attributes[.paragraphStyle] = paragraph
-		}
-		
-		return attributes
-	}
-	
-	func attributed(_ attributes: [NSAttributedString.Key : Any]) -> Self {
-		merging(attributes) { $1 }
-	}
-}
+// MARK: - Type - TextConvertible
 
 public protocol TextConvertible {
 	
@@ -67,23 +19,18 @@ public protocol TextConvertible {
 	func render(target: Any?)
 	func styled(_ attributes: [NSAttributedString.Key : Any], overriding: Bool) -> NSAttributedString
 	func appending(_ rhs: TextConvertible) -> NSAttributedString
-	func appending(_ image: UIImage) -> NSAttributedString
 }
+
+extension String : TextConvertible { }
+
+extension NSAttributedString : TextConvertible { }
+
+// MARK: - Extension - TextConvertible
 
 public extension TextConvertible {
 	
 	var attributes: [NSAttributedString.Key : Any] {
 		(self as? NSAttributedString)?.attributes(at: 0, effectiveRange: nil) ?? [:]
-	}
-	
-	func styled(font: UIFont? = nil,
-				color: UIColor? = nil,
-				lineSpacing: CGFloat? = nil,
-				lineHeight: CGFloat? = nil,
-				alignment: NSTextAlignment? = nil,
-				overriding: Bool = true) -> NSAttributedString {
-		styled(.attributed(font: font, color: color, lineSpacing: lineSpacing, lineHeight: lineHeight, alignment: alignment),
-			   overriding: overriding)
 	}
 	
 	func boundingSize(width: CGFloat? = nil, height: CGFloat? = nil) -> CGSize {
@@ -104,99 +51,16 @@ public extension TextConvertible {
 		
 		return self
 	}
+	
+	func render(target: Any?) { }
 }
-
-// MARK: - Extension - String
-
-extension String : TextConvertible {
-
-// MARK: - Properties
 	
-	public var content: String { self }
-	
-// MARK: - Exposed Methods
-	
-	public func render(target: Any?) {
-		switch target {
-		case let label as UILabel:
-			label.text = self
-		case let button as UIButton:
-			button.setTitle(self, for: .normal)
-		case let textView as UITextView:
-			textView.text = self
-		case let textField as UITextField:
-			textField.text = self
-		default:
-			break
-		}
-		
-		(target as? UIView)?.accessibilityIdentifier = originalKey
-	}
-	
-	public func styled(_ attributes: [NSAttributedString.Key : Any], overriding: Bool = true) -> NSAttributedString {
-		NSAttributedString(string: self, attributes: attributes)
-	}
-}
+// MARK: - Extension - [NSAttributedString.Key : Any]
 
-// MARK: - Extension - NSAttributedString
-
-extension NSAttributedString : TextConvertible {
+public extension Dictionary where Key == NSAttributedString.Key, Value == Any {
 	
-// MARK: - Properties
-		
-	public var content: String { string }
-	
-// MARK: - Exposed Methods
-
-	public func render(target: Any?) {
-		switch target {
-		case let label as UILabel:
-			label.attributedText = self
-		case let button as UIButton:
-			button.setAttributedTitle(self, for: .normal)
-		case let textView as UITextView:
-			textView.attributedText = self
-		case let textField as UITextField:
-			textField.attributedText = self
-		default:
-			break
-		}
-		
-		(target as? UIView)?.accessibilityIdentifier = content.originalKey
-	}
-	
-	public func styled(_ attributes: [NSAttributedString.Key : Any], overriding: Bool = true) -> NSAttributedString {
-		guard overriding else { return self }
-		let copy = NSMutableAttributedString(attributedString: self)
-		copy.addAttributes(attributes, range: NSRange(location: 0, length: copy.length))
-		return Self.init(attributedString: copy)
-	}
-}
-
-// MARK: - Extension - Optional TextConvertible
-
-extension Optional where Wrapped == TextConvertible {
-	
-	public func render(target: Any?) {
-		
-		switch self {
-		case let .some(value):
-			value.render(target: target)
-			return
-		default:
-			switch target {
-			case let label as UILabel:
-				label.text = nil
-			case let button as UIButton:
-				button.setTitle(nil, for: .normal)
-			case let textView as UITextView:
-				textView.text = nil
-			case let textField as UITextField:
-				textField.text = nil
-			default:
-				break
-			}
-		}
+	func attributed(_ attributes: [NSAttributedString.Key : Any]) -> Self {
+		merging(attributes) { $1 }
 	}
 }
 
@@ -204,15 +68,72 @@ extension Optional where Wrapped == TextConvertible {
 
 public extension String {
 	
-	func sizeThatFits(font: UIFont,
-					  width: CGFloat = .greatestFiniteMagnitude,
-					  height: CGFloat = .greatestFiniteMagnitude) -> CGSize {
-		let string = NSString(string: self)
-		let rect = string.boundingRect(with: CGSize(width: width, height: height),
-									   options: .usesLineFragmentOrigin,
-									   attributes: [.font: font],
-									   context: nil)
-		return rect.size
+// MARK: - Properties
+	
+	var content: String { self }
+	
+	/// Filters the whole string keeping only the digits `usingWesternArabicNumerals`
+	var digits: String { filter("0123456789".contains) }
+	
+	/// Converts any numeral to Western Arabic Numerals (aka ASCII digits, Western digits, Latin digits, or European digits)
+	var usingWesternArabicNumerals: String { convertedDigitsToLocale(.init(identifier: "EN")) }
+	
+	/// Tries to identify the decimal precision in a given string assuming it uses (.) as the decimal separator
+	var inferredPrecision: Int? { components(separatedBy: ".").last?.count }
+	
+// MARK: - Protected Methods
+	
+	internal func decimalComponents(locale: Locale = .autoupdatingCurrent) -> (integer: String, fraction: String) {
+		let decimalSeparator = locale.decimalSeparator ?? ""
+		let components = components(separatedBy: decimalSeparator)
+		let integer = components.first?.replacingOccurrences(of: "\\D", with: "", options: .regularExpression) ?? ""
+		let fraction = components.last?.replacingOccurrences(of: "\\D", with: "", options: .regularExpression) ?? ""
+		let value = Double(self) ?? 0
+		let signedInteger = value < 0 ? "-\(integer)" : integer
+		
+		return components.count > 1 ? (signedInteger, fraction) : (signedInteger, "")
+	}
+	
+// MARK: - Exposed Methods
+	
+	func styled(_ attributes: [NSAttributedString.Key : Any], overriding: Bool = true) -> NSAttributedString {
+		NSAttributedString(string: self, attributes: attributes)
+	}
+	
+	/// Cleans up precisely what is a thousand formatted and a decimal formatted string in a given locale.
+	///
+	/// - Parameters:
+	///   - decimals: The number of decimal places for the returning double.
+	///   - locale: The given locale.
+	/// - Returns: The resulting `Double`
+	func toDouble(decimals: Int, with locale: Locale) -> Double {
+		let components = decimalComponents(locale: locale)
+		guard !components.fraction.isEmpty else { return Double(components.integer) ?? 0 }
+		return Double("\(components.integer).\(components.fraction.prefix(decimals))") ?? 0
+	}
+	
+	/// Converts any numeral in the string to a given locale, preserving all non-numeral character as is.
+	///
+	/// - Parameter locale: The target locale of the new numerals.
+	/// - Returns: The new string with the converted numerals.
+	func convertedDigitsToLocale(_ locale: Locale = .autoupdatingCurrent) -> String {
+		let digitsOnly = components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+		let formatter = NumberFormatter()
+		formatter.locale = locale
+
+		let maps: [(original: String, converted: String)] = digitsOnly.map {
+			let original = String($0)
+			guard
+				let digit = formatter.number(from: original),
+				let localized = formatter.string(from: digit)
+			else { return ("", "") }
+			
+			return (original, localized)
+		}
+
+		return maps.reduce(self) { converted, map in
+			converted.replacingOccurrences(of: map.original, with: map.converted)
+		}
 	}
 	
 	/// Searches for any character match in the given order inside the string.
@@ -253,8 +174,6 @@ public extension String {
 	
 	@inlinable func appending(_ rhs: TextConvertible) -> NSAttributedString { NSAttributedString(string: self).appending(rhs) }
 	
-	@inlinable func appending(_ image: UIImage) -> NSAttributedString { appending(" ").appending(image.toText()) }
-	
 	@inlinable static func + (lhs: String, rhs: TextConvertible) -> NSAttributedString { NSAttributedString(string: lhs) + rhs }
 	
 	@inlinable static func + (lhs: TextConvertible, rhs: String) -> NSAttributedString { lhs + NSAttributedString(string: rhs) }
@@ -272,6 +191,19 @@ public extension String {
 
 public extension NSAttributedString {
 	
+// MARK: - Properties
+		
+	var content: String { string }
+	
+// MARK: - Exposed Methods
+
+	func styled(_ attributes: [NSAttributedString.Key : Any], overriding: Bool = true) -> NSAttributedString {
+		guard overriding else { return self }
+		let copy = NSMutableAttributedString(attributedString: self)
+		copy.addAttributes(attributes, range: NSRange(location: 0, length: copy.length))
+		return Self.init(attributedString: copy)
+	}
+	
 	/// Places a new argument in the right always. Ignores the language direction.
 	///
 	/// - Parameter rhs: The right argument that will stay in the right, regardless the direction.
@@ -287,12 +219,6 @@ public extension NSAttributedString {
 		
 		return NSAttributedString(attributedString: copy)
 	}
-	
-	/// Appends an image to the string.
-	///
-	/// - Parameter image: The image to be appended.
-	/// - Returns: The final concatenated result.
-	@inlinable func appending(_ image: UIImage) -> NSAttributedString { appending(" ").appending(image.toText()) }
 	
 	/// Rightfully concatenating string. Respecting RTL.
 	///
@@ -338,6 +264,251 @@ public extension NSAttributedString {
 		}
 		
 		return rhs
+	}
+}
+
+// MARK: - Extension - Numeric
+
+public extension Numeric {
+	
+	/// Converts a numeric value to a formatted string, respecting locale and other standards.
+	///
+	/// - Parameters:
+	///   - decimals: The number of decimal places (or fraction) in the result.
+	///   - locale: The locale defines the group and decimal separator.
+	///   - style: The style of the formatted string. Default is `.decimal`.
+	///   - multiplier: A given multiplier to apply before the final string. Default is 1.
+	///   - minimumDecimal: When defined, if sets the minimum fraction digits differently than the decimals.
+	///   When `nil`, the `decimals` is used. Default is `nil`
+	/// - Returns: The formatted value string.
+	func toString(decimals: Int,
+				  locale: Locale,
+				  style: NumberFormatter.Style = .decimal,
+				  multiplier: NSNumber? = 1,
+				  minimumDecimal: Int? = nil) -> String {
+		let formatter = NumberFormatter()
+		formatter.locale = locale
+		formatter.numberStyle = style
+		formatter.multiplier = multiplier
+		formatter.allowsFloats = true
+		formatter.minimumFractionDigits = minimumDecimal ?? decimals
+		formatter.maximumFractionDigits = decimals
+		return formatter.string(for: self) ?? ""
+	}
+}
+
+#if canImport(AppKit)
+import AppKit
+
+// MARK: - Extension - String
+
+public extension String {
+
+	// MARK: - Exposed Methods
+	
+	func render(target: Any?) {
+		guard let view = target as? NSView else {
+			return
+		}
+		
+		switch view {
+		case let label as NSTextField:
+			label.stringValue = self
+		case let button as NSButton:
+			button.title = self
+		case let textView as NSTextView:
+			textView.string = self
+		case let textField as NSTextField:
+			textField.stringValue = self
+		default:
+			break
+		}
+		
+		view.setAccessibilityIdentifier(originalKey)
+	}
+}
+
+// MARK: - Extension - NSAttributedString
+
+public extension NSAttributedString {
+	
+	// MARK: - Exposed Methods
+
+	func render(target: Any?) {
+		guard let view = target as? NSView else {
+			return
+		}
+		
+		switch view {
+		case let label as NSTextField:
+			label.attributedStringValue = self
+		case let button as NSButton:
+			button.attributedTitle = self
+		case let textView as NSTextView:
+			textView.textStorage?.setAttributedString(self)
+		case let textField as NSTextField:
+			textField.attributedStringValue = self
+		default:
+			break
+		}
+		
+		view.setAccessibilityIdentifier(content.originalKey)
+	}
+}
+#elseif canImport(UIKit) && !os(watchOS)
+import UIKit
+
+// MARK: - Definitions -
+
+public extension NSTextAlignment {
+	
+	/// Mirrors the alignment.
+	var mirror: NSTextAlignment {
+		switch self {
+		case .left:
+			return .right
+		case .right:
+			return .left
+		default:
+			return self
+		}
+	}
+}
+
+public extension Dictionary where Key == NSAttributedString.Key, Value == Any {
+	
+	static func attributed(font: UIFont? = nil,
+						   color: UIColor? = nil,
+						   lineSpacing: CGFloat? = nil,
+						   lineHeight: CGFloat? = nil,
+						   alignment: NSTextAlignment? = nil) -> Self {
+		var attributes = Self()
+		
+		if let newFont = font {
+			attributes[.font] = newFont
+		}
+		
+		if let newColor = color {
+			attributes[.foregroundColor] = newColor
+		}
+		
+		if lineSpacing != nil || lineHeight != nil || alignment != nil {
+			let paragraph = NSMutableParagraphStyle()
+			paragraph.alignment = alignment ?? .natural
+			paragraph.lineSpacing = lineSpacing ?? 0
+			paragraph.lineHeightMultiple = lineHeight ?? 0
+			paragraph.lineBreakMode = .byTruncatingTail
+			attributes[.paragraphStyle] = paragraph
+		}
+		
+		return attributes
+	}
+}
+
+public extension TextConvertible {
+	
+	func styled(font: UIFont? = nil,
+				color: UIColor? = nil,
+				lineSpacing: CGFloat? = nil,
+				lineHeight: CGFloat? = nil,
+				alignment: NSTextAlignment? = nil,
+				overriding: Bool = true) -> NSAttributedString {
+		styled(.attributed(font: font, color: color, lineSpacing: lineSpacing, lineHeight: lineHeight, alignment: alignment),
+			   overriding: overriding)
+	}
+}
+
+// MARK: - Extension - String
+
+public extension String {
+
+// MARK: - Exposed Methods
+	
+	func render(target: Any?) {
+		switch target {
+		case let label as UILabel:
+			label.text = self
+		case let button as UIButton:
+			button.setTitle(self, for: .normal)
+		case let textView as UITextView:
+			textView.text = self
+		case let textField as UITextField:
+			textField.text = self
+		default:
+			break
+		}
+		
+		(target as? UIView)?.accessibilityIdentifier = originalKey
+	}
+	
+	func sizeThatFits(font: UIFont,
+					  width: CGFloat = .greatestFiniteMagnitude,
+					  height: CGFloat = .greatestFiniteMagnitude) -> CGSize {
+		let string = NSString(string: self)
+		let rect = string.boundingRect(with: CGSize(width: width, height: height),
+									   options: .usesLineFragmentOrigin,
+									   attributes: [.font: font],
+									   context: nil)
+		return rect.size
+	}
+	
+	@inlinable func appending(_ image: UIImage) -> NSAttributedString { appending(" ").appending(image.toText()) }
+}
+
+// MARK: - Extension - NSAttributedString
+
+public extension NSAttributedString {
+	
+// MARK: - Exposed Methods
+
+	func render(target: Any?) {
+		switch target {
+		case let label as UILabel:
+			label.attributedText = self
+		case let button as UIButton:
+			button.setAttributedTitle(self, for: .normal)
+		case let textView as UITextView:
+			textView.attributedText = self
+		case let textField as UITextField:
+			textField.attributedText = self
+		default:
+			break
+		}
+		
+		(target as? UIView)?.accessibilityIdentifier = content.originalKey
+	}
+	
+	/// Appends an image to the string.
+	///
+	/// - Parameter image: The image to be appended.
+	/// - Returns: The final concatenated result.
+	@inlinable func appending(_ image: UIImage) -> NSAttributedString { appending(" ").appending(image.toText()) }
+}
+
+// MARK: - Extension - Optional TextConvertible
+
+public extension Optional where Wrapped == TextConvertible {
+	
+	func render(target: Any?) {
+		
+		switch self {
+		case let .some(value):
+			value.render(target: target)
+			return
+		default:
+			switch target {
+			case let label as UILabel:
+				label.text = nil
+			case let button as UIButton:
+				button.setTitle(nil, for: .normal)
+			case let textView as UITextView:
+				textView.text = nil
+			case let textField as UITextField:
+				textField.text = nil
+			default:
+				break
+			}
+		}
 	}
 }
 
@@ -400,124 +571,6 @@ public extension UIImage {
 		}
 		
 		return NSAttributedString(attachment: attachment)
-	}
-}
-
-// MARK: - Extension - Array Search
-
-public extension Array {
-	
-	/// Filters the array over the given fields by any combination in the current text direction (LTR or RTL).
-	///
-	/// - Parameters:
-	///   - text: The full text to be matching in the same order.
-	///   - fields: All the fields to be searching over, the order is taken into consideration.
-	///   - isCaseSensitive: Defines if the algorithm will consider the character case. Default is `false`.
-	/// - Returns: The filtered array.
-	func filtered(by text: String, fields: [KeyPath<Element, String>], isCaseSensitive: Bool = false) -> Self {
-		filter { item in fields.reduce("", { $0 + item[keyPath: $1] }).containsCharacters(text, isCaseSensitive: isCaseSensitive) }
-	}
-	
-	/// Filters the array over the given fields by matching exactly the given text.
-	///
-	/// - Parameters:
-	///   - text: The full text to be matching in the same order.
-	///   - fields: All the fields to be searching over, the order is taken into consideration.
-	///   - isCaseSensitive: Defines if the algorithm will consider the character case. Default is `false`.
-	/// - Returns: The filtered array.
-	func matched(by text: String, fields: [KeyPath<Element, String>], isCaseSensitive: Bool = false) -> Self {
-		filter { item in fields.reduce("", { $0 + item[keyPath: $1] }).containsSequence(text, isCaseSensitive: isCaseSensitive) }
-	}
-}
-
-// MARK: - Extension - Numeric
-
-public extension Numeric {
-	
-	/// Converts a numeric value to a formatted string, respecting locale and other standards.
-	///
-	/// - Parameters:
-	///   - decimals: The number of decimal places (or fraction) in the result.
-	///   - locale: The locale defines the group and decimal separator.
-	///   - style: The style of the formatted string. Default is `.decimal`.
-	///   - multiplier: A given multiplier to apply before the final string. Default is 1.
-	///   - minimumDecimal: When defined, if sets the minimum fraction digits differently than the decimals.
-	///   When `nil`, the `decimals` is used. Default is `nil`
-	/// - Returns: The formatted value string.
-	func toString(decimals: Int,
-				  locale: Locale,
-				  style: NumberFormatter.Style = .decimal,
-				  multiplier: NSNumber? = 1,
-				  minimumDecimal: Int? = nil) -> String {
-		let formatter = NumberFormatter()
-		formatter.locale = locale
-		formatter.numberStyle = style
-		formatter.multiplier = multiplier
-		formatter.allowsFloats = true
-		formatter.minimumFractionDigits = minimumDecimal ?? decimals
-		formatter.maximumFractionDigits = decimals
-		return formatter.string(for: self) ?? ""
-	}
-}
-
-// MARK: - Extension - String
-
-public extension String {
-	
-	/// Filters the whole string keeping only the digits `usingWesternArabicNumerals`
-	var digits: String { filter("0123456789".contains) }
-	
-	/// Converts any numeral to Western Arabic Numerals (aka ASCII digits, Western digits, Latin digits, or European digits)
-	var usingWesternArabicNumerals: String { convertedDigitsToLocale(.init(identifier: "EN")) }
-	
-	/// Tries to identify the decimal precision in a given string assuming it uses (.) as the decimal separator
-	var inferredPrecision: Int? { components(separatedBy: ".").last?.count }
-	
-	internal func decimalComponents(locale: Locale = .autoupdatingCurrent) -> (integer: String, fraction: String) {
-		let decimalSeparator = locale.decimalSeparator ?? ""
-		let components = components(separatedBy: decimalSeparator)
-		let integer = components.first?.replacingOccurrences(of: "\\D", with: "", options: .regularExpression) ?? ""
-		let fraction = components.last?.replacingOccurrences(of: "\\D", with: "", options: .regularExpression) ?? ""
-		let value = Double(self) ?? 0
-		let signedInteger = value < 0 ? "-\(integer)" : integer
-		
-		return components.count > 1 ? (signedInteger, fraction) : (signedInteger, "")
-	}
-	
-	/// Cleans up precisely what is a thousand formatted and a decimal formatted string in a given locale.
-	///
-	/// - Parameters:
-	///   - decimals: The number of decimal places for the returning double.
-	///   - locale: The given locale.
-	/// - Returns: The resulting `Double`
-	func toDouble(decimals: Int, with locale: Locale) -> Double {
-		let components = decimalComponents(locale: locale)
-		guard !components.fraction.isEmpty else { return Double(components.integer) ?? 0 }
-		return Double("\(components.integer).\(components.fraction.prefix(decimals))") ?? 0
-	}
-	
-	/// Converts any numeral in the string to a given locale, preserving all non-numeral character as is.
-	///
-	/// - Parameter locale: The target locale of the new numerals.
-	/// - Returns: The new string with the converted numerals.
-	func convertedDigitsToLocale(_ locale: Locale = .autoupdatingCurrent) -> String {
-		let digitsOnly = components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-		let formatter = NumberFormatter()
-		formatter.locale = locale
-
-		let maps: [(original: String, converted: String)] = digitsOnly.map {
-			let original = String($0)
-			guard
-				let digit = formatter.number(from: original),
-				let localized = formatter.string(from: digit)
-			else { return ("", "") }
-			
-			return (original, localized)
-		}
-
-		return maps.reduce(self) { converted, map in
-			converted.replacingOccurrences(of: map.original, with: map.converted)
-		}
 	}
 }
 #endif

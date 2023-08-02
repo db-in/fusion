@@ -56,6 +56,7 @@
 		609484592A4C5A70008E21A1 /* TimerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 609484422A4C5A70008E21A1 /* TimerControl.swift */; };
 		6094845A2A4C5A70008E21A1 /* Dates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 609484432A4C5A70008E21A1 /* Dates.swift */; };
 		6094845C2A4C6206008E21A1 /* Banner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6094845B2A4C6206008E21A1 /* Banner.swift */; };
+		60A57F252A7A73160077AF6E /* CollectionFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A57F242A7A73160077AF6E /* CollectionFunctions.swift */; };
 		60A8595E2A06BB2500D3B283 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A8595D2A06BB2500D3B283 /* AppDelegate.swift */; };
 		60A859602A06BB2500D3B283 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A8595F2A06BB2500D3B283 /* MainViewController.swift */; };
 		60A859632A06BB2500D3B283 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 60A859612A06BB2500D3B283 /* Main.storyboard */; };
@@ -215,6 +216,7 @@
 		609484422A4C5A70008E21A1 /* TimerControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimerControl.swift; sourceTree = "<group>"; };
 		609484432A4C5A70008E21A1 /* Dates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dates.swift; sourceTree = "<group>"; };
 		6094845B2A4C6206008E21A1 /* Banner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Banner.swift; sourceTree = "<group>"; };
+		60A57F242A7A73160077AF6E /* CollectionFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionFunctions.swift; sourceTree = "<group>"; };
 		60A8595B2A06BB2500D3B283 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60A8595D2A06BB2500D3B283 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60A8595F2A06BB2500D3B283 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -508,6 +510,7 @@
 			isa = PBXGroup;
 			children = (
 				605F3B062A77830D00CB4C97 /* AnyCodable.swift */,
+				60A57F242A7A73160077AF6E /* CollectionFunctions.swift */,
 				6094843A2A4C5A70008E21A1 /* DataBindable.swift */,
 				609484382A4C5A70008E21A1 /* DataManageable.swift */,
 				609484392A4C5A70008E21A1 /* DataStorageable.swift */,
@@ -1117,6 +1120,7 @@
 				60CC2E322A504B1F00E43713 /* UserFlow.swift in Sources */,
 				6094844D2A4C5A70008E21A1 /* HTTPCookieHelper.swift in Sources */,
 				6094844B2A4C5A70008E21A1 /* RESTAuthenticator.swift in Sources */,
+				60A57F252A7A73160077AF6E /* CollectionFunctions.swift in Sources */,
 				609484522A4C5A70008E21A1 /* DataBindable.swift in Sources */,
 				6094844E2A4C5A70008E21A1 /* RESTBuilder.swift in Sources */,
 				609484572A4C5A70008E21A1 /* Math.swift in Sources */,

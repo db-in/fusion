@@ -221,13 +221,6 @@ public extension Decodable {
 	}
 }
 
-// MARK: - Extension - Dictionary
-
-public extension Dictionary {
-	
-	static func + (lhs: Self, rhs: Self) -> Self { lhs.merging(rhs) { _, new in new} }
-}
-
 // MARK: - Extension - FileManager
 
 public extension FileManager {
