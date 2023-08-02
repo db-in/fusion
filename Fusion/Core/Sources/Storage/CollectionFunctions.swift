@@ -49,7 +49,7 @@ public extension Array {
 		return nil
 	}
 	
-	/// Same as ``firstRecursively(_:where:)-71nb2`` but for non-optional arrays.
+	/// Same as ``firstRecursively(_:where:)`` but for non-optional arrays.
 	///
 	/// - Parameters:
 	///   - keyPath: The key path used to access the subarray within each element.
@@ -82,5 +82,22 @@ public extension Dictionary {
 		return result
 	}
 	
+	/// Checks if a given dictionary is fully contained inside the current one. The values of both dictionaries must be hashable.
+	///
+	/// - Parameter other: The other dictionary.
+	/// - Returns: Returns true if the given dictionary is fully contained.
+	func contains<T: Equatable>(_ other: [Key : T]) -> Bool {
+		let keysSet = Set(keys)
+		let newKeysSet = Set(other.keys)
+		guard newKeysSet.isSubset(of: keysSet), !other.contains(where: { self[$0] as? T != $1 }) else { return false }
+		return true
+	}
+	
+	/// Merge two dictionaries together, where the right one can override elements in the original (left).
+	///
+	/// - Parameters:
+	///   - lhs: Original dictionary (left), its keys can be overriden.
+	///   - rhs: New dictionary (right), its keys will remain in the result.
+	/// - Returns: The resulting new dictionary.
 	static func + (lhs: Self, rhs: Self) -> Self { lhs.merging(rhs) { _, new in new} }
 }
