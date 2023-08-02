@@ -421,7 +421,7 @@ public extension UIWindow {
 	}
 	
 	/// The first windown of the scene that is considered key.
-	static var key: UIWindow? { all.first(where: { $0.isKeyWindow }) }
+	static var key: UIWindow? { all.first { $0.isKeyWindow } }
 	
 	/// Equivalent to the `topMost` controller of the `rootViewController` or the root itself.
 	static var topViewController: UIViewController? { key?.rootViewController?.topMost ?? key?.rootViewController }
