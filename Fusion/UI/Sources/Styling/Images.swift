@@ -25,6 +25,10 @@ public extension UIImage {
 
 // MARK: - Protected Methods
 	
+	private static func image(named: String, bundle: Bundle) -> UIImage? {
+		.init(named: named, in: bundle, with: nil) ?? Bundle.allAvailable.firstMap { .init(named: named, in: $0, with: nil) } ?? .init(systemName: named)?.template
+	}
+	
 // MARK: - Exposed Methods
 	
 	/// Returns an image object with the specified name and style from any available bundle. If there are multiple bundles with the same
@@ -36,13 +40,8 @@ public extension UIImage {
 	///   - bundleHint: A given bundle to be the first try for the given resource. Default is `main`.
 	/// - Returns: An image object, if available; otherwise, a system image or an empty image.
 	static func anyImage(named: String, allowCache: Bool = true, bundleHint: Bundle = .main) -> UIImage {
-		let getImage = {
-			let image = UIImage(named: named, in: bundleHint, with: nil) ?? Bundle.allAvailable.firstMap { UIImage(named: named, in: $0, with: nil) }
-			return image ?? .init(systemName: named)?.template
-		}
-		
-		guard allowCache else { return getImage() ?? .init() }
-		return InMemoryCache.getOrSet(key: "\(Self.self)\(named)", newValue: getImage()) ?? .init()
+		guard allowCache else { return image(named: named, bundle: bundleHint) ?? .init() }
+		return InMemoryCache.getOrSet(key: "\(Self.self)\(named)", newValue: image(named: named, bundle: bundleHint)) ?? .init()
 	}
 	
 	/// Creates a solid color image with the specified color, size, and corner radius.

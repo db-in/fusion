@@ -57,6 +57,7 @@
 		6094845A2A4C5A70008E21A1 /* Dates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 609484432A4C5A70008E21A1 /* Dates.swift */; };
 		6094845C2A4C6206008E21A1 /* Banner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6094845B2A4C6206008E21A1 /* Banner.swift */; };
 		60A57F252A7A73160077AF6E /* CollectionFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A57F242A7A73160077AF6E /* CollectionFunctions.swift */; };
+		60A57F272A7A899D0077AF6E /* TextFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A57F262A7A899D0077AF6E /* TextFunctions.swift */; };
 		60A8595E2A06BB2500D3B283 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A8595D2A06BB2500D3B283 /* AppDelegate.swift */; };
 		60A859602A06BB2500D3B283 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A8595F2A06BB2500D3B283 /* MainViewController.swift */; };
 		60A859632A06BB2500D3B283 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 60A859612A06BB2500D3B283 /* Main.storyboard */; };
@@ -80,7 +81,7 @@
 		60CC2E3A2A506ACD00E43713 /* UIScrollViewFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E352A506ACD00E43713 /* UIScrollViewFunctions.swift */; };
 		60CC2E3B2A506ACD00E43713 /* UIControlFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E362A506ACD00E43713 /* UIControlFunctions.swift */; };
 		60CC2E3C2A506ACD00E43713 /* HapticControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E372A506ACD00E43713 /* HapticControl.swift */; };
-		60CC2E3D2A506ACD00E43713 /* TextFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E382A506ACD00E43713 /* TextFunctions.swift */; };
+		60CC2E3D2A506ACD00E43713 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E382A506ACD00E43713 /* TextStyle.swift */; };
 		60CC2E9E2A50C5CC00E43713 /* Sample_watchOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E9D2A50C5CC00E43713 /* Sample_watchOSApp.swift */; };
 		60CC2EA02A50C5CC00E43713 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E9F2A50C5CC00E43713 /* ContentView.swift */; };
 		60CC2EA22A50C5CC00E43713 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60CC2EA12A50C5CC00E43713 /* Assets.xcassets */; };
@@ -217,6 +218,7 @@
 		609484432A4C5A70008E21A1 /* Dates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dates.swift; sourceTree = "<group>"; };
 		6094845B2A4C6206008E21A1 /* Banner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Banner.swift; sourceTree = "<group>"; };
 		60A57F242A7A73160077AF6E /* CollectionFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionFunctions.swift; sourceTree = "<group>"; };
+		60A57F262A7A899D0077AF6E /* TextFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFunctions.swift; sourceTree = "<group>"; };
 		60A8595B2A06BB2500D3B283 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60A8595D2A06BB2500D3B283 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60A8595F2A06BB2500D3B283 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -254,7 +256,7 @@
 		60CC2E352A506ACD00E43713 /* UIScrollViewFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIScrollViewFunctions.swift; sourceTree = "<group>"; };
 		60CC2E362A506ACD00E43713 /* UIControlFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIControlFunctions.swift; sourceTree = "<group>"; };
 		60CC2E372A506ACD00E43713 /* HapticControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HapticControl.swift; sourceTree = "<group>"; };
-		60CC2E382A506ACD00E43713 /* TextFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFunctions.swift; sourceTree = "<group>"; };
+		60CC2E382A506ACD00E43713 /* TextStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		60CC2E982A50C5CB00E43713 /* Sample watchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sample watchOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60CC2E9D2A50C5CC00E43713 /* Sample_watchOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sample_watchOSApp.swift; sourceTree = "<group>"; };
 		60CC2E9F2A50C5CC00E43713 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -469,6 +471,7 @@
 				605F3A932A70F0CC00CB4C97 /* GradientView.swift */,
 				60CC2E2B2A4F617200E43713 /* Images.swift */,
 				60CC2E272A4F5DA700E43713 /* SwiftUIStyle.swift */,
+				60CC2E382A506ACD00E43713 /* TextStyle.swift */,
 				60CC2E282A4F5DA700E43713 /* UIViewStyle.swift */,
 			);
 			path = Styling;
@@ -530,6 +533,7 @@
 				609484432A4C5A70008E21A1 /* Dates.swift */,
 				609484412A4C5A70008E21A1 /* Localization.swift */,
 				609484402A4C5A70008E21A1 /* Math.swift */,
+				60A57F262A7A899D0077AF6E /* TextFunctions.swift */,
 				609484422A4C5A70008E21A1 /* TimerControl.swift */,
 			);
 			path = Controls;
@@ -632,7 +636,6 @@
 				60CC2E372A506ACD00E43713 /* HapticControl.swift */,
 				60CC2ECB2A50CEFA00E43713 /* ImageLoader.swift */,
 				60B8D81E2A69563C001A9DE7 /* PresentationController.swift */,
-				60CC2E382A506ACD00E43713 /* TextFunctions.swift */,
 				60CC2E362A506ACD00E43713 /* UIControlFunctions.swift */,
 				60CC2E352A506ACD00E43713 /* UIScrollViewFunctions.swift */,
 				60CC2E312A504B1F00E43713 /* UserFlow.swift */,
@@ -1104,6 +1107,7 @@
 				609484582A4C5A70008E21A1 /* Localization.swift in Sources */,
 				6094844A2A4C5A70008E21A1 /* Logger.swift in Sources */,
 				609484562A4C5A70008E21A1 /* Constants.swift in Sources */,
+				60A57F272A7A899D0077AF6E /* TextFunctions.swift in Sources */,
 				609484592A4C5A70008E21A1 /* TimerControl.swift in Sources */,
 				609484442A4C5A70008E21A1 /* Tween.swift in Sources */,
 				60CC2E2A2A4F5DA700E43713 /* UIViewStyle.swift in Sources */,
@@ -1114,7 +1118,7 @@
 				60B8D81F2A69563C001A9DE7 /* PresentationController.swift in Sources */,
 				6094844F2A4C5A70008E21A1 /* JSONFunctions.swift in Sources */,
 				609484532A4C5A70008E21A1 /* LocalNotification.swift in Sources */,
-				60CC2E3D2A506ACD00E43713 /* TextFunctions.swift in Sources */,
+				60CC2E3D2A506ACD00E43713 /* TextStyle.swift in Sources */,
 				605F3A942A70F0CC00CB4C97 /* GradientView.swift in Sources */,
 				60CC2E392A506ACD00E43713 /* ControlAction.swift in Sources */,
 				60CC2E322A504B1F00E43713 /* UserFlow.swift in Sources */,

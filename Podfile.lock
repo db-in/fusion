@@ -1,9 +1,9 @@
 PODS:
-  - Fusion (1.0.40):
-    - Fusion/Core (= 1.0.40)
-    - Fusion/UI (= 1.0.40)
-  - Fusion/Core (1.0.40)
-  - Fusion/UI (1.0.40):
+  - Fusion (1.0.41):
+    - Fusion/Core (= 1.0.41)
+    - Fusion/UI (= 1.0.41)
+  - Fusion/Core (1.0.41)
+  - Fusion/UI (1.0.41):
     - Fusion/Core
   - LocalServer (2.1.0)
 
@@ -20,7 +20,7 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
-  Fusion: 1148c110c958a0ee6f97baea998c9a5b8dbfabc7
+  Fusion: b796936bc62a02a15d744ab5d0f61f689ff27dc3
   LocalServer: bd698f3963afea4aedb2ea34c00e60735f6fc3cf
 
 PODFILE CHECKSUM: b3d99914225dd53101b6d5612af2344c41f94937
