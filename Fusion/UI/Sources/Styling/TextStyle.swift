@@ -60,6 +60,17 @@ public extension NSAttributedString {
 		view.setAccessibilityIdentifier(content.originalKey)
 	}
 }
+
+// MARK: - Extension - TextConvertible
+
+public extension TextConvertible {
+	
+	func boundingSize(width: CGFloat? = nil, height: CGFloat? = nil) -> CGSize {
+		let constraintRect = CGSize(width: width ?? .greatestFiniteMagnitude, height: height ?? .greatestFiniteMagnitude)
+		let box = styled(attributes, overriding: false).boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil)
+		return box.size
+	}
+}
 #elseif canImport(UIKit) && !os(watchOS)
 import UIKit
 
@@ -111,6 +122,12 @@ public extension Dictionary where Key == NSAttributedString.Key, Value == Any {
 }
 
 public extension TextConvertible {
+	
+	func boundingSize(width: CGFloat? = nil, height: CGFloat? = nil) -> CGSize {
+		let constraintRect = CGSize(width: width ?? .greatestFiniteMagnitude, height: height ?? .greatestFiniteMagnitude)
+		let box = styled(attributes, overriding: false).boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil)
+		return box.size
+	}
 	
 	func styled(font: UIFont? = nil,
 				color: UIColor? = nil,

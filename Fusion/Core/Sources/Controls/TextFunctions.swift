@@ -33,12 +33,6 @@ public extension TextConvertible {
 		(self as? NSAttributedString)?.attributes(at: 0, effectiveRange: nil) ?? [:]
 	}
 	
-	func boundingSize(width: CGFloat? = nil, height: CGFloat? = nil) -> CGSize {
-		let constraintRect = CGSize(width: width ?? .greatestFiniteMagnitude, height: height ?? .greatestFiniteMagnitude)
-		let box = styled(attributes, overriding: false).boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil)
-		return box.size
-	}
-	
 	func replacing(regex: String, withString: String) -> TextConvertible {
 		guard let attributed = self as? NSAttributedString else { return content.replacing(regex: regex, with: withString) }
 				
