@@ -105,12 +105,20 @@ public extension UIView {
 
 // MARK: - Constructors
 	
-	convenience init(frame: CGRect = .zero, backgroundColor: UIColor? = nil, corner: CGFloat = 0) {
+	convenience init(frame: CGRect = .zero, background: UIColor? = nil, corner: CGFloat = 0, constraints: Bool = false, mode: ContentMode? = nil) {
 		self.init(frame: frame)
-		self.backgroundColor = backgroundColor
+		self.backgroundColor = background
+		
+		if let newMode = mode {
+			self.contentMode = newMode
+		}
 		
 		if corner > 0 {
 			self.cornerRadius = corner
+		}
+		
+		if constraints {
+			setConstraints(width: frame.width, height: frame.height)
 		}
 	}
 	

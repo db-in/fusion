@@ -22,7 +22,7 @@ final public class PresentationController : UIPresentationController {
 	private var interactor: UIPercentDrivenInteractiveTransition? { allowsInteraction && isInteracting ? interactiveTransition : nil }
 	private lazy var interactiveTransition: UIPercentDrivenInteractiveTransition = { .init() }()
 	private lazy var grabberView: UIView = {
-		.init(frame: .init(x: 0, y: 0, width: 36, height: 5), backgroundColor: .gray.withAlphaComponent(0.5), corner: 2.5)
+		.init(frame: .init(x: 0, y: 0, width: 36, height: 5), background: .gray.withAlphaComponent(0.5), corner: 2.5)
 	}()
 	
 	/// Indicates if a grabber will be visible for interaction. The default value is `false`.
@@ -46,7 +46,7 @@ final public class PresentationController : UIPresentationController {
 	public var onDismissal: Callback?
 	
 	/// The dimming view. This property can be used to customize the dimming view.
-	public private(set) lazy var dimmingView: UIView = { .init(backgroundColor: .black.withAlphaComponent(0.5)) }()
+	public private(set) lazy var dimmingView: UIView = { .init(background: .black.withAlphaComponent(0.5)) }()
 	
 	public override var frameOfPresentedViewInContainerView: CGRect {
 		let navigation = presentedViewController as? UINavigationController
