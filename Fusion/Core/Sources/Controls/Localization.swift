@@ -91,8 +91,8 @@ public extension Locale {
 	/// Standard UTC/GMT locale.
 	static var utc: Locale { Locale(identifier: "UTC") }
 	
-	/// Returns the current langauge code in lower case. For example `"en"`.
-	static var currentLanguage: String { "\(preferredLanguage.prefix(2))".lowercased() }
+	/// Returns the current language code ISO 3166-2 format (2 alpha codes) in lower case. For example `"en"`.
+	static var preferredLanguageCodeISO2: String { "\(preferredLanguage.prefix(2))".lowercased() }
 	
 	/// Returns the language code in ISO 639-1 format (2 alpha codes).
 	var languageCodeISO2: String {
@@ -100,6 +100,15 @@ public extension Locale {
 			return language.languageCode?.identifier.prefix(2).lowercased() ?? ""
 		} else {
 			return languageCode?.prefix(2).lowercased() ?? ""
+		}
+	}
+	
+	/// Returns the region code in ISO 3166-2 format (2 alpha codes).
+	var regionCodeISO2: String {
+		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
+			return region?.identifier.prefix(2).lowercased() ?? ""
+		} else {
+			return regionCode?.prefix(2).lowercased() ?? ""
 		}
 	}
 	
@@ -125,13 +134,19 @@ public extension Locale {
 	/// Initializes a Locale instance based on the provided currency code.
 	///
 	/// - Parameter currencyCode: The currency code to use for initializing the Locale.
+	/// - Parameter languageCode: A given language to be used as hint in the search. Serves only as hint and not guarantee.
 	/// - Returns: A Locale instance that matches the provided currency code, or nil if no match is found.
-	init?(currencyCode: String) {
-		let userLanguage = Locale.currentLanguage
+	init?(currencyCode: String, languageCode: String = Locale.preferredLanguageCodeISO2) {
 		let locales = Locale.currencyGroups[currencyCode.uppercased()]
-		guard let locale = locales?.first(where: { $0.languageCodeISO2 == userLanguage }) ?? locales?.first else { return nil }
+		guard let locale = locales?.first(where: { $0.languageCodeISO2 == languageCode }) ?? locales?.first else { return nil }
 		self = locale
 	}
+	
+	/// Creates a new locale by keeping the same region but replacing the language.
+	///
+	/// - Parameter language: A new language code.
+	/// - Returns: A new Locale.
+	func replacing(language: String) -> Self { .init(identifier: "\(language.lowercased())_\(regionCodeISO2)") }
 }
 
 // MARK: - Extension - Bundle
@@ -161,13 +176,13 @@ public extension String {
 	///
 	/// - Parameter language: A given language to be used. By default it's `currentLanguage`
 	/// - Returns: The localized version of the string key or the key itself
-	func callAsFunction(language: String = Locale.currentLanguage) -> String { localized(for: language) }
+	func callAsFunction(language: String = Locale.preferredLanguageCodeISO2) -> String { localized(for: language) }
 	
 	/// Localized string version, using the cached loaded bundle for the current defined language.
 	///
 	/// - Parameter locale: The iso code for the given locale, matching a valid language folder (lproj).
 	/// - Returns: The localized string
-	func localized(for locale: String = Locale.currentLanguage) -> String {
+	func localized(for locale: String = Locale.preferredLanguageCodeISO2) -> String {
 		guard let bundle = Bundle.languages(for: locale) else { return self }
 		var string = bundle.localizedString(forKey: self, value: nil, table: .localizableTable)
 		string.originalKey = originalKey ?? self
