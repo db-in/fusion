@@ -144,9 +144,9 @@ public extension Locale {
 	
 	/// Creates a new locale by keeping the same region but replacing the language.
 	///
-	/// - Parameter language: A new language code.
+	/// - Parameter language: A new language code. The default is ``preferredLanguageCodeISO2``
 	/// - Returns: A new Locale.
-	func replacing(language: String) -> Self { .init(identifier: "\(language.lowercased())_\(regionCodeISO2)") }
+	func adjusted(language: String = Locale.preferredLanguageCodeISO2) -> Self { .init(identifier: "\(language.lowercased())_\(regionCodeISO2)") }
 }
 
 // MARK: - Extension - Bundle

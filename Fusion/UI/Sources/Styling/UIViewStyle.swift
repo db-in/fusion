@@ -316,6 +316,33 @@ public extension UIView {
 
 public extension UIView {
 	
+	private struct Keys {
+		static var grabberKey: UInt8 = 1
+	}
+	
+	private var grabber: UIView? {
+		get { objc_getAssociatedObject(self, &Keys.grabberKey) as? UIView }
+		set { objc_setAssociatedObject(self, &Keys.grabberKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+	}
+	
+	/// Adds a single grabber like view at the top of the view.
+	///
+	/// - Parameters:
+	///   - color: The color of the grabber. The default value is black color 20% alpha.
+	///   - size: The size of the grabber. The default vlaue is [36, 5].
+	func addGrabber(color: UIColor = .black.withAlphaComponent(0.2), size: CGSize = .init(width: 36, height: 5)) {
+		let view = grabber ?? .init(frame: .init(origin: .zero, size: size), background: color, corner: size.height * 0.5)
+		addSubview(view)
+		view.center = .init(x: center.x, y: center.y - (frame.height * 0.5) + 8)
+		view.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
+		grabber = view
+	}
+	
+	/// Removes the grabber added via ``addGrabber(color:size:)``.
+	func removeGrabber() {
+		grabber?.removeFromSuperview()
+	}
+
 	/// Returns true if the given view is being rendered as right to left layout direction.
 	var isRTL: Bool { traitCollection.layoutDirection == .rightToLeft }
 	
