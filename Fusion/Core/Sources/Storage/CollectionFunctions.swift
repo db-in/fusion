@@ -9,6 +9,10 @@ import Foundation
 // MARK: - Extension - Array Search
 public extension Array {
 	
+	/// Accesses the element at the specified position safely, returning nil if the index does not exist.
+	/// - Complexity: Reading or writing is O(1).
+	@inlinable subscript(safe index: Int) -> Element?{ indices.contains(index) ? self[index] : nil }
+	
 	/// Filters the array over the given fields by any combination in the current text direction (LTR or RTL).
 	///
 	/// - Parameters:
