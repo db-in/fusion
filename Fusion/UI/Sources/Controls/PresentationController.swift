@@ -315,7 +315,7 @@ public extension UIViewController {
 	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none) {
 #if os(iOS) && !os(xrOS)
 		if #available(iOS 15.0, *) {
-			target.modalPresentationStyle = .pageSheet
+			target.modalPresentationStyle = style.isModal ? .pageSheet : style
 			target.transitioningDelegate = nil
 			let sheet = target.sheetPresentationController
 			if #available(iOS 16.0, *) {
