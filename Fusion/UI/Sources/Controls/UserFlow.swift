@@ -23,9 +23,16 @@ fileprivate extension UINavigationController {
 	}
 }
 
-fileprivate extension UIViewController {
+public extension UIViewController {
 	
-	var first: UIViewController { (self as? UINavigationController)?.viewControllers.first ?? self }
+	fileprivate var firstInNavigation: UIViewController { (self as? UINavigationController)?.viewControllers.first ?? self }
+	
+	
+	/// Instantiates the view controller from a ``UserFlow``. This functions calls ``instantiate(storyboardName:)``
+	///
+	/// - Parameter flow: The ``UserFlow`` which contains the view controller.
+	/// - Returns: The instantiated view controller.
+	class func instantiate(flow: UserFlow) -> Self? { instantiate(storyboardName: flow.name) }
 }
 
 public enum PresentationStyle {
@@ -46,7 +53,7 @@ public enum PresentationStyle {
 			window.rootViewController = controller
 			UIView.transition(with: window, duration: Constant.duration, options: .transitionCrossDissolve) { }
 		case .push:
-			let firstController = controller.first
+			let firstController = controller.firstInNavigation
 			let navigation = UIWindow.topNavigation
 			
 			if let existingController = navigation?.first(like: firstController) {
@@ -55,7 +62,7 @@ public enum PresentationStyle {
 				navigation?.pushViewController(firstController, animated: true)
 			}
 		case .pushWithRepetition:
-			UIWindow.topNavigation?.pushViewController(controller.first, animated: true)
+			UIWindow.topNavigation?.pushViewController(controller.firstInNavigation, animated: true)
 		case .modal:
 			controller.embededInNavigation().presentOverWindow()
 		case .modalWithPush:
