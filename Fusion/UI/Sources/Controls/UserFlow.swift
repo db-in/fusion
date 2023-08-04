@@ -126,7 +126,7 @@ public struct UserFlowUniversalLink {
 	}
 }
 
-public typealias UserFlowMapping = (UIViewController) -> UIViewController?
+public typealias UserFlowMapping = (UserFlow, UIViewController) -> UIViewController?
 
 // MARK: - Type -
 
@@ -146,7 +146,7 @@ public struct UserFlow {
 	/// Mapped controller, after the UserFlow mapping function is executed.
 	public var mapped: UIViewController {
 		let initialViewController = initial
-		guard let controller = map?(initialViewController) else { return initialViewController }
+		guard let controller = map?(self, initialViewController) else { return initialViewController }
 		controller.tabBarItem = initialViewController.tabBarItem
 		return controller
 	}
@@ -183,8 +183,7 @@ public struct UserFlow {
 	///   - withNavigation: Defines it a new navigation controller should be created for it. The default is `false`.
 	///   - style: Defines the modal presentation style. The default valus is `fullScreen`.
 	public func startAsModal(withNavigation: Bool = false, style: UIModalPresentationStyle = .fullScreen) {
-		let target = withNavigation ? mapped.embededInNavigation() : mapped
-		target.presentOverWindow(style: style)
+		(withNavigation ? mapped.embededInNavigation() : mapped).presentOverWindow(style: style)
 	}
 	
 	/// Presents the mapped controller by pushing in the current navigation controller.
