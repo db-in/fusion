@@ -105,3 +105,11 @@ public extension Dictionary {
 	/// - Returns: The resulting new dictionary.
 	static func + (lhs: Self, rhs: Self) -> Self { lhs.merging(rhs) { _, new in new} }
 }
+
+// MARK: - Extension - Optional Collection
+
+extension Optional where Wrapped: Collection {
+	
+	/// Returns `true` if the object is `nil` or `empty`. It returns true for non-zero valid objects.
+	var isNilOrEmpty: Bool { self?.isEmpty ?? true }
+}
