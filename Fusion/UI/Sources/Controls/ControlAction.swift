@@ -41,16 +41,18 @@ public struct ControlAction {
 	
 	public let title: TextConvertible?
 	public let image: UIImage?
-	public let action: ControlHandler?
 	public let isEnabled: Bool
+	public let isSelected: Bool
+	public let action: ControlHandler?
 	
 // MARK: - Constructors
 	
-	public init(title: TextConvertible? = nil, image: UIImage? = nil, isEnabled: Bool = true, action: ControlHandler? = nil) {
+	public init(title: TextConvertible? = nil, image: UIImage? = nil, enabled: Bool = true, selected: Bool = false, action: ControlHandler? = nil) {
 		self.title = title
 		self.image = image
 		self.action = action
-		self.isEnabled = isEnabled
+		self.isEnabled = enabled
+		self.isSelected = selected
 	}
 	
 // MARK: - Exposed Methods
