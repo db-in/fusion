@@ -108,7 +108,7 @@ public extension Dictionary {
 
 // MARK: - Extension - Optional Collection
 
-extension Optional where Wrapped: Collection {
+public extension Optional where Wrapped: Collection {
 	
 	/// Returns `true` if the object is `nil` or `empty`. It returns true for non-zero valid objects.
 	var isNilOrEmpty: Bool { self?.isEmpty ?? true }
