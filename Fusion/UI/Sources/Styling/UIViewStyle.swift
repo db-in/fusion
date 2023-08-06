@@ -379,9 +379,7 @@ public extension UIView {
 	static var interfaceStyle: UIUserInterfaceStyle { UIWindow.key?.interfaceStyle ?? .light }
 	
 	func embededInView(edges: UIEdgeInsets = .zero) -> UIView {
-		let origin = CGPoint(x: edges.left, y: edges.top)
-		let size = CGSize(width: bounds.width - (edges.left + edges.right), height: bounds.height - (edges.top + edges.bottom))
-		let view = UIView(frame: .init(origin: origin, size: size))
+		let view = UIView(frame: .init(origin: .zero, size: frame.size))
 		view.addSubview(self)
 		view.setConstraintsFitting(child: self, edges: edges)
 		return view

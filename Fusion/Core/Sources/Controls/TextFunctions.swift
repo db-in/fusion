@@ -11,13 +11,15 @@ public protocol Searcheable {
 	var searchableText: String { get }
 }
 
+public typealias TextAttributes = [NSAttributedString.Key : Any]
+
 // MARK: - Type - TextConvertible
 
 public protocol TextConvertible {
 	
 	var content: String { get }
 	func render(target: Any?)
-	func styled(_ attributes: [NSAttributedString.Key : Any], overriding: Bool) -> NSAttributedString
+	func styled(_ attributes: TextAttributes, overriding: Bool) -> NSAttributedString
 	func appending(_ rhs: TextConvertible) -> NSAttributedString
 }
 
@@ -29,7 +31,7 @@ extension NSAttributedString : TextConvertible { }
 
 public extension TextConvertible {
 	
-	var attributes: [NSAttributedString.Key : Any] {
+	var attributes: TextAttributes {
 		(self as? NSAttributedString)?.attributes(at: 0, effectiveRange: nil) ?? [:]
 	}
 	
@@ -49,11 +51,11 @@ public extension TextConvertible {
 	func render(target: Any?) { }
 }
 	
-// MARK: - Extension - [NSAttributedString.Key : Any]
+// MARK: - Extension - TextStyle
 
-public extension Dictionary where Key == NSAttributedString.Key, Value == Any {
+public extension TextAttributes {
 	
-	func attributed(_ attributes: [NSAttributedString.Key : Any]) -> Self {
+	func attributed(_ attributes: TextAttributes) -> Self {
 		merging(attributes) { $1 }
 	}
 }
@@ -90,7 +92,7 @@ public extension String {
 	
 // MARK: - Exposed Methods
 	
-	func styled(_ attributes: [NSAttributedString.Key : Any], overriding: Bool = true) -> NSAttributedString {
+	func styled(_ attributes: TextAttributes, overriding: Bool = true) -> NSAttributedString {
 		NSAttributedString(string: self, attributes: attributes)
 	}
 	
@@ -191,7 +193,7 @@ public extension NSAttributedString {
 	
 // MARK: - Exposed Methods
 
-	func styled(_ attributes: [NSAttributedString.Key : Any], overriding: Bool = true) -> NSAttributedString {
+	func styled(_ attributes: TextAttributes, overriding: Bool = true) -> NSAttributedString {
 		guard overriding else { return self }
 		let copy = NSMutableAttributedString(attributedString: self)
 		copy.addAttributes(attributes, range: NSRange(location: 0, length: copy.length))
