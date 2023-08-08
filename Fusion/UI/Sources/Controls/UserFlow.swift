@@ -252,9 +252,5 @@ extension UserFlow : Hashable {
 		hasher.combine(name)
 		hasher.combine(bundle)
 	}
-	
-	public static func == (lhs: UserFlow, rhs: UserFlow) -> Bool {
-		lhs.hashValue == rhs.hashValue
-	}
 }
 #endif

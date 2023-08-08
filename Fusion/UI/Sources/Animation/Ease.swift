@@ -269,7 +269,7 @@ public enum Ease : Equatable, CaseIterable {
 										  .bounceIn, .bounceOut, .bounceInOut,
 										  .backIn, .backOut, .backInOut]
 	
-	public static func ==(lhs: Self, rhs: Self) -> Bool {
+	public static func == (lhs: Self, rhs: Self) -> Bool {
 		switch (lhs, rhs) {
 		case (.linear, .linear),
 			(.smoothIn, .smoothIn), (.smoothOut, .smoothOut), (.smoothInOut, .smoothInOut),

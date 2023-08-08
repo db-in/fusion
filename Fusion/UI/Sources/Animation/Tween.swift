@@ -367,10 +367,6 @@ extension Tween : Hashable {
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(identifier)
 	}
-	
-	public static func == (lhs: Tween, rhs: Tween) -> Bool {
-		lhs.identifier == rhs.identifier
-	}
 }
 
 // MARK: - Extension - Tween
