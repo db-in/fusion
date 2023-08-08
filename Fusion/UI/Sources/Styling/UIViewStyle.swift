@@ -233,7 +233,7 @@ public extension UIView {
 	/// Returns true if there is an existing gradient created by using ``makeShadow(radius:fillColor:shadowColor:opacity:offset:cornerRadius:)``
 	var hasShadow: Bool { (layer.sublayers(named: shadowKey).first?.shadowOpacity ?? 0) > 0 }
 	
-	/// Makes a shadow in the background of the view.
+	/// Makes a shadow in the background of the view. Re-call this method once at every redraw to resize or re-color the effect.
 	///
 	/// - Returns: Returns self for nested calls purpose.
 	/// - Important: This routine uses layers to create its effect, changing layers after calling this method may produce undesired effects.
@@ -281,7 +281,7 @@ public extension UIView {
 	/// Returns true if there is an existing gradient created by using ``makeGradient(colors:start:end:type:)``
 	var hasGradient: Bool { !layer.sublayers(named: gradientKey).isEmpty }
 	
-	/// Makes a gradient in the background of the view. Call the method once at every redraw.
+	/// Makes a gradient in the background of the view. Re-call this method once at every redraw to resize or re-color the effect.
 	///
 	/// - Parameters:
 	///   - colors: An array of colors. If empty ([]) any existing gradient is removed.
@@ -312,7 +312,7 @@ public extension UIView {
 	}
 }
 
-// MARK: - Extension - UIView Others
+// MARK: - Extension - UIView Grabber
 
 public extension UIView {
 	
@@ -325,24 +325,31 @@ public extension UIView {
 		set { objc_setAssociatedObject(self, &Keys.grabberKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
 	}
 	
-	/// Adds a single grabber like view at the top of the view.
+	/// Makes a single grabber like view at the top of the view.
 	///
 	/// - Parameters:
 	///   - color: The color of the grabber. The default value is black color 20% alpha.
 	///   - size: The size of the grabber. The default vlaue is [36, 5].
-	func addGrabber(color: UIColor = .black.withAlphaComponent(0.2), size: CGSize = .init(width: 36, height: 5)) {
+	@discardableResult func makeGrabber(color: UIColor = .black.withAlphaComponent(0.2), size: CGSize = .init(width: 36, height: 5)) -> Self {
 		let view = grabber ?? .init(frame: .init(origin: .zero, size: size), background: color, corner: size.height * 0.5)
 		addSubview(view)
 		view.center = .init(x: center.x, y: center.y - (frame.height * 0.5) + 8)
 		view.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
 		grabber = view
+		return self
 	}
 	
 	/// Removes the grabber added via ``addGrabber(color:size:)``.
-	func removeGrabber() {
+	@discardableResult func removeGrabber() -> Self {
 		grabber?.removeFromSuperview()
+		return self
 	}
+}
 
+// MARK: - Extension - UIView
+
+public extension UIView {
+	
 	/// Returns true if the given view is being rendered as right to left layout direction.
 	var isRTL: Bool { traitCollection.layoutDirection == .rightToLeft }
 	
@@ -377,6 +384,24 @@ public extension UIView {
 	}
 	
 	static var interfaceStyle: UIUserInterfaceStyle { UIWindow.key?.interfaceStyle ?? .light }
+	
+	/// Resizes the view with a new CGSize. Returns itself for concatenation.
+	///
+	/// - Parameter size: The new size.
+	/// - Returns: The same instance after changes.
+	@discardableResult func resize(_ size: CGSize) -> Self {
+		frame = .init(origin: frame.origin, size: size)
+		return self
+	}
+	
+	/// Resizes the view with a new CGRect. Returns itself for concatenation.
+	///
+	/// - Parameter size: The new rect.
+	/// - Returns: The same instance after changes.
+	@discardableResult func resize(_ rect: CGRect) -> Self {
+		frame = rect
+		return self
+	}
 	
 	func embededInView(edges: UIEdgeInsets = .zero) -> UIView {
 		let view = UIView(frame: .init(origin: .zero, size: frame.size))
