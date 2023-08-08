@@ -339,7 +339,7 @@ public extension UIView {
 		return self
 	}
 	
-	/// Removes the grabber added via ``addGrabber(color:size:)``.
+	/// Removes the grabber added via ``makeGrabber(color:size:)``.
 	@discardableResult func removeGrabber() -> Self {
 		grabber?.removeFromSuperview()
 		return self
