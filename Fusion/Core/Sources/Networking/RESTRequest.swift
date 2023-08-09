@@ -92,21 +92,25 @@ public extension URLResponse {
 
 private extension URLRequest {
 	
+	var fullRequest: String {
+		let headers = allHTTPHeaderFields?.description ?? ""
+		guard let data = httpBody else { return headers }
+		return .init(data: data, encoding: .utf8) ?? ""
+	}
+	
 	func debugLogRequest() {
-		Logger.global.log(basic: "=== 🚀 REQUEST === \(httpMethod ?? "") \(urlString)",
-						  full: allHTTPHeaderFields?.description ?? "")
+		Logger.global.log(basic: "=== 🚀 REQUEST === \(httpMethod ?? "") \(urlString)", full: fullRequest)
 	}
 	
 	func debugLog(response: URLResponse?, seconds: TimeInterval) {
 		let code = (response as? HTTPURLResponse)?.statusCode ?? 0
 		let icon = code >= 200 && code < 400 ? "📦" : "📦‼️"
-		Logger.global.log(basic: "=== \(icon) RESPONSE === \(urlString) (\(code)) - \(Int(seconds * 1000))ms",
-						  full: "\(response ?? URLResponse())")
+		let time = Int(seconds * 1000)
+		Logger.global.log(basic: "=== \(icon) RESPONSE === \(urlString) (\(code)) - \(time)ms", full: "\(response ?? URLResponse())")
 	}
 	
 	func debugLog(data: Data) {
-		Logger.global.log(basic: "=== 📥 RECEIVED === \(urlString) (\(data.byteCount))",
-						  full: "\(String(data: data, encoding: .utf8) ?? "")")
+		Logger.global.log(basic: "=== 📥 RECEIVED === \(urlString) (\(data.byteCount))", full: "\(String(data: data, encoding: .utf8) ?? "")")
 	}
 	
 	func debugLog(error: Error) {
