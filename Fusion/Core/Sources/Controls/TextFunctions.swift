@@ -25,6 +25,8 @@ public protocol TextConvertible {
 
 extension String : TextConvertible { }
 
+extension String.SubSequence : TextConvertible { }
+
 extension NSAttributedString : TextConvertible { }
 
 // MARK: - Extension - TextConvertible
@@ -181,6 +183,19 @@ public extension String {
 			return "\(lhs)\(rhs)"
 		}
 	}
+}
+
+// MARK: - Extension - String.SubSequence
+
+public extension String.SubSequence {
+	
+	var string: String { .init(self) }
+	
+	var content: String { string }
+	
+	func appending(_ rhs: TextConvertible) -> NSAttributedString { string.appending(rhs) }
+	
+	func styled(_ attributes: TextAttributes, overriding: Bool) -> NSAttributedString { string.styled(attributes) }
 }
 
 // MARK: - Extension - NSAttributedString

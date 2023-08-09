@@ -33,6 +33,15 @@ public extension String {
 	}
 }
 
+// MARK: - Extension - String.SubSequence
+
+public extension String.SubSequence {
+
+	// MARK: - Exposed Methods
+	
+	func render(target: Any?) { string.render(target: target) }
+}
+
 // MARK: - Extension - NSAttributedString
 
 public extension NSAttributedString {
@@ -163,9 +172,7 @@ public extension String {
 		(target as? UIView)?.accessibilityIdentifier = originalKey
 	}
 	
-	func sizeThatFits(font: UIFont,
-					  width: CGFloat = .greatestFiniteMagnitude,
-					  height: CGFloat = .greatestFiniteMagnitude) -> CGSize {
+	func sizeThatFits(font: UIFont, width: CGFloat = .greatestFiniteMagnitude, height: CGFloat = .greatestFiniteMagnitude) -> CGSize {
 		let string = NSString(string: self)
 		let rect = string.boundingRect(with: CGSize(width: width, height: height),
 									   options: .usesLineFragmentOrigin,
@@ -175,6 +182,21 @@ public extension String {
 	}
 	
 	@inlinable func appending(_ image: UIImage) -> NSAttributedString { appending(" ").appending(image.toText()) }
+}
+
+// MARK: - Extension - String.SubSequence
+
+public extension String.SubSequence {
+
+// MARK: - Exposed Methods
+	
+	func render(target: Any?) { string.render(target: target) }
+	
+	func sizeThatFits(font: UIFont, width: CGFloat = .greatestFiniteMagnitude, height: CGFloat = .greatestFiniteMagnitude) -> CGSize {
+		string.sizeThatFits(font: font, width: width, height: height)
+	}
+	
+	@inlinable func appending(_ image: UIImage) -> NSAttributedString { string.appending(image) }
 }
 
 // MARK: - Extension - NSAttributedString
