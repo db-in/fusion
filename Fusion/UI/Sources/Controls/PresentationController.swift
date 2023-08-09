@@ -21,15 +21,10 @@ final public class PresentationController : UIPresentationController {
 	private var topOffset: CGFloat { UIWindow.key?.safeAreaInsets.top ?? 0 }
 	private var interactor: UIPercentDrivenInteractiveTransition? { allowsInteraction && isInteracting ? interactiveTransition : nil }
 	private lazy var interactiveTransition: UIPercentDrivenInteractiveTransition = { .init() }()
-	private lazy var grabberView: UIView = {
-		.init(frame: .init(x: 0, y: 0, width: 36, height: 5), background: .gray.withAlphaComponent(0.5), corner: 2.5)
-	}()
 	
 	/// Indicates if a grabber will be visible for interaction. The default value is `false`.
 	public var isGrabberVisible: Bool = false {
-		didSet {
-			grabberView.isHidden = !isGrabberVisible
-		}
+		didSet { updateGrabber() }
 	}
 	
 	/// Indicates if the user is allowed to interactively move the presentation. The default value is `true`.
@@ -148,6 +143,14 @@ final public class PresentationController : UIPresentationController {
 		scrollView?.contentOffset.y = -(scrollView?.adjustedContentInset.top ?? 0)
 	}
 	
+	private func updateGrabber() {
+		if isGrabberVisible {
+			presentedView?.makeGrabber()
+		} else {
+			presentedView?.removeGrabber()
+		}
+	}
+	
 // MARK: - Exposed Methods
 
 // MARK: - Overridden Methods
@@ -159,8 +162,8 @@ final public class PresentationController : UIPresentationController {
 		else { return }
 		
 		containerView?.addSubview(targetView)
-//		containerView?.addSubview(grabberView)
 		containerView?.insertSubview(dimmingView, at: 0)
+		updateGrabber()
 		
 		targetView.layoutIfNeeded()
 		targetView.frame = frameOfPresentedViewInContainerView
@@ -314,8 +317,8 @@ public extension UIViewController {
 	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
 	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none) {
 #if os(iOS) && !os(xrOS)
-		if #available(iOS 15.0, *) {
-			target.modalPresentationStyle = style.isModal ? .pageSheet : style
+		if #available(iOS 15.0, *), style == .pageSheet || style == .formSheet {
+			target.modalPresentationStyle = style
 			target.transitioningDelegate = nil
 			let sheet = target.sheetPresentationController
 			if #available(iOS 16.0, *) {
