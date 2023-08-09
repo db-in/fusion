@@ -583,8 +583,26 @@ public extension UIViewController {
 	}
 	
 #if os(iOS)
+	private struct ObjcKeys {
+		static var keyboard: UInt8 = 1
+		static var originalInset: UInt8 = 2
+	}
+	
+	private var keyboardInsetY: CGFloat {
+		get { (objc_getAssociatedObject(self, &ObjcKeys.keyboard) as? CGFloat) ?? 0 }
+		set { objc_setAssociatedObject(self, &ObjcKeys.keyboard, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
+	}
+	
+	private var originalBottom: CGFloat {
+		get { objc_getAssociatedObject(self, &ObjcKeys.originalInset) as? CGFloat ?? 0 }
+		set { objc_setAssociatedObject(self, &ObjcKeys.originalInset, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
+	}
+	
 	/// Registers the current view controller for keyboard show and hide notifications.
-	func registerForKeyboardNotifications() {
+	func registerForKeyboardNotifications(insetY: CGFloat = 0) {
+		keyboardInsetY = insetY
+		originalBottom = additionalSafeAreaInsets.bottom
+		
 		let center = NotificationCenter.default
 		let keyboardShow = UIResponder.keyboardWillShowNotification
 		let keyboardHide = UIResponder.keyboardWillHideNotification
@@ -600,23 +618,25 @@ public extension UIViewController {
 	@objc func keyboard(notification: Notification) {
 		guard
 			let userInfo = notification.userInfo,
-			let beginKeyboardFrame = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect,
-			let endKeyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-			beginKeyboardFrame.origin.y != endKeyboardFrame.origin.y
+			let frame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+			let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
+			let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int
 		else { return }
 		
-		switch notification.name {
-		case UIResponder.keyboardWillShowNotification:
-			if beginKeyboardFrame.origin.y - endKeyboardFrame.origin.y == endKeyboardFrame.height {
-				additionalSafeAreaInsets.bottom += endKeyboardFrame.height - (view.safeAreaInsets.bottom - additionalSafeAreaInsets.bottom)
+		let isShowing = notification.name == UIResponder.keyboardWillShowNotification
+		
+		UIView.animate(withDuration: duration, delay: 0, options: UIView.AnimationOptions(rawValue: UInt(curve << 16)), animations: {
+			if isShowing {
+				let existingInsets = self.additionalSafeAreaInsets
+				let newBottomInset = max(existingInsets.bottom, frame.height - self.keyboardInsetY)
+				self.additionalSafeAreaInsets = UIEdgeInsets(top: existingInsets.top, left: existingInsets.left, bottom: newBottomInset, right: existingInsets.right)
 			} else {
-				additionalSafeAreaInsets.bottom += beginKeyboardFrame.origin.y - endKeyboardFrame.origin.y
+				let bottom = self.originalBottom
+				let insets = self.additionalSafeAreaInsets
+				self.additionalSafeAreaInsets = UIEdgeInsets(top: insets.top, left: insets.left, bottom: bottom, right: insets.right)
 			}
-		case UIResponder.keyboardWillHideNotification:
-			additionalSafeAreaInsets.bottom = view.safeAreaInsets.bottom - beginKeyboardFrame.height
-		default:
-			break
-		}
+			self.view.layoutIfNeeded()
+		}, completion: nil)
 	}
 #endif
 }
