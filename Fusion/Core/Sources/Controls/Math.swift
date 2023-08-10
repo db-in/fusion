@@ -148,28 +148,28 @@ public extension CGRect {
 		self.init(origin: .zero, size: .init(width: width, height: height))
 	}
 	
-	/// Similar to `insetBy` but safer, this function avoids resulting in negative size.
-	/// - Parameters:
-	///   - dx: The X axis insets on both sides.
-	///   - dy: The Y axis insets on both sides.
-	/// - Returns: A new `CGRect`.
-	func insetSafelyBy(dx: CGFloat, dy: CGFloat) -> CGRect {
-		let normalizedX = dx * 2 > size.width ? 0 : dx
-		let normalizedY = dy * 2 > size.height ? 0 : dy
-		return insetBy(dx: normalizedX, dy: normalizedY)
-	}
-	
-	/// Returns a new `CGRect` by expanding the edges of the current `CGRect` with a given criteria.
-	///
-	/// - Parameters:
-	///   - top: The top expansion.
-	///   - left: The left expansion.
-	///   - bottom: The bottom expansion.
-	///   - right: The right expansion.
-	/// - Returns: A new `CGRect`.
-	func expandBy(top: CGFloat = 0, left: CGFloat = 0, bottom: CGFloat = 0, right: CGFloat = 0) -> CGRect {
-		let newOrigin = CGPoint(x: origin.x - left, y: origin.y - top)
-		let newSize = CGSize(width: width + right + left, height: height + bottom + top)
-		return .init(origin: newOrigin, size: newSize)
-	}
+//	/// Similar to `insetBy` but safer, this function avoids resulting in negative size.
+//	/// - Parameters:
+//	///   - dx: The X axis insets on both sides.
+//	///   - dy: The Y axis insets on both sides.
+//	/// - Returns: A new `CGRect`.
+//	func insetSafelyBy(dx: CGFloat, dy: CGFloat) -> CGRect {
+//		let normalizedX = dx * 2 > size.width ? 0 : dx
+//		let normalizedY = dy * 2 > size.height ? 0 : dy
+//		return insetBy(dx: normalizedX, dy: normalizedY)
+//	}
+//	
+//	/// Returns a new `CGRect` by expanding the edges of the current `CGRect` with a given criteria.
+//	///
+//	/// - Parameters:
+//	///   - top: The top expansion.
+//	///   - left: The left expansion.
+//	///   - bottom: The bottom expansion.
+//	///   - right: The right expansion.
+//	/// - Returns: A new `CGRect`.
+//	func expandBy(top: CGFloat = 0, left: CGFloat = 0, bottom: CGFloat = 0, right: CGFloat = 0) -> CGRect {
+//		let newOrigin = CGPoint(x: origin.x - left, y: origin.y - top)
+//		let newSize = CGSize(width: width + right + left, height: height + bottom + top)
+//		return .init(origin: newOrigin, size: newSize)
+//	}
 }
