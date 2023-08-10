@@ -141,11 +141,11 @@ public extension CGSize {
 public extension CGRect {
 	
 	init(size: CGSize) {
-		self.init(origin: .zero, size: size)
+		self.init(origin: .init(x: 0, y: 0), size: size)
 	}
 	
 	init(width: CGFloat, height: CGFloat) {
-		self.init(origin: .zero, size: .init(width: width, height: height))
+		self.init(origin: .init(x: 0, y: 0), size: .init(width: width, height: height))
 	}
 	
 //	/// Similar to `insetBy` but safer, this function avoids resulting in negative size.
