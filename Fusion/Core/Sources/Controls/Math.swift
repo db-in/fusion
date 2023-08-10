@@ -167,7 +167,7 @@ public extension CGRect {
 	///   - bottom: The bottom expansion.
 	///   - right: The right expansion.
 	/// - Returns: A new `CGRect`.
-	func expand(top: CGFloat = 0, left: CGFloat = 0, bottom: CGFloat = 0, right: CGFloat = 0) -> CGRect {
+	func expandBy(top: CGFloat = 0, left: CGFloat = 0, bottom: CGFloat = 0, right: CGFloat = 0) -> CGRect {
 		let newOrigin = CGPoint(x: origin.x - left, y: origin.y - top)
 		let newSize = CGSize(width: width + right + left, height: height + bottom + top)
 		return .init(origin: newOrigin, size: newSize)
