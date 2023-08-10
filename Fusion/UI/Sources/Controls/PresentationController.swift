@@ -18,8 +18,8 @@ final public class PresentationController : UIPresentationController {
 	private var propertyAnimator: UIViewPropertyAnimator?
 	private var nestedViewController: UIViewController? { (presentedViewController as? UINavigationController)?.viewControllers.last ?? presentedViewController }
 	private var scrollView: UIScrollView? { nestedViewController?.view.firstOf() }
-	private var topOffset: CGFloat { UIWindow.key?.safeAreaInsets.top ?? 0 }
-	private var interactor: UIPercentDrivenInteractiveTransition? { allowsInteraction && isInteracting ? interactiveTransition : nil }
+	private var topOffset: CGFloat { (UIWindow.key?.safeAreaInsets.top ?? 0) }
+	private var interactor: UIPercentDrivenInteractiveTransition? { allowsInteractiveTransition && isInteracting ? interactiveTransition : nil }
 	private lazy var interactiveTransition: UIPercentDrivenInteractiveTransition = { .init() }()
 	
 	/// Indicates if a grabber will be visible for interaction. The default value is `false`.
@@ -27,8 +27,8 @@ final public class PresentationController : UIPresentationController {
 		didSet { updateGrabber() }
 	}
 	
-	/// Indicates if the user is allowed to interactively move the presentation. The default value is `true`.
-	public var allowsInteraction: Bool = true
+	/// Indicates if the user is allowed to interactively move the transition. The default value is `true`.
+	public var allowsInteractiveTransition: Bool = false
 	
 	/// Indicates if the user is allowed to dismiss it manually. When set to `false` user won't be albe to tap to dismiss, however it still
 	/// dismissable programatically. The default value is `true`.
@@ -36,6 +36,9 @@ final public class PresentationController : UIPresentationController {
 	
 	/// The corner radius of the drawer frame.
 	public var cornerRadius: CGFloat = 20
+	
+	/// Defines a safe space at the top that will never be exceeded, this is in addition to any top existing window safe.
+	public var topSafeArea: CGFloat = 20
 	
 	/// A closure to be executed after the presentation is dismissed in the future.
 	public var onDismissal: Callback?
@@ -57,7 +60,7 @@ final public class PresentationController : UIPresentationController {
 		let extraPadding = header + screenSafeArea.bottom + viewSafeArea.top + viewSafeArea.bottom
 		
 		var frame = containerBounds
-		frame.size.height = min(controller.preferredHeight + extraPadding, containerBounds.height - topOffset)
+		frame.size.height = min(controller.preferredHeight + extraPadding, containerBounds.height - topOffset - topSafeArea)
 		frame.origin.y = containerBounds.height - frame.size.height
 		originalHeight = originalHeight > 0 ? originalHeight : controller.preferredHeight
 		
@@ -106,7 +109,7 @@ final public class PresentationController : UIPresentationController {
 	
 	@objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
 		guard
-			allowsInteraction,
+			allowsInteractiveTransition,
 			let containerView = containerView
 		else { return }
 		
