@@ -223,16 +223,16 @@ public extension Decodable {
 
 // MARK: - Extension - String
 
-public extension String {
-	
-	var prettyJSON: String {
-		guard
-			let jsonObject = object,
-			let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted])
-		else { return self }
-		return .init(data: prettyData, encoding: .utf8) ?? self
-	}
-}
+//public extension String {
+//	
+//	var prettyJSON: String {
+//		guard
+//			let jsonObject = object,
+//			let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted])
+//		else { return self }
+//		return .init(data: prettyData, encoding: .utf8) ?? self
+//	}
+//}
 
 // MARK: - Extension - FileManager
 
