@@ -223,7 +223,7 @@ public extension Decodable {
 
 // MARK: - Extension - String
 
-extension String {
+public extension String {
 	
 	var prettyJSON: String {
 		guard
