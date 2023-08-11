@@ -100,7 +100,7 @@ public extension NSTextAlignment {
 	}
 }
 
-public extension Dictionary where Key == NSAttributedString.Key, Value == Any {
+public extension TextAttributes {
 	
 	static func attributed(font: UIFont? = nil,
 						   color: UIColor? = nil,
