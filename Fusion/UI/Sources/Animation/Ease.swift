@@ -20,159 +20,105 @@ private extension Constant {
 }
 
 private struct EaseFunction {
-
-	static func linear(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		return change * time / duration + begin
+	
+	static func linear(_ value: FPoint) -> FPoint { value }
+	
+	static func smoothIn(_ value: FPoint) -> FPoint { value * value * value * value }
+	
+	static func smoothOut(_ value: FPoint) -> FPoint {
+		let delta = value - 1.0
+		return delta * delta * delta * (1 - value) + 1.0
 	}
 	
-	static func smoothIn(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		let t = time / duration
-		return change * t * t + begin
-	}
-	
-	static func smoothOut(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		let t = time / duration
-		return -change * t * (t - 2.0) + begin
-	}
-	
-	static func smoothInOut(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		var t = time / (duration * 0.5)
-		
-		if t < 1.0 {
-			return change * 0.5 * t * t + begin
+	static func smoothInOut(_ value: FPoint) -> FPoint {
+		if value < 0.5 {
+			return 8.0 * value * value * value * value
 		} else {
-			t -= 1.0
+			let delta = (value - 1.0)
+			return -8.0 * delta * delta * delta * delta + 1.0
 		}
-		
-		return -change * 0.5 * ((t) * (t - 2.0) - 1.0) + begin
 	}
 	
-	static func strongIn(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		if time == 0.0 {
-			return begin
-		} else if time == duration {
-			return begin + change
+	static func strongIn(_ value: FPoint) -> FPoint { value * value }
+	
+	static func strongOut(_ value: FPoint) -> FPoint { 1.0 - strongIn(1.0 - value) }
+	
+	static func strongInOut(_ value: FPoint) -> FPoint {
+		if value < 0.5 {
+			return 0.5 * strongIn(value * 2.0)
+		} else {
+			return 0.5 * strongOut(value * 2.0 - 1.0) + 0.5
 		}
-		return change * pow(2.0, 10.0 * (time / duration - 1.0)) + begin - change * 0.001
 	}
 	
-	static func strongOut(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		let power = -pow(2.0, -10.0 * time / duration) + 1.0
-		return (time == duration) ? begin + change : change * FPoint(power) + begin
+	static func elasticIn(_ value: FPoint) -> FPoint {
+		guard value != 0.0 && value != 1.0 else { return value }
+		return sin(13 * Constant.pi / 2 * value) * pow(2, 10 * (value - 1))
 	}
 	
-	static func strongInOut(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		if time == 0.0 {
-			return begin
-		} else if time == duration {
-			return begin + change
-		} else if time < duration * 0.5 {
-			let t = time / (duration * 0.5)
-			return change * 0.5 * pow(2.0, 10.0 * (t - 1.0)) + begin
+	static func elasticOut(_ value: FPoint) -> FPoint {
+		guard value != 0.0 && value != 1.0 else { return value }
+		return sin(-13 * Constant.pi / 2 * (value + 1)) * pow(2, -10 * value) + 1
+	}
+	
+	static func elasticInOut(_ value: FPoint) -> FPoint {
+		guard value != 0.0 && value != 1.0 else { return value }
+		if value < 0.5 {
+			return 0.5 * elasticIn(value * 2.0)
+		} else {
+			return 0.5 * elasticOut(value * 2.0 - 1.0) + 0.5
 		}
-		
-		let t = time / (duration * 0.5)
-		return change * 0.5 * (-pow(2.0, -10.0 * (t - 1.0)) + 2.0) + begin
 	}
 	
-	static func elasticIn(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		let x = change, y = duration * 0.3, z = y / 4.0, percent = time / duration
-
-		if time == 0.0 {
-			return begin
-		} else if percent == 1.0 {
-			return begin + change
-		}
-
-		let t = percent - 1.0
-		return -x * pow(2.0, 10.0 * t) * sin((t * duration - z) * Constant.piDouble / y) + begin
-	}
+	static func bounceIn(_ value: FPoint) -> FPoint { 1.0 - bounceOut(1.0 - value) }
 	
-	static func elasticOut(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		let x = change, y = duration * 0.3, z = y / 4.0, percent = time / duration
+	static func bounceOut(_ value: FPoint) -> FPoint {
+		guard value != 0.0 && value != 1.0 else { return value }
+		var t = value
 		
-		if time == 0.0 {
-			return begin
-		} else if percent == 1.0 {
-			return begin + change
-		}
-		
-		return x * pow(2.0, -10.0 * percent) * sin((percent * duration - z) * Constant.piDouble / y) + x + begin
-	}
-	
-	static func elasticInOut(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		var x = change, y = duration * 0.45, z = y / 4.0, powTime: FPoint, percent = time / (duration * 0.5)
-		
-		if time == 0.0 {
-			return begin
-		} else if percent == 2.0 {
-			return begin + change
-		}
-		
-		if percent < 1.0 {
-			let t = percent - 1.0
-			powTime = pow(2.0, 10.0 * t)
-			return -0.5 * x * powTime * sin((t * duration - z) * Constant.piDouble / y) + begin
-		}
-		
-		let t = percent - 1.0
-		powTime = pow(2.0, -10.0 * t)
-		return 0.5 * x * powTime * sin((t * duration - z) * Constant.piDouble / y) + change + begin
-	}
-	
-	static func bounceIn(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		return change - bounceOut(0.0, change, duration - time, duration) + begin
-	}
-	
-	static func bounceOut(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
-		var t = time / duration
-		
-		if time == 0.0 {
-			return begin
-		} else if time == duration {
-			return begin + change
-		} else if t < Constant.tween_0_36 {
-			return change * (Constant.tween_7_56 * t * t) + begin
+		if t < Constant.tween_0_36 {
+			return Constant.tween_7_56 * t * t
 		} else if t < Constant.tween_0_72 {
 			t -= Constant.tween_0_54
-			return change * (Constant.tween_7_56 * t * t + Constant.tween_0_72) + begin
+			return Constant.tween_7_56 * t * t + Constant.tween_0_72
 		} else if t < Constant.tween_0_90 {
 			t -= Constant.tween_0_81
-			return change * (Constant.tween_7_56 * t * t + Constant.tween_0_95) + begin
+			return Constant.tween_7_56 * t * t + Constant.tween_0_95
 		}
 		
 		t -= Constant.tween_0_95
-		return change * (Constant.tween_7_56 * t * t + Constant.tween_0_95) + begin
+		return Constant.tween_7_56 * t * t + Constant.tween_0_95
 	}
 	
-	static func bounceInOut(begin: FPoint, change: FPoint, time: FPoint, duration: FPoint) -> FPoint {
-		if time < duration * 0.5 {
-			return bounceIn(0.0, change, time * 2.0, duration) * 0.5 + begin
+	static func bounceInOut(_ value: FPoint) -> FPoint {
+		if value < 0.5 {
+			return 0.5 * bounceIn(value * 2.0)
+		} else {
+			return 0.5 * bounceOut(value * 2.0 - 1.0) + 0.5
 		}
-		return bounceOut(0.0, change, time * 2.0 - duration, duration) * 0.5 + change * 0.5 + begin
 	}
 	
-	static func backIn(begin: FPoint, change: FPoint, time: FPoint, duration: FPoint) -> FPoint {
-		let t = time / duration
-		return change * t * t * ((Constant.tween_1_65 + 1.0) * t - Constant.tween_1_65) + begin
+	static func backIn(_ value: FPoint) -> FPoint {
+		let t = value
+		return t * t * ((Constant.tween_1_65 + 1.0) * t - Constant.tween_1_65)
 	}
 	
-	static func backOut(begin: FPoint, change: FPoint, time: FPoint, duration: FPoint) -> FPoint {
-		let t = time / duration - 1.0
-		return change * (t * t * ((Constant.tween_1_65 + 1.0) * t + Constant.tween_1_65) + 1.0) + begin
+	static func backOut(_ value: FPoint) -> FPoint {
+		let t = value - 1.0
+		return (t * t * ((Constant.tween_1_65 + 1.0) * t + Constant.tween_1_65) + 1.0)
 	}
 	
-	static func backInOut(begin: FPoint, change: FPoint, time: FPoint, duration: FPoint) -> FPoint {
-		var t = time / (duration * 0.5)
+	static func backInOut(_ value: FPoint) -> FPoint {
+		var t = value / 0.5
 		if t < 1.0 {
-			return change * 0.5 * (t * t * ((Constant.tween_3_23 + 1.0) * t - Constant.tween_3_23)) + begin
+			return 0.5 * (t * t * ((Constant.tween_3_23 + 1.0) * t - Constant.tween_3_23))
 		}
 		t -= 2.0
-		return change * 0.5 * (t * t * ((Constant.tween_3_23 + 1.0) * t + Constant.tween_3_23) + 2.0) + begin
+		return 0.5 * (t * t * ((Constant.tween_3_23 + 1.0) * t + Constant.tween_3_23) + 2.0)
 	}
 }
 
-public typealias Easing = (_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint
+public typealias Easing = (_ value: FPoint) -> FPoint
 
 // MARK: - Type -
 
@@ -260,6 +206,31 @@ public enum Ease : Equatable, CaseIterable {
 		default:
 			return self
 		}
+	}
+	
+	/// Calculates the value at a specific point in time using a time-based approach.
+	///
+	/// - Parameters:
+	///   - begin: The initial value.
+	///   - change: The change in value.
+	///   - time: The current time.
+	///   - duration: The duration of the change.
+	///
+	/// - Returns: The calculated value at the given time using the easing function.
+	public func calculate(_ begin: FPoint, _ change: FPoint, _ time: FPoint, _ duration: FPoint) -> FPoint {
+		calculate(begin, change, time / duration)
+	}
+
+	/// Calculates the value at a specific percentage of the change using a percentage-based approach.
+	///
+	/// - Parameters:
+	///   - begin: The initial value.
+	///   - change: The change in value.
+	///   - percentage: The progress percentage (0.0 to 1.0).
+	///
+	/// - Returns: The calculated value at the given percentage using the easing function.
+	public func calculate(_ begin: FPoint, _ change: FPoint, _ percentage: FPoint) -> FPoint {
+		change * easingFunction(percentage) + begin
 	}
 	
 	public static var allCases: [Ease] = [.linear,

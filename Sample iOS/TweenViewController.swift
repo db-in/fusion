@@ -61,7 +61,7 @@ class TweenSampleCell : UICollectionViewCell {
 		range.forEach {
 			let value = Double($0)
 			let posX = margin + (value / Double(range.upperBound)) * (bounds.width - padding)
-			let posY = bounds.height - tween.easingFunction(margin, bounds.height - padding, value, Double(range.upperBound))
+			let posY = bounds.height - tween.calculate(margin, bounds.height - padding, value, Double(range.upperBound))
 			
 			if $0 == 0 {
 				path.move(to: CGPoint(x: posX, y: posY))

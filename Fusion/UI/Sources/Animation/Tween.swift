@@ -284,7 +284,7 @@ public class Tween {
 	fileprivate func updateTargetValues() {
 		preUpdateValues()
 		allValues.forEach {
-			target?[keyPath: $0.key] = options.ease.easingFunction($0.value[0], $0.value[1], deltaTime, duration)
+			target?[keyPath: $0.key] = options.ease.calculate($0.value[0], $0.value[1], deltaTime, duration)
 		}
 		postUpdateValues()
 	}

@@ -61,6 +61,17 @@ public extension FPoint {
 	}
 }
 
+// MARK: - Extension - FloatingPoint
+
+public extension FloatingPoint {
+	
+	/// Returns 0 if the value is not a number.
+	var zeroIfNaN: Self { isNaN ? 0 : self }
+	
+	/// Returns the number securely inside the range of finite numbers.
+	var finite: Self { isFinite ? self : min(max(zeroIfNaN, .leastNormalMagnitude), .greatestFiniteMagnitude) }
+}
+
 // MARK: - Extension - ClosedRange
 
 public extension ClosedRange {

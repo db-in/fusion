@@ -7,13 +7,6 @@ import UIKit
 
 // MARK: - Definitions -
 
-public extension FloatingPoint {
-	
-	var zeroIfNaN: Self { isNaN ? 0 : self }
-	
-	var finite: Self { isFinite ? self : min(max(zeroIfNaN, .leastNormalMagnitude), .greatestFiniteMagnitude) }
-}
-
 public extension UIEdgeInsets {
 	
 	var finite: UIEdgeInsets { .init(top: top.finite, left: left.finite, bottom: bottom.finite, right: right.finite) }

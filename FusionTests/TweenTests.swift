@@ -254,14 +254,14 @@ class TweenTests: XCTestCase {
 		let change: FPoint = 100.0
 		
 		Ease.allCases.forEach {
-			XCTAssertEqual($0.easingFunction(begin, change, 0, 1.0), begin, "\($0)")
-			XCTAssertEqual($0.easingFunction(begin, change, 1.0, 1.0), change, "\($0)")
-			XCTAssertNotEqual($0.easingFunction(begin, change, 0.4, 1.0), begin, "\($0)")
-			XCTAssertNotEqual($0.easingFunction(begin, change, 0.4, 1.0), change, "\($0)")
-			XCTAssertNotEqual($0.easingFunction(begin, change, 0.6, 1.0), begin, "\($0)")
-			XCTAssertNotEqual($0.easingFunction(begin, change, 0.6, 1.0), change, "\($0)")
-			XCTAssertNotEqual($0.easingFunction(begin, change, 0.95, 1.0), begin, "\($0)")
-			XCTAssertNotEqual($0.easingFunction(begin, change, 0.95, 1.0), change, "\($0)")
+			XCTAssertEqual($0.calculate(begin, change, 0, 1.0), begin, "\($0)")
+			XCTAssertEqual($0.calculate(begin, change, 1.0, 1.0), change, "\($0)")
+			XCTAssertNotEqual($0.calculate(begin, change, 0.4, 1.0), begin, "\($0)")
+			XCTAssertNotEqual($0.calculate(begin, change, 0.4, 1.0), change, "\($0)")
+			XCTAssertNotEqual($0.calculate(begin, change, 0.6, 1.0), begin, "\($0)")
+			XCTAssertNotEqual($0.calculate(begin, change, 0.6, 1.0), change, "\($0)")
+			XCTAssertNotEqual($0.calculate(begin, change, 0.95, 1.0), begin, "\($0)")
+			XCTAssertNotEqual($0.calculate(begin, change, 0.95, 1.0), change, "\($0)")
 		}
 	}
 	
@@ -269,11 +269,9 @@ class TweenTests: XCTestCase {
 		let begin: FPoint = 0.0
 		let change: FPoint = 100.0
 		let duration: FPoint = 1.0
-		let customEase: Easing = { begin, change, time, duration in
-			time * change / duration + begin
-		}
+		let customLinearEase: Easing = { $0 }
 		
-		let result = Ease.custom(customEase).easingFunction(begin, change, 0.5, duration)
+		let result = Ease.custom(customLinearEase).calculate(begin, change, 0.5, duration)
 		
 		XCTAssertEqual(result, 50.0)
 	}
