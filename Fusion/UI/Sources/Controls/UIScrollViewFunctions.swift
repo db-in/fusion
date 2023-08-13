@@ -7,7 +7,16 @@ import UIKit
 
 // MARK: - Definitions -
 
+public extension FloatingPoint {
+	
+	var zeroIfNaN: Self { isNaN ? 0 : self }
+	
+	var finite: Self { isFinite ? self : min(max(zeroIfNaN, .leastNormalMagnitude), .greatestFiniteMagnitude) }
+}
+
 public extension UIEdgeInsets {
+	
+	var finite: UIEdgeInsets { .init(top: top.finite, left: left.finite, bottom: bottom.finite, right: right.finite) }
 	
 	static func + (lhs: Self, rhs: Self) -> Self {
 		.init(top: lhs.top + rhs.top, left: lhs.left + rhs.left, bottom: lhs.bottom + rhs.bottom, right: lhs.right + rhs.right)
@@ -56,9 +65,9 @@ public extension UIScrollView {
 				let gradientLocation = Float(64.0 / contentHeight)
 				let offsetLocation = Float(inset / contentHeight)
 				let viewSize = scrollView.bounds.size
+				let offsetY = scrollView.contentOffset.y
 				var contentInset = scrollView.contentInset
 				var scrollInset = scrollView.indicatorInsets
-				let offsetY = scrollView.contentOffset.y
 				
 				gradient.frame = CGRect(origin: .zero, size: viewSize)
 				
@@ -89,8 +98,8 @@ public extension UIScrollView {
 				maskLayer.frame = scrollView.bounds
 				maskLayer.addSublayer(gradient)
 				scrollView.layer.mask = maskLayer
-				scrollView.contentInset = contentInset
-				scrollView.indicatorInsets = scrollInset
+				scrollView.contentInset = contentInset.finite
+				scrollView.indicatorInsets = scrollInset.finite
 			case .none:
 				break
 			}
@@ -148,10 +157,7 @@ public extension UIScrollView {
 		self.top = top
 		self.bottom = bottom
 		addObserverOnce(forKeyPath: KeyPathName.scrollOffset)
-		
-		asyncMain {
-			self.flashScrollIndicators()
-		}
+		asyncMain { self.flashScrollIndicators() }
 	}
 }
 
