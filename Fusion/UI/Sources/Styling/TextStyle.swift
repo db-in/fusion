@@ -106,6 +106,7 @@ public extension TextAttributes {
 						   color: UIColor? = nil,
 						   lineSpacing: CGFloat? = nil,
 						   lineHeight: CGFloat? = nil,
+						   linebreak: NSLineBreakMode? = nil,
 						   alignment: NSTextAlignment? = nil) -> Self {
 		var attributes = Self()
 		
@@ -122,7 +123,7 @@ public extension TextAttributes {
 			paragraph.alignment = alignment ?? .natural
 			paragraph.lineSpacing = lineSpacing ?? 0
 			paragraph.lineHeightMultiple = lineHeight ?? 0
-			paragraph.lineBreakMode = .byTruncatingTail
+			paragraph.lineBreakMode = linebreak ?? .byTruncatingTail
 			attributes[.paragraphStyle] = paragraph
 		}
 		
@@ -142,9 +143,10 @@ public extension TextConvertible {
 				color: UIColor? = nil,
 				lineSpacing: CGFloat? = nil,
 				lineHeight: CGFloat? = nil,
+				linebreak: NSLineBreakMode? = nil,
 				alignment: NSTextAlignment? = nil,
 				overriding: Bool = true) -> NSAttributedString {
-		styled(.attributed(font: font, color: color, lineSpacing: lineSpacing, lineHeight: lineHeight, alignment: alignment),
+		styled(.attributed(font: font, color: color, lineSpacing: lineSpacing, lineHeight: lineHeight, linebreak: linebreak, alignment: alignment),
 			   overriding: overriding)
 	}
 }
