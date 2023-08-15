@@ -225,6 +225,11 @@ public extension Decodable {
 
 public extension String {
 	
+	static func randomString(_ length: Int) -> String {
+		let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
+		return .init((0..<length).compactMap { _ in letters.randomElement() })
+	}
+	
 	var prettyJSON: String {
 		guard
 			let data = data(using: .utf8),
