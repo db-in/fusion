@@ -34,7 +34,8 @@ extension NSAttributedString : TextConvertible { }
 public extension TextConvertible {
 	
 	var attributes: TextAttributes {
-		(self as? NSAttributedString)?.attributes(at: 0, effectiveRange: nil) ?? [:]
+		guard let attributed = (self as? NSAttributedString), attributed.length > 0 else { return [:] }
+		return attributed.attributes(at: 0, effectiveRange: nil) ?? [:]
 	}
 	
 	func replacing(regex: String, withString: String) -> TextConvertible {
