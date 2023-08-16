@@ -16,6 +16,12 @@ public extension String.CompareOptions {
 
 public extension String {
 	
+	struct RegEx {
+		static let email = "\\b[\\w\\.-]+@[\\w\\.-]+\\.\\w{1,10}\\b"
+		static let phone8 = "[0-9]{8,}"
+		static let password8 = ".{8,}"
+	}
+	
 	var encryptBase64: String { Data(self.utf8).base64EncodedString() }
 	
 	var decryptBase64: String {
