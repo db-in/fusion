@@ -137,7 +137,7 @@ public extension UIScrollView {
 
 // MARK: - Protected Methods
 	
-	@objc func updateOnScroll() {
+	@objc open func updateOnScroll() {
 		top?.update(self, at: .top)
 		bottom?.update(self, at: .bottom)
 	}
@@ -172,12 +172,12 @@ public extension UIScrollView {
 	}
 }
 
-struct KeyPathName {
+public struct KeyPathName {
 	
-	static var viewFrame: String = #keyPath(UIView.frame)
-	static var layerBounds: String = #keyPath(UIView.layer.bounds)
-	static var layerPosition: String = #keyPath(UIView.layer.position)
-	static var scrollOffset: String = #keyPath(UIScrollView.contentOffset)
+	public static var viewFrame: String = #keyPath(UIView.frame)
+	public static var layerBounds: String = #keyPath(UIView.layer.bounds)
+	public static var layerPosition: String = #keyPath(UIView.layer.position)
+	public static var scrollOffset: String = #keyPath(UIScrollView.contentOffset)
 }
 
 public extension UIScrollView {
