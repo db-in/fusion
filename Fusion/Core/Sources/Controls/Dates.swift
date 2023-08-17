@@ -34,6 +34,10 @@ public extension DateFormatter {
 	/// For example: `"Nov 23, 1937 at 3:30 PM"`
 	static let standard: DateFormatter = .init(dateStyle: .medium, timeStyle: .short)
 	
+	/// Defines the standard formatter. It uses `medium` date style and `none` time style.
+	/// For example: `"Nov 23, 1937"`
+	static let date: DateFormatter = .init(dateStyle: .medium, timeStyle: .none)
+	
 	/// Defines the time formatter. It uses `none` date style and `short` time style.
 	/// For example: `"3:30 PM"`
 	static let time: DateFormatter = .init(dateStyle: .none, timeStyle: .short)
@@ -88,8 +92,11 @@ public extension String {
 	///   - dateFormat: The given string format.
 	///   - formatter: A given formatter object. Default is `standard`.
 	/// - Returns: A date object if the string corresponds to valid date or nil otherwise.
-	func toDate(dateFormat: CustomStringConvertible, formatter: DateFormatter = .standard) -> Date? {
-		formatter.dateFormat = "\(dateFormat)"
+	func toDate(dateFormat: CustomStringConvertible? = nil, formatter: DateFormatter = .standard) -> Date? {
+		if let newFormat = dateFormat {
+			formatter.dateFormat = "\(newFormat)"
+		}
+		
 		return formatter.date(from: self)
 	}
 }
