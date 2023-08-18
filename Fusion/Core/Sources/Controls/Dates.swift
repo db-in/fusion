@@ -71,10 +71,13 @@ public extension DateFormatter {
 	
 	/// Initializes DateFormatter with a fixed format.
 	///
-	/// - Parameter format: The format
-	convenience init(format: String) {
+	/// - Parameters:
+	///   - format: The given fixed format.
+	///   - locale: The locale to convert the date to. The default value is `autoupdatingCurrent`
+	convenience init(format: String, locale: Locale = .autoupdatingCurrent) {
 		self.init()
-		dateFormat = format
+		self.locale = locale
+		self.dateFormat = format
 	}
 }
 
@@ -85,7 +88,7 @@ public extension Date {
 	/// Generates a String from a date object with a given output template using current locale.
 	///
 	/// - Parameters:
-	///   - dateFormat: The given fixed format.
+	///   - format: The given fixed format.
 	///   - formatter: A given formatter object. Default is `standard`.
 	/// - Returns: A new String object with the final format.
 	func toString(format: CustomStringConvertible? = nil, formatter: DateFormatter = .standard) -> String {
