@@ -19,6 +19,7 @@ public protocol TextConvertible {
 	
 	var content: String { get }
 	func render(target: Any?)
+	func styled(_ attributes: TextAttributes) -> NSAttributedString
 	func styled(_ attributes: TextAttributes, overriding: Bool) -> NSAttributedString
 	func appending(_ rhs: TextConvertible) -> NSAttributedString
 }
@@ -52,6 +53,8 @@ public extension TextConvertible {
 	}
 	
 	func render(target: Any?) { }
+	
+	func styled(_ attributes: TextAttributes) -> NSAttributedString { styled(attributes, overriding: true) }
 }
 	
 // MARK: - Extension - TextStyle
@@ -95,9 +98,7 @@ public extension String {
 	
 // MARK: - Exposed Methods
 	
-	func styled(_ attributes: TextAttributes, overriding: Bool = true) -> NSAttributedString {
-		NSAttributedString(string: self, attributes: attributes)
-	}
+	func styled(_ attributes: TextAttributes, overriding: Bool) -> NSAttributedString { .init(string: self, attributes: attributes) }
 	
 	/// Cleans up precisely what is a thousand formatted and a decimal formatted string in a given locale.
 	///
@@ -209,7 +210,7 @@ public extension NSAttributedString {
 	
 // MARK: - Exposed Methods
 
-	func styled(_ attributes: TextAttributes, overriding: Bool = true) -> NSAttributedString {
+	func styled(_ attributes: TextAttributes, overriding: Bool) -> NSAttributedString {
 		guard overriding else { return self }
 		let copy = NSMutableAttributedString(attributedString: self)
 		copy.addAttributes(attributes, range: NSRange(location: 0, length: copy.length))
