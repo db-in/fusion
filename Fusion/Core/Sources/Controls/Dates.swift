@@ -42,7 +42,7 @@ public extension DateFormatter {
 	/// For example: `"3:30 PM"`
 	static let time: DateFormatter = .init(dateStyle: .none, timeStyle: .short)
 	
-	/// Generates a String from a date object with a given output template using current locale.
+	/// Initializes a DateFormatter with localized style and templates for a given locale.
 	///
 	/// - Parameters:
 	///   - dateStyle: The output date style. Default is `none`.
@@ -68,6 +68,14 @@ public extension DateFormatter {
 			setLocalizedDateFormatFromTemplate("\(string)")
 		}
 	}
+	
+	/// Initializes DateFormatter with a fixed format.
+	///
+	/// - Parameter format: The format
+	convenience init(format: String) {
+		self.init()
+		dateFormat = format
+	}
 }
 
 // MARK: - Extension - Date
@@ -76,9 +84,16 @@ public extension Date {
 	
 	/// Generates a String from a date object with a given output template using current locale.
 	/// - Parameter formatter: A given formatter object. Default is `standard`.
-	/// - Returns: A new String object with the final format
+	/// - Returns: A new String object with the final format.
 	func toString(formatter: DateFormatter = .standard) -> String {
 		formatter.string(from: self)
+	}
+	
+	/// Generates a String from a date object with a fixed format.
+	/// - Parameter format: A given format.
+	/// - Returns: A new String object with the final format.
+	func toString(format: CustomStringConvertible) -> String {
+		DateFormatter(format: "\(format)").string(from: self)
 	}
 }
 
