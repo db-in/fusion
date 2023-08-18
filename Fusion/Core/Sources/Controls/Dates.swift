@@ -83,17 +83,17 @@ public extension DateFormatter {
 public extension Date {
 	
 	/// Generates a String from a date object with a given output template using current locale.
-	/// - Parameter formatter: A given formatter object. Default is `standard`.
+	///
+	/// - Parameters:
+	///   - dateFormat: The given fixed format.
+	///   - formatter: A given formatter object. Default is `standard`.
 	/// - Returns: A new String object with the final format.
-	func toString(formatter: DateFormatter = .standard) -> String {
-		formatter.string(from: self)
-	}
-	
-	/// Generates a String from a date object with a fixed format.
-	/// - Parameter format: A given format.
-	/// - Returns: A new String object with the final format.
-	func toString(format: CustomStringConvertible) -> String {
-		DateFormatter(format: "\(format)").string(from: self)
+	func toString(format: CustomStringConvertible? = nil, formatter: DateFormatter = .standard) -> String {
+		if let newFormat = format {
+			formatter.dateFormat = "\(newFormat)"
+		}
+		
+		return formatter.string(from: self)
 	}
 }
 
@@ -104,11 +104,11 @@ public extension String {
 	/// Generates a Date object from a formatted date string.
 	///
 	/// - Parameters:
-	///   - dateFormat: The given string format.
+	///   - dateFormat: The given fixed format.
 	///   - formatter: A given formatter object. Default is `standard`.
 	/// - Returns: A date object if the string corresponds to valid date or nil otherwise.
-	func toDate(dateFormat: CustomStringConvertible? = nil, formatter: DateFormatter = .standard) -> Date? {
-		if let newFormat = dateFormat {
+	func toDate(format: CustomStringConvertible? = nil, formatter: DateFormatter = .standard) -> Date? {
+		if let newFormat = format {
 			formatter.dateFormat = "\(newFormat)"
 		}
 		
