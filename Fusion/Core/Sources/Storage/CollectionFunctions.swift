@@ -4,13 +4,29 @@
 
 import Foundation
 
-// MARK: - Definitions -
+// MARK: - Extension - Sequence
 
-// MARK: - Extension - Array Search
+public extension Sequence where Element : Hashable {
+	
+	/// Returns an array containing the unique elements from the sequence.
+	///
+	/// - Parameter keepLast: A boolean value indicating whether to keep the last occurrence of each duplicated element.
+	/// If `true`, the last occurrence is kept. If `false`, the first occurrence is kept. The default value is `false`.
+	/// - Returns: An array containing the unique elements from the sequence based on the `keepLast` behavior.
+	/// - Complexity: O(n), where `n` is the length of the sequence.
+	func unique(keepLast: Bool = false) -> [Iterator.Element] {
+		guard !keepLast else { return reversed().unique(keepLast: false).reversed() }
+		var seen = Set<Element>()
+		return filter { seen.insert($0).inserted }
+	}
+}
+
+// MARK: - Extension - Array
+
 public extension Array {
 	
 	/// Accesses the element at the specified position safely, returning nil if the index does not exist.
-	/// - Complexity: Reading or writing is O(1).
+	/// - Complexity: O(1) for both reading / writing.
 	@inlinable subscript(safe index: Int) -> Element?{ indices.contains(index) ? self[index] : nil }
 	
 	/// Filters the array over the given fields by any combination in the current text direction (LTR or RTL).
@@ -20,6 +36,7 @@ public extension Array {
 	///   - fields: All the fields to be searching over, the order is taken into consideration.
 	///   - isCaseSensitive: Defines if the algorithm will consider the character case. Default is `false`.
 	/// - Returns: The filtered array.
+	/// - Complexity: O(n), where `n` is the length of the sequence.
 	func filtered(by text: String, fields: [KeyPath<Element, String>], isCaseSensitive: Bool = false) -> Self {
 		filter { item in fields.reduce("", { $0 + item[keyPath: $1] }).containsCharacters(text, isCaseSensitive: isCaseSensitive) }
 	}
@@ -31,6 +48,7 @@ public extension Array {
 	///   - fields: All the fields to be searching over, the order is taken into consideration.
 	///   - isCaseSensitive: Defines if the algorithm will consider the character case. Default is `false`.
 	/// - Returns: The filtered array.
+	/// - Complexity: O(n), where `n` is the length of the sequence.
 	func matched(by text: String, fields: [KeyPath<Element, String>], isCaseSensitive: Bool = false) -> Self {
 		filter { item in fields.reduce("", { $0 + item[keyPath: $1] }).containsSequence(text, isCaseSensitive: isCaseSensitive) }
 	}
@@ -80,6 +98,7 @@ public extension Dictionary {
 	///
 	/// - Parameter transform: The predicate that will transform the keys.
 	/// - Returns: The new dictionary.
+	/// - Complexity: O(n), where `n` is the length of the sequence.
 	func mapKeys<T>(_ transform: (Key) throws -> T) rethrows -> [T : Value] {
 		var result = [T : Value]()
 		try forEach { key, value in result[try transform(key)] = value }
@@ -90,6 +109,7 @@ public extension Dictionary {
 	///
 	/// - Parameter other: The other dictionary.
 	/// - Returns: Returns true if the given dictionary is fully contained.
+	/// - Complexity: O(n), where `n` is the sum of elements in both dictionaries.
 	func contains<T: Equatable>(_ other: [Key : T]) -> Bool {
 		let keysSet = Set(keys)
 		let newKeysSet = Set(other.keys)
