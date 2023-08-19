@@ -14,7 +14,7 @@ public extension Sequence where Element : Hashable {
 	/// If `true`, the last occurrence is kept. If `false`, the first occurrence is kept. The default value is `false`.
 	/// - Returns: An array containing the unique elements from the sequence based on the `keepLast` behavior.
 	/// - Complexity: O(n), where `n` is the length of the sequence.
-	func unique(keepLast: Bool = false) -> [Iterator.Element] {
+	func unique(keepLast: Bool = false) -> [Element] {
 		guard !keepLast else { return reversed().unique(keepLast: false).reversed() }
 		var seen = Set<Element>()
 		return filter { seen.insert($0).inserted }
@@ -123,7 +123,7 @@ public extension Dictionary {
 	///   - lhs: Original dictionary (left), its keys can be overriden.
 	///   - rhs: New dictionary (right), its keys will remain in the result.
 	/// - Returns: The resulting new dictionary.
-	static func + (lhs: Self, rhs: Self) -> Self { lhs.merging(rhs) { _, new in new} }
+	@inlinable static func + (lhs: Self, rhs: Self) -> Self { lhs.merging(rhs) { _, new in new} }
 }
 
 // MARK: - Extension - Optional Collection
