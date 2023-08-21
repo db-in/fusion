@@ -103,7 +103,7 @@ private extension URLRequest {
 	}
 	
 	func debugLog(response: URLResponse?, seconds: TimeInterval) {
-		let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+		let code = response?.httpStatusCode ?? 0
 		let icon = code >= 200 && code < 400 ? "📦" : "📦‼️"
 		let time = Int(seconds * 1000)
 		Logger.global.log(basic: "=== \(icon) RESPONSE === \(urlString) (\(code)) - \(time)ms", full: "\(response ?? URLResponse())")
@@ -118,6 +118,28 @@ private extension URLRequest {
 	}
 }
 
+// MARK: - Extension - URLRequest Pending Retries
+
+public extension URLRequest {
+	
+	typealias PendingRequest = (request: URLRequest, completion: Response<Data>?)
+	
+	@ThreadSafe
+	private static var suspended: [PendingRequest] = []
+	
+	static var autoSuspendStatus: [Int] = []
+	
+	static var isFrozen: Bool = false {
+		didSet {
+			guard !isFrozen else { return }
+			while !Self.suspended.isEmpty, !Self.isFrozen {
+				let item = Self.suspended.removeFirst()
+				item.request.mapDataResponse(to: item.completion)
+			}
+		}
+	}
+}
+
 // MARK: - Extension - URLRequest REST Tasks
 
 public extension URLRequest {
@@ -126,9 +148,7 @@ public extension URLRequest {
 	
 	var urlString: String { url?.absoluteString ?? "" }
 	
-	private func responseResult(_ response: URLResponse?, _ data: Data) -> Result<Data, Error> {
-		let code = (response as? HTTPURLResponse)?.statusCode ?? 0
-		
+	private func responseResult(_ code: Int, _ data: Data) -> Result<Data, Error> {
 		switch code {
 		case 200..<400:
 			return .success(data)
@@ -138,17 +158,27 @@ public extension URLRequest {
 	}
 	
 	func mapDataResponse(to completion: Response<Data>?) {
+		guard !Self.isFrozen else {
+			Self.suspended.append((self, completion))
+			return
+		}
+		
 		debugLogRequest()
 		let time = currentTime
 		
 		RESTAuthenticator.session.dataTask(with: self) { (data, response, error) in
-			let result: Result<Data, Error>
-
 			self.debugLog(response: response, seconds: currentTime - time)
+			
+			let result: Result<Data, Error>
+			let statusCode = response?.httpStatusCode ?? 0
+			
+			if Self.autoSuspendStatus.contains(statusCode) {
+				Self.suspended.append((self, completion))
+			}
 			
 			if let validData = data {
 				self.debugLog(data: validData)
-				result = responseResult(response, validData)
+				result = responseResult(statusCode, validData)
 			} else {
 				let fail = error ?? RESTError.unkown(nil)
 				self.debugLog(error: fail)

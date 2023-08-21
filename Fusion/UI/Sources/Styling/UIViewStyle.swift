@@ -128,7 +128,17 @@ public extension UIView {
 
 public extension UIView {
 	
-	typealias Border = (color: UIColor, width: CGFloat)
+	struct Border {
+		public let color: UIColor?
+		public let width: CGFloat
+		
+		public static var none: Self = .init()
+		
+		public init(color: UIColor? = nil, width: CGFloat = 0) {
+			self.color = color
+			self.width = width
+		}
+	}
 	
 	private var borderKey: String { "viewBorderKey" }
 	
@@ -148,9 +158,9 @@ public extension UIView {
 	///
 	/// - Parameter border: The border settings.
 	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func make(border: Border?) -> Self{
-		borderColor = border?.color
-		borderWidth = border?.width ?? 0
+	@discardableResult func make(border: Border) -> Self {
+		borderColor = border.color
+		borderWidth = border.width
 		return self
 	}
 	
@@ -158,9 +168,8 @@ public extension UIView {
 	///
 	/// - Parameter border: The border settings.
 	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func makeCapsule(border: Border?) -> Self {
-		borderColor = border?.color
-		borderWidth = border?.width ?? 0
+	@discardableResult func makeCapsule(border: Border = .none) -> Self {
+		make(border: border)
 		cornerRadius = frame.height * 0.5
 		return self
 	}
@@ -171,13 +180,13 @@ public extension UIView {
 	///   - pattern: The solid and spacing pattern ratio. [1,1] means solid and spaces happens 1 to 1 ratio.
 	///   - border: The border settings.
 	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func makeDashedBorder(_ pattern: [Int], border: Border?) -> Self {
+	@discardableResult func makeDashedBorder(_ pattern: [Int], border: Border = .none) -> Self {
 		layer.sublayers(named: borderKey).removeAllFromSuperLayer()
 		guard !pattern.isEmpty else { return self }
 		let shape = CAShapeLayer()
-		shape.strokeColor = border?.color.cgResolved(with: interfaceStyle)
 		shape.lineDashPattern = pattern as [NSNumber]
-		shape.lineWidth = border?.width ?? 0
+		shape.strokeColor = border.color?.cgResolved(with: interfaceStyle)
+		shape.lineWidth = border.width
 		shape.frame = bounds
 		shape.fillColor = nil
 		shape.path = UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
@@ -201,7 +210,7 @@ public extension UIView {
 			totalWidth += border.width * 0.5
 			let shape = CAShapeLayer()
 			let shapeFrame = bounds.integral.insetBy(dx: totalWidth, dy: totalWidth)
-			shape.strokeColor = border.color.cgColor
+			shape.strokeColor = border.color?.cgColor
 			shape.lineWidth = border.width
 			shape.frame = bounds
 			shape.fillColor = .clear
@@ -258,8 +267,8 @@ public extension UIView {
 			
 			shadow.frame = self.bounds
 			shadow.cornerRadius = cornerRadius
-			shadow.backgroundColor = fillColor.cgResolved(with: interface)
 			shadow.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: cornerRadius).cgPath
+			shadow.backgroundColor = fillColor.cgResolved(with: interface)
 			shadow.shadowColor = shadowColor.cgResolved(with: interface)
 			shadow.shadowOpacity = opacity
 			shadow.shadowOffset = offset
