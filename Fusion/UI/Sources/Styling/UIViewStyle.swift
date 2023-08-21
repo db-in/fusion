@@ -128,7 +128,7 @@ public extension UIView {
 
 public extension UIView {
 	
-	struct Border {
+	struct Border : Equatable {
 		public let color: UIColor?
 		public let width: CGFloat
 		
