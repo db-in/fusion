@@ -18,9 +18,9 @@ public extension UIEdgeInsets {
 
 // MARK: - Extension - UIScrollView Overflow
 
-public extension UIScrollView {
+extension UIScrollView {
 	
-	enum Overflow {
+	public enum Overflow {
 		case none
 		case fade(inset: CGFloat = 0)
 		case line(view: UIView = UIView(frame: .init(x: 0, y: 0, width: 1, height: 1), background: .lightGray))
@@ -125,7 +125,7 @@ public extension UIScrollView {
 		set { objc_setAssociatedObject(self, &Self.bottomKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
 	}
 	
-	var indicatorInsets: UIEdgeInsets {
+	public var indicatorInsets: UIEdgeInsets {
 		get { verticalScrollIndicatorInsets + horizontalScrollIndicatorInsets }
 		set {
 			verticalScrollIndicatorInsets = newValue
@@ -144,7 +144,7 @@ public extension UIScrollView {
 	
 // MARK: - Exposed Methods
 
-	func setupOverflow(top: Overflow = .line(), bottom: Overflow = .fade()) {
+	public func setupOverflow(top: Overflow = .line(), bottom: Overflow = .fade()) {
 		self.top?.clear(self)
 		self.bottom?.clear(self)
 		self.top = top
