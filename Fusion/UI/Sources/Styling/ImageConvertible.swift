@@ -25,7 +25,7 @@ extension ImageConvertible where Self : CustomStringConvertible {
 			if let image = UIImage.loadCache(url: "\(self)") {
 				syncMain { target[keyPath: path] = image }
 			} else {
-				UIImage.download(url: "\(self)") { image in target[keyPath: path] = image }
+				UIImage.download(url: "\(self)") { target[keyPath: path] = $0 ?? target[keyPath: path] }
 			}
 		}
 	}
@@ -43,7 +43,7 @@ extension ImageConvertible where Self : CustomStringConvertible {
 			if let image = UIImage.loadCache(url: "\(self)", allowsBadge: allowsBadge, storage: storage) {
 				syncMain { target[keyPath: path] = image }
 			} else {
-				UIImage.download(url: "\(self)", allowsBadge: allowsBadge, storage: storage) { image in target[keyPath: path] = image }
+				UIImage.download(url: "\(self)", allowsBadge: allowsBadge, storage: storage) { target[keyPath: path] = $0 ?? target[keyPath: path] }
 			}
 		}
 	}
