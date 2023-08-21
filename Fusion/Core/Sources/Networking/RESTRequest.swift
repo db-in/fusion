@@ -9,12 +9,20 @@ import Foundation
 public typealias Response<T> = (Result<T, Error>, URLResponse?) -> Void
 public typealias Headers = [String : String]
 
+@inlinable public func syncMain(_ callback: @escaping () -> Void) {
+	DispatchQueue.main.sync { callback() }
+}
+
 @inlinable public func asyncMain(_ callback: @escaping () -> Void) {
 	DispatchQueue.main.async { callback() }
 }
 
 @inlinable public func asyncMain(after: Double, _ callback: @escaping () -> Void) {
 	DispatchQueue.main.asyncAfter(deadline: .now() + after) { callback() }
+}
+
+@inlinable public func asyncGlobal(_ callback: @escaping () -> Void) {
+	DispatchQueue.global().async { callback() }
 }
 
 @inlinable public func asyncResponse<T>(_ callback: Response<T>?) -> Response<T> {

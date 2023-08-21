@@ -98,7 +98,7 @@ public struct ControlAction {
 //		
 //		let define = { [weak self] in
 //			if let validAction = action {
-//				action?.title.render(target: self)
+//				action?.title.render(on: self)
 //				self?.setImage(action?.image, for: .normal)
 //				self?.setAction { validAction.action?(validAction) }
 //				self?.isEnabled = validAction.isEnabled

@@ -133,48 +133,6 @@ public extension UIImage {
 		task.resume()
 	}
 	
-	/// Loads an image for an object into a given `keyPath`. This function is able to load from cache or download from the internet.
-	/// This function can be called with multiple types of source: `String`, `URL`, `UIImage` or `Data`.
-	/// This function also takes care of loading states such as redaction or placeholder images.
-	///
-	/// For `String` and `URL`, badges are available if chosen.
-	///
-	/// - Parameters:
-	///   - source: The source to be loaded.
-	///   - object: The target object.
-	///   - at: The mutable `keyPath` that contains the final `UIImage` property.
-	///   - placeholder: The placeholder image to be used when redaction is not allowed in the target object.
-	///   - allowsBadge: Indicates if badges are allowed. The default is `true`.
-	///   - storage: Defines an alternative storage, which will be used to save the image or load from it in case `URLCache` is not available.
-	static func load<T>(_ source: Any?,
-						for object: T,
-						at: ReferenceWritableKeyPath<T, UIImage?>,
-						placeholder: UIImage? = .photoPlaceholder,
-						allowsBadge: Bool = true,
-						storage: URL? = nil) {
-		guard let url = source as? String ?? (source as? URL)?.absoluteString else {
-			if let image = source as? UIImage {
-				object[keyPath: at] = image
-			} else if let data = source as? Data {
-				object[keyPath: at] = UIImage(data: data)
-			} else {
-				object[keyPath: at] = nil
-			}
-			return
-		}
-		
-		object[keyPath: at] = placeholder
-		DispatchQueue.global().async {
-			if let image = loadCache(url: url, allowsBadge: allowsBadge, storage: storage) {
-				asyncMain { object[keyPath: at] = image }
-			} else {
-				download(url: url, allowsBadge: allowsBadge, storage: storage) { image in
-					object[keyPath: at] = image ?? placeholder
-				}
-			}
-		}
-	}
-	
 	/// Removes all the current cached images.
 	/// - Parameter storage: An alternative storage used to cache.
 	static func flushCache(storage: URL? = nil) {

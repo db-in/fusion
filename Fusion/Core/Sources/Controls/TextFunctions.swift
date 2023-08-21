@@ -17,10 +17,31 @@ public typealias TextAttributes = [NSAttributedString.Key : Any]
 
 public protocol TextConvertible {
 	
+	/// The raw content.
 	var content: String { get }
-	func render(target: Any?)
+	
+	/// Renders the text on the given target.
+	/// - Parameter target: The target to receive the text.
+	func render(on target: Any?)
+	
+	/// Apply a given style to the current text. Multiple sequencial calls can be made.
+	///
+	/// - Parameter attributes: The ``TextAttributes`` to be applied.
+	/// - Returns: The new attributed string.
 	func styled(_ attributes: TextAttributes) -> NSAttributedString
+	
+	/// Apply a given style to the current text with option to override existing styles. Multiple sequencial calls can be made.
+	///
+	/// - Parameters:
+	///   - attributes: The ``TextAttributes`` to be applied.
+	///   - overriding: Defines if old styles will be overriden.
+	/// - Returns: The new attributed string.
 	func styled(_ attributes: TextAttributes, overriding: Bool) -> NSAttributedString
+	
+	/// Appends two different texts with their given styles and attributes. This function respects RTL concatenation.
+	///
+	/// - Parameter rhs: The new text to be appended (at the trailing side).
+	/// - Returns: The new attributed string.
 	func appending(_ rhs: TextConvertible) -> NSAttributedString
 }
 
@@ -52,7 +73,7 @@ public extension TextConvertible {
 		return self
 	}
 	
-	func render(target: Any?) { }
+	func render(on: Any?) { }
 	
 	func styled(_ attributes: TextAttributes) -> NSAttributedString { styled(attributes, overriding: true) }
 }

@@ -11,7 +11,7 @@ public extension String {
 
 	// MARK: - Exposed Methods
 	
-	func render(target: Any?) {
+	func render(on target: Any?) {
 		guard let view = target as? NSView else {
 			return
 		}
@@ -39,7 +39,7 @@ public extension String.SubSequence {
 
 	// MARK: - Exposed Methods
 	
-	func render(target: Any?) { string.render(target: target) }
+	func render(on target: Any?) { string.render(on: target) }
 }
 
 // MARK: - Extension - NSAttributedString
@@ -48,7 +48,7 @@ public extension NSAttributedString {
 	
 	// MARK: - Exposed Methods
 
-	func render(target: Any?) {
+	func render(on target: Any?) {
 		guard let view = target as? NSView else {
 			return
 		}
@@ -157,7 +157,7 @@ public extension String {
 
 // MARK: - Exposed Methods
 	
-	func render(target: Any?) {
+	func render(on target: Any?) {
 		switch target {
 		case let label as UILabel:
 			label.text = self
@@ -192,7 +192,7 @@ public extension String.SubSequence {
 
 // MARK: - Exposed Methods
 	
-	func render(target: Any?) { string.render(target: target) }
+	func render(on target: Any?) { string.render(on: target) }
 	
 	func sizeThatFits(font: UIFont, width: CGFloat = .greatestFiniteMagnitude, height: CGFloat = .greatestFiniteMagnitude) -> CGSize {
 		string.sizeThatFits(font: font, width: width, height: height)
@@ -207,7 +207,7 @@ public extension NSAttributedString {
 	
 // MARK: - Exposed Methods
 
-	func render(target: Any?) {
+	func render(on target: Any?) {
 		switch target {
 		case let label as UILabel:
 			label.attributedText = self
@@ -235,11 +235,11 @@ public extension NSAttributedString {
 
 public extension Optional where Wrapped == TextConvertible {
 	
-	func render(target: Any?) {
+	func render(on target: Any?) {
 		
 		switch self {
 		case let .some(value):
-			value.render(target: target)
+			value.render(on: target)
 			return
 		default:
 			switch target {
@@ -278,7 +278,7 @@ public extension UILabel {
 		minimumScaleFactor = minimumScale
 		numberOfLines = lines
 		textAlignment = isRTL ? aligment.mirror : aligment
-		text.render(target: self)
+		text.render(on: self)
 	}
 	
 	func sizeToFitContent(maxWidth: CGFloat = .greatestFiniteMagnitude) {
