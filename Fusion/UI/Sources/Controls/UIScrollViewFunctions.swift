@@ -152,51 +152,14 @@ extension UIScrollView {
 		addObserverOnce(forKeyPath: KeyPathName.scrollOffset)
 		asyncMain { self.flashScrollIndicators() }
 	}
-}
-
-// MARK: - Extension - UIScrollView Observer
-
-public extension UIScrollView {
 	
 // MARK: - Overridden Methods
 	
-	override func observeValue(forKeyPath keyPath: String?,
-							   of object: Any?,
-							   change: [NSKeyValueChangeKey : Any]?,
-							   context: UnsafeMutableRawPointer?) {
-		if keyPath == KeyPathName.scrollOffset {
-			updateOnScroll()
-		} else {
-			super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-		}
-	}
-}
-
-public struct KeyPathName {
-	
-	public static var viewFrame: String = #keyPath(UIView.frame)
-	public static var layerBounds: String = #keyPath(UIView.layer.bounds)
-	public static var layerPosition: String = #keyPath(UIView.layer.position)
-	public static var scrollOffset: String = #keyPath(UIScrollView.contentOffset)
-}
-
-public extension UIScrollView {
-
-// MARK: - Properties
-
-	private static var observerKey: UInt8 = 1
-
-	private var hasObserver: Bool {
-		get { objc_getAssociatedObject(self, &Self.observerKey) as? Bool ?? false }
-		set { objc_setAssociatedObject(self, &Self.observerKey, newValue, .OBJC_ASSOCIATION_ASSIGN) }
-	}
-
-// MARK: - Protected Methods
-
-	func addObserverOnce(forKeyPath keyPath: String, notifyAt: NSObject? = nil, options: NSKeyValueObservingOptions = [.new]) {
-		guard !hasObserver else { return }
-		hasObserver = true
-		addObserver(notifyAt ?? self, forKeyPath: keyPath, options: options, context: nil)
+	open override func observeValue(forKeyPath keyPath: String?,
+									of object: Any?,
+									change: [NSKeyValueChangeKey : Any]?,
+									context: UnsafeMutableRawPointer?) {
+		updateOnScroll()
 	}
 }
 #endif
