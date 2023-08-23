@@ -120,7 +120,7 @@ public struct Line {
 	public var center: CGPoint { .init(x: (start.x + end.x) * 0.5, y: (start.y + end.y) * 0.5) }
 	
 	/// Creates a `Line` at zero point.
-	public static var zero: Self { .init(start: .zero, end: .zero) }
+	public static var zero: Self { .init(start: .init(x: 0, y: 0), end: .init(x: 0, y: 0)) }
 	
 // MARK: - Constructors
 	
