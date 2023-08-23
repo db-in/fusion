@@ -115,8 +115,16 @@ public extension ClosedRange where Bound == CGFloat {
 
 // MARK: - Extension - CGPoint
 
+@available(macOS 11, iOS 13, watchOS 7, tvOS 13, *)
 public extension CGPoint {
+	
+	/// Calculates the cross product of two points.
+	static func * (lhs: Self, rhs: Self) -> CGFloat { lhs.x * rhs.y - lhs.y * rhs.x }
+	
+	/// Adds two points component-wise.
 	static func + (lhs: Self, rhs: Self) -> Self { .init(x: lhs.x + rhs.x, y: lhs.y + rhs.y) }
+	
+	/// Subtracts two points component-wise.
 	static func - (lhs: Self, rhs: Self) -> Self { .init(x: lhs.x - rhs.x, y: lhs.y - rhs.y) }
 }
 

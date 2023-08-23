@@ -9,6 +9,8 @@ import UIKit
 
 public extension CALayer {
 	
+	var maskPath: CGPath? { (mask as? CAShapeLayer)?.path?.copy() }
+	
 	func sublayers(named: String) -> [CALayer] { sublayers?.filter(\.name == named) ?? [] }
 }
 
@@ -83,6 +85,7 @@ public extension UIRectCorner {
 }
 
 public extension CACornerMask {
+	
 	var rectCorners: UIRectCorner { .init(rawValue: rawValue) }
 }
 // MARK: - Extension - UIView Corner
@@ -107,6 +110,11 @@ public extension UIView {
 		}
 	}
 	
+	var cornerCurve: CALayerCornerCurve {
+		get { layer.cornerCurve }
+		set { layer.cornerCurve = newValue }
+	}
+	
 // MARK: - Constructor
 	
 	convenience init(circular: CGRect, backgroundColor color: UIColor = .clear) {
@@ -117,9 +125,18 @@ public extension UIView {
 	
 // MARK: - Protected Methods
 	
-	@discardableResult func makeCornerRadius(at: UIRectCorner, radius: CGFloat) -> Self {
+	@discardableResult func makeCornerRadius(at: UIRectCorner, radius: CGFloat, curve: CALayerCornerCurve = .continuous) -> Self {
 		cornerRadius = radius
 		layer.maskedCorners = at.maskedCorners
+		layer.cornerCurve = curve
+		return self
+	}
+	
+	/// Sets its corner radius as half of the current height.
+	///
+	/// - Returns: Returns self same instance for convenience.
+	@discardableResult func makeCapsule() -> Self {
+		cornerRadius = frame.height * 0.5
 		return self
 	}
 }
@@ -129,6 +146,7 @@ public extension UIView {
 public extension UIView {
 	
 	struct Border : Equatable {
+		
 		public let color: UIColor?
 		public let width: CGFloat
 		
@@ -142,54 +160,36 @@ public extension UIView {
 	
 	private var borderKey: String { "viewBorderKey" }
 	
+	private var borderLayer: CAShapeLayer? { layer.sublayers(named: borderKey).firstMap { $0 as? CAShapeLayer } }
+	
 	/// The current border width.
 	@IBInspectable var borderWidth: CGFloat {
-		get { layer.borderWidth }
-		set { layer.borderWidth = newValue }
+		get { borderLayer?.lineWidth ?? 0 }
+		set { borderLayer?.lineWidth = newValue }
 	}
 	
 	/// The current border color.
 	@IBInspectable var borderColor: UIColor? {
-		get { layer.borderColor?.uiColor }
-		set { layer.borderColor = newValue?.cgResolved(with: interfaceStyle) }
-	}
-	
-	/// Makes a regular border on the current view.
-	///
-	/// - Parameter border: The border settings.
-	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func make(border: Border) -> Self {
-		borderColor = border.color
-		borderWidth = border.width
-		return self
-	}
-	
-	/// Makes a regular border on the current view and sets its corner radius as half of the current height.
-	///
-	/// - Parameter border: The border settings.
-	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func makeCapsule(border: Border = .none) -> Self {
-		make(border: border)
-		cornerRadius = frame.height * 0.5
-		return self
+		get { borderLayer?.strokeColor?.uiColor }
+		set { borderLayer?.strokeColor = newValue?.cgResolved(with: interfaceStyle) }
 	}
 	
 	/// Makes a dashed border on the current view following the current corners.
 	///
 	/// - Parameters:
-	///   - pattern: The solid and spacing pattern ratio. [1,1] means solid and spaces happens 1 to 1 ratio.
 	///   - border: The border settings.
+	///   - dashed: The dashed pattern ratio. Eg: [1,1], [3, 1, 2]. The default is [], draws solid border.
 	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func makeDashedBorder(_ pattern: [Int], border: Border = .none) -> Self {
+	@discardableResult func make(border: Border, dashed: [Int] = []) -> Self {
 		layer.sublayers(named: borderKey).removeAllFromSuperLayer()
-		guard !pattern.isEmpty else { return self }
+		guard border != .none else { return self }
 		let shape = CAShapeLayer()
-		shape.lineDashPattern = pattern as [NSNumber]
+		shape.lineDashPattern = dashed as [NSNumber]
 		shape.strokeColor = border.color?.cgResolved(with: interfaceStyle)
 		shape.lineWidth = border.width
 		shape.frame = bounds
 		shape.fillColor = nil
-		shape.path = UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
+		shape.path = layer.maskPath ?? UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
 		shape.name = borderKey
 		layer.addSublayer(shape)
 		return self
@@ -267,7 +267,7 @@ public extension UIView {
 			
 			shadow.frame = self.bounds
 			shadow.cornerRadius = cornerRadius
-			shadow.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: cornerRadius).cgPath
+			shadow.shadowPath = self.layer.maskPath ?? UIBezierPath(roundedRect: self.bounds, cornerRadius: cornerRadius).cgPath
 			shadow.backgroundColor = fillColor.cgResolved(with: interface)
 			shadow.shadowColor = shadowColor.cgResolved(with: interface)
 			shadow.shadowOpacity = opacity
