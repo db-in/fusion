@@ -51,7 +51,7 @@ public enum PresentationStyle {
 		case .root:
 			guard let window = UIWindow.key else { return }
 			window.rootViewController = controller
-			UIView.transition(with: window, duration: Constant.duration, options: .transitionCrossDissolve) { }
+			UIView.transition(with: window, duration: Constant.duration, options: .transitionCrossDissolve, animations: nil)
 		case .push:
 			let firstController = controller.firstInNavigation
 			let navigation = UIWindow.topNavigation
