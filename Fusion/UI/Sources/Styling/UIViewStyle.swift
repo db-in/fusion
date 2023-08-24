@@ -19,15 +19,28 @@ public extension Array where Element == CALayer {
 	func removeAllFromSuperLayer() { forEach { $0.removeFromSuperlayer() } }
 }
 
-// MARK: - Extension - UIRectCorner
+// MARK: - Extension - CAGradientLayer
 
+/// Extends `CAGradientLayer` to provide convenience initializers for creating gradient layers with various styles.
 public extension CAGradientLayer {
 	
+	/// Represents the different styles for gradient layers.
 	enum Style {
+		
+		/// Radial gradient style.
 		case radial
+		
+		/// Vertical linear gradient style.
 		case vertical
+		
+		/// Horizontal linear gradient style.
 		case horizontal
 		
+		/// Custom gradient style.
+		case custom(start: CGPoint, end: CGPoint, type: CAGradientLayerType)
+		
+		/// Configures the given gradient layer according to the style.
+		/// - Parameter layer: The gradient layer to be configured.
 		func configure(_ layer: CAGradientLayer) {
 			switch self {
 			case .radial:
@@ -42,17 +55,28 @@ public extension CAGradientLayer {
 				layer.type = .axial
 				layer.startPoint = CGPoint(x: 0, y: 0)
 				layer.endPoint = CGPoint(x: 1.0, y: 0)
+			case let .custom(start, end, type):
+				layer.type = type
+				layer.startPoint = start
+				layer.endPoint = end
 			}
 		}
 	}
-
-	convenience init(pattern: [UIColor], size: CGSize, style: Style = .radial) {
+	
+	/// Creates a gradient layer with a specified pattern of colors, size, and style.
+	/// - Parameters:
+	///   - colors: An array of UIColor objects representing the gradient colors.
+	///   - frame: The gradient layer's frame.
+	///   - style: The style of the gradient layer. Default is `.radial`.
+	convenience init(colors: [UIColor], frame: CGRect, style: Style = .radial) {
 		self.init()
-		colors = pattern.map(\.cgColor)
-		frame = CGRect(origin: .zero, size: size)
+		self.colors = colors.map(\.cgColor)
+		self.frame = frame
 		style.configure(self)
 	}
 	
+	/// Creates a gradient layer with variations in color stops.
+	/// - Parameter variations: The number of color variations.
 	convenience init(variations: Int) {
 		self.init()
 		guard variations > 1 else { return }
@@ -123,11 +147,17 @@ public extension UIView {
 		backgroundColor = color
 	}
 	
-// MARK: - Protected Methods
+// MARK: - Exposed Methods
 	
-	@discardableResult func makeCornerRadius(at: UIRectCorner, radius: CGFloat, curve: CALayerCornerCurve = .continuous) -> Self {
+	/// Applies a corner radius to specific corners of the current view's layer.
+	/// - Parameters:
+	///   - at: The corners to apply the corner radius to.
+	///   - radius: The radius value for the corners.
+	///   - curve: The corner curve style to use. Default is `.continuous`.
+	/// - Returns: The modified view with the applied corner radius.
+	@discardableResult func make(corners: UIRectCorner, radius: CGFloat, curve: CALayerCornerCurve = .continuous) -> Self {
 		cornerRadius = radius
-		layer.maskedCorners = at.maskedCorners
+		layer.maskedCorners = corners.maskedCorners
 		layer.cornerCurve = curve
 		return self
 	}
@@ -137,6 +167,28 @@ public extension UIView {
 	/// - Returns: Returns self same instance for convenience.
 	@discardableResult func makeCapsule() -> Self {
 		cornerRadius = frame.height * 0.5
+		return self
+	}
+	
+	/// Applies a soft curve rounded corners with options to expand and distort the rect by its edges.
+	///
+	/// - Parameters:
+	///   - bezierCorners: The radii for each corner of the view.
+	///   - edges: The offsets for each edge of the view. Default is `.zero`.
+	///   - aspectToFit: Defines if the aspect will set to fit inside the given rect. The default is `true`.
+	/// - Returns: Returns self same instance for convenience.
+	@discardableResult func make(bezierCorners: RectCorners, edges: RectEdges = .zero, aspectToFit: Bool = true) -> Self {
+		let path = UIBezierPath(smooth: bounds, corners: bezierCorners, edges: edges, aspectToFit: aspectToFit)
+		let maskLayer = CAShapeLayer()
+		maskLayer.path = path.cgPath
+		layer.mask = maskLayer
+		return self
+	}
+	
+	/// Removes previously applied bezier corners.
+	/// - Returns: Returns self same instance for convenience.
+	@discardableResult func removeBezierCorners() -> Self {
+		layer.mask = nil
 		return self
 	}
 }
@@ -239,7 +291,7 @@ public extension UIView {
 	
 	private var shadowKey: String { "viewShadowKey" }
 
-	/// Returns true if there is an existing gradient created by using ``makeShadow(radius:fillColor:shadowColor:opacity:offset:cornerRadius:)``
+	/// Returns true if there is an existing gradient created by using ``make(shadowRadius:fillColor:shadowColor:opacity:offset:cornerRadius:)``
 	var hasShadow: Bool { (layer.sublayers(named: shadowKey).first?.shadowOpacity ?? 0) > 0 }
 	
 	/// Makes a shadow in the background of the view. Re-call this method once at every redraw to resize or re-color the effect.
@@ -247,18 +299,18 @@ public extension UIView {
 	/// - Returns: Returns self for nested calls purpose.
 	/// - Important: This routine uses layers to create its effect, changing layers after calling this method may produce undesired effects.
 	/// - Parameters:
-	///   - radius: The shadow radius. The default is `4`.
+	///   - shadowRadius: The shadow radius.
 	///   - fillColor: The new fill color of the view. The default is `black`.
 	///   - shadowColor: The shadow color. The default is `black`.
 	///   - opacity: The shadow opacity. The default is `0.3.
 	///   - offset: The shadow offset. The default is `zero.
 	///   - cornerRadius: The corner radius of the view. The default is `0.
-	@discardableResult func makeShadow(radius: CGFloat = 4.0,
-									   fillColor: UIColor = .black,
-									   shadowColor: UIColor = .black,
-									   opacity: Float = 0.3,
-									   offset: CGSize = .zero,
-									   cornerRadius: CGFloat = 0.0) -> Self {
+	@discardableResult func make(shadowRadius: CGFloat,
+								 fillColor: UIColor = .black,
+								 shadowColor: UIColor = .black,
+								 opacity: Float = 0.3,
+								 offset: CGSize = .zero,
+								 cornerRadius: CGFloat = 0.0) -> Self {
 		asyncMain {
 			self.cornerRadius = 0
 			self.layer.sublayers(named: self.shadowKey).removeAllFromSuperLayer()
@@ -272,7 +324,7 @@ public extension UIView {
 			shadow.shadowColor = shadowColor.cgResolved(with: interface)
 			shadow.shadowOpacity = opacity
 			shadow.shadowOffset = offset
-			shadow.shadowRadius = radius
+			shadow.shadowRadius = shadowRadius
 			shadow.name = self.shadowKey
 			self.layer.insertSublayer(shadow, at: 0)
 			self.layer.cornerRadius = cornerRadius
@@ -287,36 +339,30 @@ public extension UIView {
 	
 	private var gradientKey: String { "viewGradientKey" }
 	
-	/// Returns true if there is an existing gradient created by using ``makeGradient(colors:start:end:type:)``
+	/// Returns true if there is an existing gradient created by using ``make(gradient:start:end:type:)``
 	var hasGradient: Bool { !layer.sublayers(named: gradientKey).isEmpty }
 	
 	/// Makes a gradient in the background of the view. Re-call this method once at every redraw to resize or re-color the effect.
 	///
 	/// - Parameters:
-	///   - colors: An array of colors. If empty ([]) any existing gradient is removed.
+	///   - gradient: An array of colors. If empty ([]) any existing gradient is removed.
 	///   - start: The percentual starting point [0-1]. The default is `(x:0,y:0)`.
 	///   - end: The percentual ending point [0-1]. The default is `(x:0,y:1)`.
 	///   - type: The type of gradient. The default is `axial`.
 	/// - Returns: Returns self for nested calls purpose.
 	/// - Important: This routine uses layers to create its effect, changing layers after calling this method may produce undesired effects.
-	@discardableResult func makeGradient(colors: [UIColor],
-										 start: CGPoint = .init(x: 0, y: 0),
-										 end: CGPoint = .init(x: 0, y: 1),
-										 type: CAGradientLayerType = .axial) -> Self {
+	@discardableResult func make(gradient: [UIColor],
+								 start: CGPoint = .init(x: 0, y: 0),
+								 end: CGPoint = .init(x: 0, y: 1),
+								 type: CAGradientLayerType = .axial) -> Self {
 		
 		layer.sublayers(named: gradientKey).removeAllFromSuperLayer()
-		guard !colors.isEmpty else { return self }
-		let gradient = CAGradientLayer()
-		
-		gradient.frame = CGRect(origin: .zero, size: bounds.size)
-		gradient.colors = colors.map(\.cgColor)
-		gradient.startPoint = start
-		gradient.endPoint = end
-		gradient.type = type
+		guard !gradient.isEmpty else { return self }
+		let rect = layer.maskPath?.boundingBox ?? bounds
+		let gradient = CAGradientLayer(colors: gradient, frame: rect, style: .custom(start: start, end: end, type: type))
 		gradient.zPosition = -1000
 		gradient.name = gradientKey
 		layer.insertSublayer(gradient, at: 0)
-		
 		return self
 	}
 }
@@ -355,7 +401,7 @@ public extension UIView {
 	}
 }
 
-// MARK: - Extension - UIView
+// MARK: - Extension - UIView Visual
 
 public extension UIView {
 	

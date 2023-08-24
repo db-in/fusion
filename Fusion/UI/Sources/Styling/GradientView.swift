@@ -7,7 +7,7 @@ import UIKit
 
 // MARK: - Type -
 
-/// Convenience view that encpsulates the ``UIView.makeGradient(colors:start:end:type:)`` and makes it automatically redrawable and adaptable.
+/// Convenience view that encpsulates the ``UIView.make(gradient:start:end:type:)`` and makes it automatically redrawable and adaptable.
 open class GradientView : UIView {
 
 // MARK: - Properties
@@ -27,7 +27,7 @@ open class GradientView : UIView {
 // MARK: - Protected Methods
 
 	private func buildUI() {
-		makeGradient(colors: colors)
+		make(gradient: colors)
 	}
 	
 // MARK: - Exposed Methods
