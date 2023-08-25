@@ -4,48 +4,34 @@
 
 import Foundation
 
-// MARK: - Definitions -
+// MARK: - Extension - NotificationCenter
 
-public extension Collection {
+public extension NotificationCenter {
 	
-	/// Returns the first non-nil result by applying the provided closure to each element.
-	/// This function iterates through the elements and applies the closure. It returns the first non-nil result, or `nil` if no result is found.
+	/// Posts a notification name on a given center with a specified object. This method is a shortcut for the underlaying post notification.
 	///
-	/// ```
-	/// let numbers = [1, 2, 3, 4, 5]
-	/// if let even = numbers.firstMap({ $0 % 2 == 0 ? "Even" : nil }) {
-	///     print(even) // Output: "Even"
-	/// }
-	/// ```
-	///
-	/// - Parameter transform: A closure that maps an element to an optional value.
-	/// - Returns: The first non-nil result obtained by applying the closure, or `nil` if no result is found.
-	/// - Complexity: O(n), where n is the number of elements in the collection.
-	func firstMap<T>(_ transform: (Element) -> T?) -> T? {
-		for element in self {
-			guard let mapped = transform(element) else { continue }
-			return mapped
-		}
-		return nil
+	/// - Parameters:
+	///   - name: The notification name.
+	///   - object: The object associated with the notification. The default value is `nil`.
+	///   - center: The center on which the notification will be posted. The default value is `default`.
+	static func post(_ name: Notification.Name, object: Any? = nil, on center: NotificationCenter = .default) {
+		center.post(name: name, object: object)
 	}
 }
+
+// MARK: - Extension - Bundle
 
 public extension Bundle {
 
 // MARK: - Properties
 	
-	private static var cachedBundles: [String : Bundle] = [:]
+	private static var cachedLanguages: [String : [Bundle]] = [:]
 	
-	/// Returns a combined collection of `Bundle.allBundles` + `Bundle.allFrameworks`
-	static var allAvailable: [Bundle] { allBundles + allFrameworks }
+	/// Returns a combined collection of ``hints`` + `Bundle.allBundles` + `Bundle.allFrameworks`, in this given order.
+	static var allAvailable: [Bundle] { hints + allBundles + allFrameworks }
 	
-	/// Defines a set of bundle targets for each language.
-	/// For example:
-	///
-	/// ```
-	/// Bundle.sources = ["en" : .main, "fr" : anotherBundle]
-	/// ```
-	static var sources: [String : Bundle] = [:]
+	/// Hints are the first bundles to be scanned for loading contents. Including (but not limited to) languages, images, url, etc.
+	static var hints: [Bundle] = []
 	
 // MARK: - Protected Methods
 	
@@ -53,8 +39,8 @@ public extension Bundle {
 	///
 	/// - Parameter languageCode: The language code for the desired language resource.
 	/// - Returns: The bundle containing the language resource if found, otherwise ``nil``.
-	func languages(for languageCode: String) -> Bundle? {
-		guard let resourcePath = path(forResource: languageCode, ofType: "lproj") else { return nil }
+	func languages(for code: String) -> Bundle? {
+		guard let resourcePath = path(forResource: code, ofType: "lproj") else { return nil }
 		return .init(path: resourcePath)
 	}
 	
@@ -65,22 +51,121 @@ public extension Bundle {
 	///
 	/// - Parameter languageCode: The language code for the desired language resource.
 	/// - Returns: The bundle containing the language resource if found, otherwise ``nil``.
-	static func languages(for languageCode: String) -> Bundle? {
-		if let cached = cachedBundles[languageCode] {
-			return cached
+	
+	/// Recursively tries to find a valid localized string in ``allAvailable`` bundles.
+	///
+	/// - Parameters:
+	///   - code: The language code alpha-2.
+	///   - key: The localization key.
+	///   - table: The string table file.
+	/// - Returns: The resulting localized string.
+	static func localizedString(for code: String, key: String, table: String?) -> String? {
+		if let cached = cachedLanguages[code] {
+			for bundle in cached {
+				let value = bundle.localizedString(forKey: key, value: nil, table: table)
+				guard !value.isUntranslated else { continue }
+				return value
+			}
 		}
 		
-		guard
-			let bundle = sources[languageCode]?.languages(for: languageCode) ?? allAvailable.firstMap({ $0.languages(for: languageCode) })
-		else { return languageCode != "en" ? languages(for: "en") : nil }
+		for bundle in allAvailable {
+			guard let languageBundle = bundle.languages(for: code) else { continue }
+			let value = languageBundle.localizedString(forKey: key, value: nil, table: table)
+			guard !value.isUntranslated else { continue }
+			cachedLanguages[code, default: []].appendOnce(languageBundle)
+			return value
+		}
 		
-		cachedBundles[languageCode] = bundle
-		
-		return bundle
+		return nil
 	}
 }
 
-// MARK: - Type -
+// MARK: - Extension - Bundle
+
+public extension String {
+
+// MARK: - Properties
+	
+	private static var tableKey: UInt8 = 1
+	
+	/// Localizable Table strings.
+	static let localizableTable = "Localizable.nocache"
+	
+	/// Returns the original key. This property can be called at any given time in any given string.
+	/// This property remains the same even after multiple localization processes.
+	/// A `nil` is returned if the original key is the current value
+	var originalKey: String? {
+		get { objc_getAssociatedObject(self, &String.tableKey) as? String }
+		set { objc_setAssociatedObject(self, &String.tableKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+	}
+	
+	/// Returns true if the string is untranslated. It can be untranslated for various reasons, including but not limited to
+	/// missing files, missing keys, missing bundles, missing languages, etc.
+	var isUntranslated: Bool { isEmpty || originalKey == self }
+	
+// MARK: - Protected Methods
+	
+// MARK: - Exposed Methods
+	
+	/// Alias for `localized()` function
+	///
+	/// - Parameter language: A given language to be used. By default it's `currentLanguage`
+	/// - Returns: The localized version of the string key or the key itself
+	func callAsFunction(language: String = Locale.preferredLanguageCodeISO2) -> String { localized(for: language) }
+	
+	/// Localized string version, using the cached loaded bundle for the current defined language.
+	///
+	/// - Parameter locale: The iso code for the given locale, matching a valid language folder (lproj).
+	/// - Returns: The localized string
+	func localized(for locale: String = Locale.preferredLanguageCodeISO2) -> String {
+		guard var string = Bundle.localizedString(for: locale, key: self, table: .localizableTable) else { return self }
+		string.originalKey = originalKey ?? self
+		return string.replacingOccurrences(of: "amp;", with: "").replacingOccurrences(of: "\\", with: "")
+	}
+	
+	/// This function will find and replace placeholders inside a string with other values, the placeholders can be named of unnamed.
+	///
+	/// ```
+	/// "{KG}kg is equal {gr}g".replace(["5", "5000"]) // results in "5kg is equal 5000g"
+	/// ```
+	///
+	/// ```
+	/// let string = "{KG}kg is equal {gr}g"
+	/// string.replace(["5000", "5"], placeholders: ["{KG}", "{gr}"]) // results in "5kg is equal 5000g"
+	/// ```
+	///
+	/// - Parameters:
+	///   - template: An array containing the actual values to be replaced
+	///   - placeholders: An array containing the named placeholders. Ommiting this parameter takes advantage of default placeholders.
+	/// - Returns: A string with placeholders being replaced.
+	func replacing(with template: [String], placeholders: [String]? = nil) -> String {
+		
+		let suffix = placeholders != nil ? "?" : ""
+		let elements = placeholders ?? Array(repeating: "{.*?}", count: template.count)
+		let pattern = elements.map { string -> String in
+			var item = string.replacingOccurrences(of: "{", with: "\\{")
+			item = item.replacingOccurrences(of: "}", with: "\\}")
+			
+			return "(.*?)\(item)(.*\(suffix))"
+		}
+		
+		let newString = pattern.enumerated().reduce (self) { result, string in
+			result.replacingOccurrences(of: string.element, with: "$1\(template[string.offset])$2", options: .regularExpression)
+		}
+		
+		return newString
+	}
+	
+	/// Replaces the default placeholders in a given string with the new values.
+	///
+	/// - Parameter template: The new values.
+	/// - Returns: A string with the replaces values.
+	func replacing(_ template: String...) -> String {
+		replacing(with: template)
+	}
+}
+
+// MARK: - Extension - Locale
 
 public extension Locale {
 
@@ -147,87 +232,4 @@ public extension Locale {
 	/// - Parameter language: A new language code. The default is ``preferredLanguageCodeISO2``
 	/// - Returns: A new Locale.
 	func adjusted(language: String = Locale.preferredLanguageCodeISO2) -> Self { .init(identifier: "\(language.lowercased())_\(regionCodeISO2)") }
-}
-
-// MARK: - Extension - Bundle
-
-public extension String {
-
-// MARK: - Properties
-	
-	private static var tableKey: UInt8 = 1
-	
-	/// Localizable Table strings.
-	static let localizableTable = "Localizable.nocache"
-	
-	/// Returns the original key. This property can be called at any given time in any given string.
-	/// This property remains the same even after multiple localization processes.
-	/// A `nil` is returned if the original key is the current value
-	var originalKey: String? {
-		get { objc_getAssociatedObject(self, &String.tableKey) as? String }
-		set { objc_setAssociatedObject(self, &String.tableKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
-	}
-	
-// MARK: - Protected Methods
-	
-// MARK: - Exposed Methods
-	
-	/// Alias for `localized()` function
-	///
-	/// - Parameter language: A given language to be used. By default it's `currentLanguage`
-	/// - Returns: The localized version of the string key or the key itself
-	func callAsFunction(language: String = Locale.preferredLanguageCodeISO2) -> String { localized(for: language) }
-	
-	/// Localized string version, using the cached loaded bundle for the current defined language.
-	///
-	/// - Parameter locale: The iso code for the given locale, matching a valid language folder (lproj).
-	/// - Returns: The localized string
-	func localized(for locale: String = Locale.preferredLanguageCodeISO2) -> String {
-		guard let bundle = Bundle.languages(for: locale) else { return self }
-		var string = bundle.localizedString(forKey: self, value: nil, table: .localizableTable)
-		string.originalKey = originalKey ?? self
-		
-		return string.replacingOccurrences(of: "amp;", with: "").replacingOccurrences(of: "\\", with: "")
-	}
-	
-	/// This function will find and replace placeholders inside a string with other values, the placeholders can be named of unnamed.
-	///
-	/// ```
-	/// "{KG}kg is equal {gr}g".replace(["5", "5000"]) // results in "5kg is equal 5000g"
-	/// ```
-	///
-	/// ```
-	/// let string = "{KG}kg is equal {gr}g"
-	/// string.replace(["5000", "5"], placeholders: ["{KG}", "{gr}"]) // results in "5kg is equal 5000g"
-	/// ```
-	///
-	/// - Parameters:
-	///   - template: An array containing the actual values to be replaced
-	///   - placeholders: An array containing the named placeholders. Ommiting this parameter takes advantage of default placeholders.
-	/// - Returns: A string with placeholders being replaced.
-	func replacing(with template: [String], placeholders: [String]? = nil) -> String {
-		
-		let suffix = placeholders != nil ? "?" : ""
-		let elements = placeholders ?? Array(repeating: "{.*?}", count: template.count)
-		let pattern = elements.map { string -> String in
-			var item = string.replacingOccurrences(of: "{", with: "\\{")
-			item = item.replacingOccurrences(of: "}", with: "\\}")
-			
-			return "(.*?)\(item)(.*\(suffix))"
-		}
-		
-		let newString = pattern.enumerated().reduce (self) { result, string in
-			result.replacingOccurrences(of: string.element, with: "$1\(template[string.offset])$2", options: .regularExpression)
-		}
-		
-		return newString
-	}
-	
-	/// Replaces the default placeholders in a given string with the new values.
-	///
-	/// - Parameter template: The new values.
-	/// - Returns: A string with the replaces values.
-	func replacing(_ template: String...) -> String {
-		replacing(with: template)
-	}
 }

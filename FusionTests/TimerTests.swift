@@ -115,13 +115,13 @@ class TimerControlTests: XCTestCase {
 		
 		timer.addItem(key: #function) { }
 		
-		NotificationCenter.default.post(name: UIApplication.willResignActiveNotification, object: nil)
+		NotificationCenter.post(UIApplication.willResignActiveNotification)
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 			XCTAssertGreaterThan(timer.itemsCount, 0)
 			XCTAssertTrue(timer.isPaused)
 			
-			NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+			NotificationCenter.post(UIApplication.didBecomeActiveNotification)
 			
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 				XCTAssertFalse(timer.isPaused)

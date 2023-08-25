@@ -4,6 +4,32 @@
 
 import Foundation
 
+// MARK: - Extension - Collection
+
+public extension Collection {
+	
+	/// Returns the first non-nil result by applying the provided closure to each element.
+	/// This function iterates through the elements and applies the closure. It returns the first non-nil result, or `nil` if no result is found.
+	///
+	/// ```
+	/// let numbers = [1, 2, 3, 4, 5]
+	/// if let even = numbers.firstMap({ $0 % 2 == 0 ? "Even" : nil }) {
+	///     print(even) // Output: "Even"
+	/// }
+	/// ```
+	///
+	/// - Parameter transform: A closure that maps an element to an optional value.
+	/// - Returns: The first non-nil result obtained by applying the closure, or `nil` if no result is found.
+	/// - Complexity: O(n), where n is the number of elements in the collection.
+	func firstMap<T>(_ transform: (Element) -> T?) -> T? {
+		for element in self {
+			guard let mapped = transform(element) else { continue }
+			return mapped
+		}
+		return nil
+	}
+}
+
 // MARK: - Extension - Sequence
 
 public extension Sequence where Element : Hashable {
@@ -87,6 +113,18 @@ public extension Array {
 			return element
 		}
 		return nil
+	}
+}
+
+// MARK: - Extension - Array Hashable
+
+extension Array where Element : Hashable {
+	
+	/// Appends an item to the collection only if it's unique.
+	/// - Parameter element: A new item to be added.
+	mutating func appendOnce(_ element: Element) {
+		guard !contains(element) else { return }
+		append(element)
 	}
 }
 
