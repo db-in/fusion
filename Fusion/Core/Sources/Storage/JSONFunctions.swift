@@ -1,4 +1,4 @@
-//  
+//
 //  Created by Diney Bomfim on 5/7/23.
 //
 
@@ -225,11 +225,18 @@ public extension Decodable {
 
 public extension String {
 	
+	/// Generates a random string of the specified length.
+	///
+	/// - Parameter length: The length of the random string to generate.
+	/// - Returns: A random string containing characters from the set of lowercase and uppercase letters, digits, and spaces.
 	static func randomString(_ length: Int) -> String {
 		let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
 		return .init((0..<length).compactMap { _ in letters.randomElement() })
 	}
 	
+	/// Returns a pretty-printed JSON representation of the string if it contains valid JSON data.
+	///
+	/// - Returns: A string with indented JSON representation if the current string is valid JSON; otherwise, returns the original string.
 	var prettyJSON: String {
 		guard
 			let data = data(using: .utf8),
@@ -238,6 +245,17 @@ public extension String {
 		else { return self }
 		
 		return .init(data: prettyData, encoding: .utf8) ?? self
+	}
+	
+	/// Returns the current string as URL.
+	var toURL: URL { .init(string: self) ?? .init(fileURLWithPath: "") }
+	
+	/// Creates a URL using the string as the resource name.
+	///
+	/// - Parameter bundle: The bundle in which to search for the resource. The default value is `.main`.
+	/// - Returns: A URL constructed using the resource name from the string and the specified bundle.
+	func toURL(in bundle: Bundle = .main) -> URL {
+		bundle.url(forResource: self, withExtension: nil) ?? .init(fileURLWithPath: "")
 	}
 }
 
