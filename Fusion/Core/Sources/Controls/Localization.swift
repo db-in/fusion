@@ -35,48 +35,56 @@ public extension Bundle {
 	
 // MARK: - Protected Methods
 	
-	/// Returns the language bundle inside this given bundle for a given language code, otherwise it returns ``nil``.
+	/// Returns the language bundle inside this given bundle for a given language code, otherwise it returns `nil`.
 	///
 	/// - Parameter languageCode: The language code for the desired language resource.
-	/// - Returns: The bundle containing the language resource if found, otherwise ``nil``.
+	/// - Returns: The bundle containing the language resource if found, otherwise `nil`.
 	func languages(for code: String) -> Bundle? {
 		guard let resourcePath = path(forResource: code, ofType: "lproj") else { return nil }
 		return .init(path: resourcePath)
 	}
 	
-	/// Returns the language bundle resource for a given language code if it's found inside the application.
-	/// This functions will utilize the ``sources`` available, otherwise it loops over all available bundles.
-	///
-	/// Any valid result will also be cached for future use.
-	///
-	/// - Parameter languageCode: The language code for the desired language resource.
-	/// - Returns: The bundle containing the language resource if found, otherwise ``nil``.
-	
-	/// Recursively tries to find a valid localized string in ``allAvailable`` bundles.
+	/// Returns a localized string for the specified key and table.
 	///
 	/// - Parameters:
-	///   - code: The language code alpha-2.
+	///   - key: The key for a string in the specified table.
+	///   - table: The receiver's string table to search.
+	/// - Returns: A localized version of the string, or `nil` if the key is not found.
+	func localizedString(forKey key: String, table: String?) -> String? {
+		let value = localizedString(forKey: key, value: nil, table: table)
+		return !(value.isEmpty || value == key) ? value : nil
+	}
+	
+	/// Returns a localized string for the specified language code, key, and table.
+	///
+	/// - Parameters:
+	///   - language: The language code alpha-2.
+	///   - key: The key for a string in the specified table.
+	///   - table: The receiver's string table to search.
+	/// - Returns: A localized version of the string designated by `key`, `table`, and the language `code`, or `nil` if the key is not found.
+	func localizedString(language: String, key: String, table: String?) -> String? {
+		guard
+			let languageBundle = languages(for: language),
+			let value = languageBundle.localizedString(forKey: key, table: table)
+		else { return nil }
+		Self.cachedLanguages[language, default: []].appendOnce(languageBundle)
+		return value
+	}
+	
+	/// Recursively tries to find the first valid localized string in ``allAvailable`` bundles, leveraging the speed of ``hints`` bundles.
+	///
+	/// - Parameters:
+	///   - language: The language code alpha-2.
 	///   - key: The localization key.
 	///   - table: The string table file.
 	/// - Returns: The resulting localized string.
-	static func localizedString(for code: String, key: String, table: String?) -> String? {
-		if let cached = cachedLanguages[code] {
-			for bundle in cached {
-				let value = bundle.localizedString(forKey: key, value: nil, table: table)
-				guard !value.isUntranslated else { continue }
-				return value
-			}
-		}
-		
-		for bundle in allAvailable {
-			guard let languageBundle = bundle.languages(for: code) else { continue }
-			let value = languageBundle.localizedString(forKey: key, value: nil, table: table)
-			guard !value.isUntranslated else { continue }
-			cachedLanguages[code, default: []].appendOnce(languageBundle)
-			return value
-		}
-		
-		return nil
+	/// - Important: This function utilizes caching to optimize
+	/// subsequent reads of the same language or key. The cache can't be clean programatically as it relies on the string file table naming
+	/// convention, utilizing `nocache` to avoid strong caching.
+	/// - SeeAlso: [Apple Loading String Resources Documentation](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/LoadingResources/Strings/Strings.html#//apple_ref/doc/uid/10000051i-CH6-97055-CJBFDJGF)
+	static func localizedString(language: String, key: String, table: String?) -> String? {
+		let value = cachedLanguages[language]?.firstMap({ $0.localizedString(forKey: key, table: table) })
+		return value ?? allAvailable.firstMap({ $0.localizedString(language: language, key: key, table: table) })
 	}
 }
 
@@ -99,26 +107,24 @@ public extension String {
 		set { objc_setAssociatedObject(self, &String.tableKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
 	}
 	
-	/// Returns true if the string is untranslated. It can be untranslated for various reasons, including but not limited to
-	/// missing files, missing keys, missing bundles, missing languages, etc.
-	var isUntranslated: Bool { isEmpty || originalKey == self }
-	
 // MARK: - Protected Methods
 	
 // MARK: - Exposed Methods
 	
-	/// Alias for `localized()` function
+	/// Alias for ``localized(for:table:)`` function.
 	///
 	/// - Parameter language: A given language to be used. By default it's `currentLanguage`
 	/// - Returns: The localized version of the string key or the key itself
 	func callAsFunction(language: String = Locale.preferredLanguageCodeISO2) -> String { localized(for: language) }
 	
-	/// Localized string version, using the cached loaded bundle for the current defined language.
+	/// Localized string version, using the a high `speed dynamic loading algorithm` - ``localizedString(language:key:table:)`` -
+	/// for the `current preferred language` - ``preferredLanguageCodeISO2``.
 	///
 	/// - Parameter locale: The iso code for the given locale, matching a valid language folder (lproj).
 	/// - Returns: The localized string
-	func localized(for locale: String = Locale.preferredLanguageCodeISO2) -> String {
-		guard var string = Bundle.localizedString(for: locale, key: self, table: .localizableTable) else { return self }
+	/// - SeeAlso: ``localizedString(language:key:table:)`` and ``preferredLanguageCodeISO2``.
+	func localized(for locale: String = Locale.preferredLanguageCodeISO2, table: String? = .localizableTable) -> String {
+		guard var string = Bundle.localizedString(language: locale, key: self, table: table) else { return self }
 		string.originalKey = originalKey ?? self
 		return string.replacingOccurrences(of: "amp;", with: "").replacingOccurrences(of: "\\", with: "")
 	}
