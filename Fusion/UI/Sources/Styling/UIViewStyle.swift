@@ -373,9 +373,7 @@ public extension UIView {
 		gradient.zPosition = -1000
 		gradient.name = gradientKey
 		layer.insertSublayer(gradient, at: 0)
-		asyncMain {
-			gradient.frame = self.layer.maskPath?.boundingBox ?? self.bounds
-		}
+		asyncMain { gradient.frame = self.layer.maskPath?.boundingBox ?? self.bounds }
 		return self
 	}
 }

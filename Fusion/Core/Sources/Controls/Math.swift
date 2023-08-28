@@ -159,7 +159,7 @@ public extension CGSize {
 
 public extension CGRect {
 	
-	var finite: Self { .init(x: origin.x.finite, y: origin.y.finite, width: width.finite, height: height.finite) }
+	var finite: Self { .init(origin: .init(x: origin.x.finite, y: origin.y.finite), size: .init(width: width.finite, height: height.finite)) }
 	
 	init(size: CGSize) {
 		self.init(origin: .init(x: 0, y: 0), size: size)
