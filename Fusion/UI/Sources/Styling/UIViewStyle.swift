@@ -226,13 +226,24 @@ public extension UIView {
 		set { borderLayer?.strokeColor = newValue?.cgResolved(with: interfaceStyle) }
 	}
 	
+	/// Makes a border on the current view following the current corners.
+	///
+	/// - Parameters:
+	///   - border: The border settings.
+	/// - Returns: Returns self same instance for convenience.
+	@discardableResult func make(border: Border) -> Self {
+		layer.borderColor = border.color?.cgResolved(with: interfaceStyle)
+		layer.borderWidth = border.width ?? 0
+		return self
+	}
+	
 	/// Makes a dashed border on the current view following the current corners.
 	///
 	/// - Parameters:
 	///   - border: The border settings.
-	///   - dashed: The dashed pattern ratio. Eg: [1,1], [3, 1, 2]. The default is [], draws solid border.
+	///   - dashed: The dashed pattern ratio. Eg: [1,1], [3, 1, 2].
 	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func make(border: Border, dashed: [Int] = []) -> Self {
+	@discardableResult func make(border: Border, dashed: [Int]) -> Self {
 		layer.sublayers(named: borderKey).removeAllFromSuperLayer()
 		guard border != .none else { return self }
 		let shape = CAShapeLayer()
