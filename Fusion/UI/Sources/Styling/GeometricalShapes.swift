@@ -79,8 +79,7 @@ public extension UIBezierPath {
 	@discardableResult func scale(toFit rect: CGRect) -> Self {
 		let box = cgPath.boundingBox
 		guard box.width != 0 && box.height != 0 else { return self }
-		let scaleFactor = min(rect.width / box.width, rect.height / box.height)
-		apply(.init(scaleX: scaleFactor, y: scaleFactor))
+		apply(.init(scaleX: rect.width / box.width, y: rect.height / box.height))
 		return self
 	}
 	
