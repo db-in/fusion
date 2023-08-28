@@ -201,12 +201,31 @@ public extension UIView {
 		
 		public let color: UIColor?
 		public let width: CGFloat
+		public let dashed: [Int]
+		
+		public var shapeLayer: CAShapeLayer {
+			let shape = CAShapeLayer()
+			shape.fillColor = .clear
+			shape.strokeColor = color?.cgColor
+			shape.lineWidth = width
+			if !dashed.isEmpty {
+				shape.lineDashPattern = dashed as [NSNumber]
+			}
+			return shape
+		}
 		
 		public static var none: Self = .init()
 		
-		public init(color: UIColor? = nil, width: CGFloat = 0) {
+		/// Defines a border construction style.
+		///
+		/// - Parameters:
+		///   - color: The border's color. The default value is `nil`.
+		///   - width: The border's thickness. The default value is 0.
+		///   - dashed: The border's dashed pattern. If empty, it means solid line. The default value is `[]`.
+		public init(color: UIColor? = nil, width: CGFloat = 0, dashed: [Int] = []) {
 			self.color = color
 			self.width = width
+			self.dashed = dashed
 		}
 	}
 	
@@ -226,43 +245,7 @@ public extension UIView {
 		set { borderLayer?.strokeColor = newValue?.cgResolved(with: interfaceStyle) }
 	}
 	
-	/// Makes a border on the current view following the current corners.
-	///
-	/// - Parameters:
-	///   - border: The border settings.
-	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func make(border: Border) -> Self {
-		layer.borderColor = border.color?.cgResolved(with: interfaceStyle)
-		layer.borderWidth = border.width ?? 0
-		return self
-	}
-	
-	/// Makes a dashed border on the current view following the current corners.
-	///
-	/// - Parameters:
-	///   - border: The border settings.
-	///   - dashed: The dashed pattern ratio. Eg: [1,1], [3, 1, 2].
-	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func make(border: Border, dashed: [Int]) -> Self {
-		layer.sublayers(named: borderKey).removeAllFromSuperLayer()
-		guard border != .none else { return self }
-		let shape = CAShapeLayer()
-		shape.lineDashPattern = dashed as [NSNumber]
-		shape.strokeColor = border.color?.cgResolved(with: interfaceStyle)
-		shape.lineWidth = border.width
-		shape.frame = bounds
-		shape.fillColor = nil
-		shape.path = layer.maskPath ?? UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
-		shape.name = borderKey
-		layer.addSublayer(shape)
-		return self
-	}
-	
-	/// Makes concentric borders following the current corner configuration. This method does not automatically redraws.
-	///
-	/// - Parameter borders: The array of concentrict borders.
-	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func make(borders: [Border]) -> Self {
+	private func buildBorders(_ borders: [Border]) {
 		let radius = cornerRadius
 		var totalWidth: CGFloat = 0
 		var previous: CGFloat = 0
@@ -271,27 +254,43 @@ public extension UIView {
 		layer.sublayers?.filter(\.name == borderKey).forEach { $0.removeFromSuperlayer() }
 		borders.forEach { border in
 			totalWidth += border.width * 0.5
-			let shape = CAShapeLayer()
-			let shapeFrame = bounds.integral.insetBy(dx: totalWidth, dy: totalWidth)
-			shape.strokeColor = border.color?.cgColor
-			shape.lineWidth = border.width
+			let shape = border.shapeLayer
+			let shapeFrame = bounds.insetBy(dx: totalWidth, dy: totalWidth).finite
 			shape.frame = bounds
-			shape.fillColor = .clear
+			shape.name = borderKey
 			
-			if radius == 0 {
-				shape.path = UIBezierPath(rect: shapeFrame).cgPath
-			} else {
+			if let mask = layer.maskPath {
+				shape.path = UIBezierPath(cgPath: mask).fit(into: mask.boundingBox.insetBy(dx: totalWidth, dy: totalWidth)).cgPath
+			} else if radius > 0 {
 				let corners = layer.maskedCorners.rectCorners
 				let size = CGSize(squared: radius - previous - (border.width * 0.5))
 				shape.path = UIBezierPath(roundedRect: shapeFrame, byRoundingCorners: corners, cornerRadii: size).cgPath
+			} else {
+				shape.path = UIBezierPath(rect: shapeFrame).cgPath
 			}
 			
-			shape.name = borderKey
 			layer.addSublayer(shape)
 			totalWidth += border.width * 0.5
 			previous = border.width
 		}
-		
+	}
+	
+	/// Makes a border on the current view following the current corners.
+	///
+	/// - Parameters:
+	///   - border: The border settings.
+	/// - Returns: Returns self same instance for convenience.
+	@discardableResult func make(border: Border) -> Self {
+		asyncMain { self.buildBorders([border]) }
+		return self
+	}
+	
+	/// Makes concentric borders following the current corner configuration. This method does not automatically redraws.
+	///
+	/// - Parameter borders: The array of concentrict borders.
+	/// - Returns: Returns self same instance for convenience.
+	@discardableResult func make(borders: [Border]) -> Self {
+		asyncMain { self.buildBorders(borders) }
 		return self
 	}
 }
@@ -374,6 +373,9 @@ public extension UIView {
 		gradient.zPosition = -1000
 		gradient.name = gradientKey
 		layer.insertSublayer(gradient, at: 0)
+		asyncMain {
+			gradient.frame = self.layer.maskPath?.boundingBox ?? self.bounds
+		}
 		return self
 	}
 }
