@@ -41,6 +41,14 @@ public struct RectEdges {
 		self.right = right
 	}
 	
+	/// Initializes a `RectEdges` instance with the same value for horizontal edges (left/right) and vertical edges (top/bottom).
+	/// - Parameters:
+	///   - horizontal: The horizontal edges' value.
+	///   - vertical: The vertical edges' value.
+	public init(horizontal: CGFloat = 0, vertical: CGFloat = 0) {
+		self.init(top: vertical, left: horizontal, bottom: vertical, right: horizontal)
+	}
+	
 	/// Initializes a `RectEdges` instance with the same value for all edges.
 	/// - Parameter all: The value for all edges.
 	public init(all: CGFloat) {
