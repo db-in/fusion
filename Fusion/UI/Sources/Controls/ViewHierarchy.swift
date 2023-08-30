@@ -437,6 +437,12 @@ public extension UIWindow {
 	/// The first tabbar that exists in the key hierarchy or nil if none is found.
 	static var topTabBar: UITabBar? { key?.firstSubviewOf() }
 	
+	/// The frame of the key window. It can return zero if the key window isn't defined.
+	static var keyFrame: CGRect { key?.frame ?? .zero }
+	
+	/// The bounds of the key window. It can return zero if the key window isn't defined.
+	static var keyBounds: CGRect { key?.bounds ?? .zero }
+	
 	/// Removes the window from its scene and hides it.
 	func removeFromScene() {
 		isHidden = true
@@ -461,6 +467,11 @@ public extension UIWindow {
 		return window
 	}
 	
+	/// Sets the status bar state.
+	///
+	/// - Parameters:
+	///   - hidden: A `bool` indicating if the bar will hide or show.
+	///   - animated: A `bool` indicating if the transition will be animated.
 	static func setStatusBarHidden(_ hidden: Bool, animated: Bool) {
 		StatusBarViewController.setStatusBarHidden(hidden, animated: animated)
 	}
