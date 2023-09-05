@@ -13,11 +13,9 @@ public extension UIEdgeInsets {
 	
 	var finite: UIEdgeInsets { .init(top: top.finite, left: left.finite, bottom: bottom.finite, right: right.finite) }
 	
-	init(by: CGFloat) { self.init(top: by, left: by, bottom: by, right: by) }
+	init(all: CGFloat) { self.init(top: all, left: all, bottom: all, right: all) }
 	
-	init(horizontal: CGFloat) { self.init(top: 0, left: horizontal, bottom: 0, right: horizontal) }
-	
-	init(vertical: CGFloat) { self.init(top: vertical, left: 0, bottom: vertical, right: 0) }
+	init(horizontal: CGFloat = 0, vertical: CGFloat = 0) { self.init(top:vertical, left: horizontal, bottom: vertical, right: horizontal) }
 	
 	static func + (lhs: Self, rhs: Self) -> Self {
 		.init(top: lhs.top + rhs.top, left: lhs.left + rhs.left, bottom: lhs.bottom + rhs.bottom, right: lhs.right + rhs.right)
