@@ -8,7 +8,16 @@ import UIKit
 // MARK: - Definitions -
 
 /// A presentation controller that has a dimming view and presents from the bottom, as a drawer behavior.
-final public class PresentationController : UIPresentationController {
+public final class PresentationController : UIPresentationController {
+	
+	public struct Config {
+		
+		/// Defines the default initial ``cornerRadius`` for future ``PresentationController``.
+		public static var cornerRadius: CGFloat = 20
+		
+		/// Defines the default initial ``topSafeArea`` for future ``PresentationController``.
+		public static var topSafeArea: CGFloat = 20
+	}
 	
 // MARK: - Properties
 	
@@ -35,10 +44,10 @@ final public class PresentationController : UIPresentationController {
 	public var allowsDismiss: Bool = true
 	
 	/// The corner radius of the drawer frame.
-	public var cornerRadius: CGFloat = 20
+	public var cornerRadius: CGFloat = Config.cornerRadius
 	
 	/// Defines a safe space at the top that will never be exceeded, this is in addition to any top existing window safe.
-	public var topSafeArea: CGFloat = 20
+	public var topSafeArea: CGFloat = Config.topSafeArea
 	
 	/// A closure to be executed after the presentation is dismissed in the future.
 	public var onDismissal: Callback?
