@@ -9,7 +9,15 @@ import UIKit
 
 public extension UIEdgeInsets {
 	
+	var flipped: UIEdgeInsets { UIEdgeInsets(top: bottom, left: right, bottom: top, right: left) }
+	
 	var finite: UIEdgeInsets { .init(top: top.finite, left: left.finite, bottom: bottom.finite, right: right.finite) }
+	
+	init(by: CGFloat) { self.init(top: by, left: by, bottom: by, right: by) }
+	
+	init(horizontal: CGFloat) { self.init(top: 0, left: horizontal, bottom: 0, right: horizontal) }
+	
+	init(vertical: CGFloat) { self.init(top: vertical, left: 0, bottom: vertical, right: 0) }
 	
 	static func + (lhs: Self, rhs: Self) -> Self {
 		.init(top: lhs.top + rhs.top, left: lhs.left + rhs.left, bottom: lhs.bottom + rhs.bottom, right: lhs.right + rhs.right)
