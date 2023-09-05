@@ -130,7 +130,7 @@ public extension UIView {
 		get { bounds }
 		set {
 			frame = newValue
-			cornerRadius = CGFloat.minimum(newValue.width, newValue.height) * 0.5
+			cornerRadius = newValue.size.squared.half.width
 		}
 	}
 	
@@ -141,10 +141,8 @@ public extension UIView {
 	
 // MARK: - Constructor
 	
-	convenience init(circular: CGRect, backgroundColor color: UIColor = .clear) {
-		self.init()
-		circularFrame = circular
-		backgroundColor = color
+	convenience init(circular: CGRect, background: UIColor? = nil, useConstraints: Bool = false, mode: ContentMode? = nil) {
+		self.init(frame: circular, background: background, corner: circular.size.squared.half.width, useConstraints: useConstraints, mode: mode)
 	}
 	
 // MARK: - Exposed Methods
