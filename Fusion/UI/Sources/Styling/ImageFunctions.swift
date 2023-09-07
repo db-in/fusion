@@ -130,12 +130,12 @@ public extension UIImage {
 	///   - borderWidth: The width of the shape background's border (optional).
 	///   - borderColor: The color of the shape background's border (optional).
 	/// - Returns: A new image with the combined shape and original image.
-	func shapped(with color: UIColor,
-				 shapeSize: CGSize,
-				 iconSize: CGSize,
-				 cornerRadius: CGFloat = 0,
-				 borderWidth: CGFloat? = nil,
-				 borderColor: UIColor? = nil) -> UIImage {
+	func shaped(with color: UIColor,
+				shapeSize: CGSize,
+				iconSize: CGSize,
+				cornerRadius: CGFloat = 0,
+				borderWidth: CGFloat? = nil,
+				borderColor: UIColor? = nil) -> UIImage {
 		let view = UIImageView(frame: CGRect(origin: .zero, size: shapeSize))
 		
 		view.contentMode = .center
@@ -169,7 +169,7 @@ public extension UIImage {
 						 backgroundColor: UIColor = .red,
 						 iconSize: CGSize = .init(width: 12, height: 12),
 						 shapeSize: CGSize = .init(width: 20, height: 20)) -> UIImage {
-		image.tinted(tintColor).shapped(with: backgroundColor, shapeSize: shapeSize, iconSize: iconSize, cornerRadius: shapeSize.width * 0.5)
+		image.tinted(tintColor).shaped(with: backgroundColor, shapeSize: shapeSize, iconSize: iconSize, cornerRadius: shapeSize.width * 0.5)
 	}
 	
 	/// Returns a gausian blurred version of the image on all its dimension.
