@@ -39,10 +39,9 @@ public extension UIFont {
 	
 	var monospacedDigit: UIFont { .init(descriptor: fontDescriptor.monospacedDigit, size: 0) }
 	
-	var bold: UIFont {
-		guard let descriptor = fontDescriptor.withSymbolicTraits(.traitBold) else { return self }
-		return .init(descriptor: descriptor, size: pointSize)
-	}
+	var bold: UIFont { withTrait(.traitBold) }
+	
+	var italic: UIFont { withTrait(.traitItalic) }
 	
 	var style: String { (fontDescriptor.object(forKey: .textStyle) as? String) ?? fontDescriptor.postscriptName }
 	
@@ -77,6 +76,11 @@ public extension UIFont {
 			caption1 = .TextStyle.caption1.font
 			caption2 = .TextStyle.caption2.font
 		}
+	}
+	
+	func withTrait(_ trait: UIFontDescriptor.SymbolicTraits) -> UIFont {
+		guard let descriptor = fontDescriptor.withSymbolicTraits(trait) else { return self }
+		return .init(descriptor: descriptor, size: pointSize)
 	}
 }
 
