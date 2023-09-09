@@ -93,6 +93,24 @@ public extension UIColor {
 	static func random(alpha: CGFloat = 1.0) -> UIColor {
 		.init(red: .random(in: 0...1), green: .random(in: 0...1), blue: .random(in: 0...1), alpha: alpha)
 	}
+	
+	/// Returns a gradient color using a gradient image pattern. It's important to be aware of the size of the generated gradient,
+	/// it has direct relation with the resulting effect.
+	/// 
+	/// - Parameters:
+	///   - colors: The gradient of colors to be used.
+	///   - size: The pattern size. The default is `(width:10,height:10)`.
+	///   - start: The percentual starting point [0-1]. The default is `(x:0,y:0)`.
+	///   - end: The percentual ending point [0-1]. The default is `(x:0,y:1)`.
+	///   - type: The type of gradient. The default is `axial`.
+	/// - Returns: The resulting gradient color.
+	static func gradient(_ colors: [UIColor],
+						 size: CGSize = .init(width: 10, height: 10),
+						 start: CGPoint = .init(x: 0, y: 0),
+						 end: CGPoint = .init(x: 0, y: 1),
+						 type: CAGradientLayerType = .axial) -> UIColor {
+		.init(patternImage: UIView(frame: .init(size: size)).make(gradient: colors, start: start, end: end, type: type).snapshot)
+	}
 }
 
 public extension CGColor {
