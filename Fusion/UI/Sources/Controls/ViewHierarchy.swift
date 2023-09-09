@@ -25,7 +25,7 @@ private class StatusBarViewController : UIViewController {
 	
 	private static func generateWindow() -> UIWindow {
 		let topWindow = UIWindow.createWindowOverScene()
-		topWindow.frame = UIWindow.key?.bounds ?? .zero
+		topWindow.frame = UIWindow.keyBounds
 		topWindow.backgroundColor = .clear
 		topWindow.isUserInteractionEnabled = false
 		topWindow.rootViewController = StatusBarViewController()

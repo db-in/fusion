@@ -63,7 +63,7 @@ public final class PresentationController : UIPresentationController {
 			let containerBounds = containerView?.bounds,
 			let controller = nestedViewController,
 			let screenSafeArea = UIWindow.key?.safeAreaInsets
-		else { return UIWindow.key?.bounds ?? .zero }
+		else { return UIWindow.keyBounds }
 
 		let viewSafeArea = controller.additionalSafeAreaInsets
 		let extraPadding = header + screenSafeArea.bottom + viewSafeArea.top + viewSafeArea.bottom
