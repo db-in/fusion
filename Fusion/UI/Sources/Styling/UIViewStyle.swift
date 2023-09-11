@@ -334,7 +334,7 @@ public extension UIView {
 			
 			let shape = CAShapeLayer()
 			shape.name = self.shadowKey
-			shape.path = self.layer.maskPath
+			shape.path = shadow.shadowPath
 			shape.fillColor = self.backgroundColor?.cgResolved(with: interface) ?? .clear
 			
 			self.backgroundColor = .clear
