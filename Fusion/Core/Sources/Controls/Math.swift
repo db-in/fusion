@@ -149,6 +149,24 @@ public extension CGSize {
 	/// - Parameter squared: The length of the sides of the square.
 	init(squared: CGFloat) { self.init(width: squared, height: squared) }
 	
+	/// Returns a new size by expanding the current size.
+	///
+	/// - Parameters:
+	///   - width: The delta width.
+	///   - height: The delta height.
+	/// - Returns: The new size.
+	func expanded(width: CGFloat = 0, height: CGFloat = 0) -> CGSize { self + .init(width: width, height: height) }
+	
+	/// Expands the current size by a given width and height.
+	///
+	/// - Parameters:
+	///   - width: The delta expansion.
+	///   - height: The delta height.
+	mutating func expand(width: CGFloat = 0, height: CGFloat = 0) {
+		self.width += width
+		self.height += height
+	}
+	
 	static func + (lhs: Self, rhs: Self) -> Self { .init(width: lhs.width + rhs.width, height: lhs.height + rhs.height) }
 	static func - (lhs: Self, rhs: Self) -> Self { .init(width: lhs.width - rhs.width, height: lhs.height - rhs.height) }
 	static func * (lhs: Self, rhs: CGFloat) -> Self { .init(width: lhs.width * rhs, height: lhs.height * rhs) }
