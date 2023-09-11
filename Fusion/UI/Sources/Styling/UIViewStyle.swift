@@ -308,13 +308,11 @@ public extension UIView {
 	/// - Important: This routine uses layers to create its effect, changing layers after calling this method may produce undesired effects.
 	/// - Parameters:
 	///   - shadowRadius: The shadow radius.
-	///   - fillColor: The new fill color of the view. The default is `black`.
 	///   - shadowColor: The shadow color. The default is `black`.
 	///   - opacity: The shadow opacity. The default is `0.3.
 	///   - offset: The shadow offset. The default is `zero.
 	///   - cornerRadius: The corner radius of the view. The default is `0.
 	@discardableResult func make(shadowRadius: CGFloat,
-								 fillColor: UIColor = .black,
 								 shadowColor: UIColor = .black,
 								 opacity: Float = 0.3,
 								 offset: CGSize = .zero,
@@ -325,15 +323,23 @@ public extension UIView {
 			let shadow = CALayer()
 			let interface = self.interfaceStyle
 			
+			shadow.name = self.shadowKey
 			shadow.frame = self.bounds
 			shadow.cornerRadius = cornerRadius
 			shadow.shadowPath = self.layer.maskPath ?? UIBezierPath(roundedRect: self.bounds, cornerRadius: cornerRadius).cgPath
-			shadow.backgroundColor = fillColor.cgResolved(with: interface)
 			shadow.shadowColor = shadowColor.cgResolved(with: interface)
 			shadow.shadowOpacity = opacity
 			shadow.shadowOffset = offset
 			shadow.shadowRadius = shadowRadius
-			shadow.name = self.shadowKey
+			
+			let shape = CAShapeLayer()
+			shape.name = self.shadowKey
+			shape.path = self.layer.maskPath
+			shape.fillColor = self.backgroundColor?.cgResolved(with: interface) ?? .clear
+			
+			self.backgroundColor = .clear
+			self.layer.mask = nil
+			self.layer.insertSublayer(shape, at: 0)
 			self.layer.insertSublayer(shadow, at: 0)
 			self.layer.cornerRadius = cornerRadius
 		}
