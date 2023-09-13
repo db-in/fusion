@@ -142,7 +142,8 @@ public extension UIView {
 // MARK: - Constructor
 	
 	convenience init(circular: CGRect, background: UIColor? = nil, useConstraints: Bool = false, mode: ContentMode? = nil) {
-		self.init(frame: circular, background: background, corner: circular.size.squared.half.width, useConstraints: useConstraints, mode: mode)
+		self.init(frame: circular, background: background, useConstraints: useConstraints, mode: mode)
+		make(radius: circular.size.squared.half.width)
 	}
 	
 // MARK: - Exposed Methods
@@ -153,7 +154,7 @@ public extension UIView {
 	///   - radius: The radius value for the corners.
 	///   - curve: The corner curve style to use. Default is `.continuous`.
 	/// - Returns: The modified view with the applied corner radius.
-	@discardableResult func make(corners: UIRectCorner, radius: CGFloat, curve: CALayerCornerCurve = .continuous) -> Self {
+	@discardableResult func make(radius: CGFloat, corners: UIRectCorner = .allCorners, curve: CALayerCornerCurve = .continuous) -> Self {
 		cornerRadius = radius
 		layer.maskedCorners = corners.maskedCorners
 		layer.cornerCurve = curve
@@ -401,8 +402,9 @@ public extension UIView {
 	///   - color: The color of the grabber. The default value is black color 20% alpha.
 	///   - size: The size of the grabber. The default vlaue is [36, 5].
 	@discardableResult func makeGrabber(color: UIColor = .black.withAlphaComponent(0.2), size: CGSize = .init(width: 36, height: 5)) -> Self {
-		let view = grabber ?? .init(frame: .init(origin: .zero, size: size), background: color, corner: size.height * 0.5)
+		let view = grabber ?? .init(frame: .init(origin: .zero, size: size), background: color)
 		addSubview(view)
+		view.cornerRadius = size.height * 0.5
 		view.center = .init(x: center.x, y: center.y - (frame.height * 0.5) + 8)
 		view.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
 		grabber = view

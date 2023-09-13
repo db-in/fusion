@@ -182,7 +182,7 @@ public final class PresentationController : UIPresentationController {
 		targetView.frame.origin.y = containerBounds.height
 		targetView.layer.masksToBounds = true
 		targetView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-		targetView.make(corners: [.topLeft, .topRight], radius: cornerRadius)
+		targetView.make(radius: cornerRadius, corners: [.topLeft, .topRight])
 		
 		dimmingView.frame = containerBounds
 		dimmingView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
