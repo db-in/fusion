@@ -360,12 +360,12 @@ public extension UIView {
 
 public extension UIStackView {
 	
-	convenience init(arrangedSubviews: [UIView],
+	convenience init(_ subviews: [UIView],
 					 axis: NSLayoutConstraint.Axis,
 					 spacing: CGFloat = 16,
 					 distribution: UIStackView.Distribution = .equalSpacing,
 					 alignment: UIStackView.Alignment = .fill) {
-		self.init(arrangedSubviews: arrangedSubviews)
+		self.init(arrangedSubviews: subviews)
 		self.spacing = spacing
 		self.axis = axis
 		self.distribution = distribution
