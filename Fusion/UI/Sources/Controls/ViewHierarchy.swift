@@ -371,11 +371,6 @@ public extension UIStackView {
 		self.distribution = distribution
 		self.alignment = alignment
 	}
-	
-	func setLayoutMargins(_ margins: UIEdgeInsets) {
-		layoutMargins = margins
-		isLayoutMarginsRelativeArrangement = true
-	}
 }
 
 // MARK: - Extension - UIModalPresentationStyle
