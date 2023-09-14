@@ -87,7 +87,7 @@ public extension UIImage {
 	///   - gifData: The data of the GIF image.
 	/// - Returns: An animated UIImage if successful, or nil if there was an error.
 	static func images(gifData: Data) -> UIImage? {
-#if !os(watchOS) && !os(tvOS)
+#if !os(watchOS) && !os(xrOS) && !os(tvOS)
 		var duration: TimeInterval = 0.0
 		
 		guard let source = CGImageSourceCreateWithData(gifData as CFData, nil) else { return nil }
