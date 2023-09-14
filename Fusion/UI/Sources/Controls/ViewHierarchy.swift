@@ -681,12 +681,14 @@ public extension UIGestureRecognizer {
 	/// - Parameters:
 	///   - view: The target view.
 	///   - closure: The gesture callback.
-	static func add(on view: UIView, closure: @escaping GestureCallback) {
+	/// - Returns: Returns the newly created gesture for convenience.
+	@discardableResult static func add(on view: UIView, closure: @escaping GestureCallback) -> Self {
 		let gesture = Self()
 		gesture.gestureAction = closure
 		gesture.addTarget(gesture, action: #selector(handler))
 		view.addGestureRecognizer(gesture)
 		view.isUserInteractionEnabled = true
+		return gesture
 	}
 	
 	/// Sets this instance as the only gesture of its kind removing any existing gesture of the same kind.
@@ -694,9 +696,10 @@ public extension UIGestureRecognizer {
 	/// - Parameters:
 	///   - view: The target view.
 	///   - closure: The gesture callback.
-	static func set(on view: UIView, closure: @escaping GestureCallback) {
+	/// - Returns: Returns the newly created gesture for convenience.
+	@discardableResult static func set(on view: UIView, closure: @escaping GestureCallback) -> Self {
 		view.removeAllGesture(of: Self.self)
-		add(on: view, closure: closure)
+		return add(on: view, closure: closure)
 	}
 }
 
