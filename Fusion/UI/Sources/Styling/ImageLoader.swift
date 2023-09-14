@@ -81,6 +81,28 @@ public extension UIImage {
 		associated[to] = image
 	}
 	
+	/// Creates an animated UIImage from GIF data with proper frame durations.
+	///
+	/// - Parameters:
+	///   - gifData: The data of the GIF image.
+	/// - Returns: An animated UIImage if successful, or nil if there was an error.
+	static func images(gifData: Data) -> UIImage? {
+		var duration: TimeInterval = 0.0
+		
+		guard let source = CGImageSourceCreateWithData(gifData as CFData, nil) else { return nil }
+		let count = CGImageSourceGetCount(source)
+		let images: [UIImage] = (0..<count).compactMap {
+			let properties = CGImageSourceCopyPropertiesAtIndex(source, $0, nil) as? [String: Any]
+			let gifInfo = properties?[kCGImagePropertyGIFDictionary as String] as? [String: Any]
+			let frameDuration = gifInfo?[kCGImagePropertyGIFDelayTime as String] as? Double
+			duration += frameDuration ?? 0.1
+			guard let image = CGImageSourceCreateImageAtIndex(source, $0, nil) else { return nil }
+			return .init(cgImage: image)
+		}
+		
+		return .animatedImage(with: images, duration: duration)
+	}
+	
 	/// This function exclusively tries to load the image from cache.
 	/// Options for using the badge feature or a fallback storage are available.
 	///
@@ -95,7 +117,7 @@ public extension UIImage {
 		guard
 			let validURL = URL(string: url),
 			let data = URLCache.shared.cachedResponse(for: .init(url: validURL))?.data ?? storage?.readImageData(withKey: url),
-			let image = UIImage(data: data)
+			let image = url.contains(".gif") ? UIImage.images(gifData: data) : UIImage(data: data)
 		else { return nil }
 		
 		inMemory[url] = image
