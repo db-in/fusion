@@ -87,6 +87,7 @@ public extension UIImage {
 	///   - gifData: The data of the GIF image.
 	/// - Returns: An animated UIImage if successful, or nil if there was an error.
 	static func images(gifData: Data) -> UIImage? {
+#if !os(watchOS)
 		var duration: TimeInterval = 0.0
 		
 		guard let source = CGImageSourceCreateWithData(gifData as CFData, nil) else { return nil }
@@ -101,6 +102,9 @@ public extension UIImage {
 		}
 		
 		return .animatedImage(with: images, duration: duration)
+#else
+		return .init(data: data)
+#endif
 	}
 	
 	/// This function exclusively tries to load the image from cache.
