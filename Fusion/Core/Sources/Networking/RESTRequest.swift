@@ -103,7 +103,7 @@ private extension URLRequest {
 	var fullRequest: String {
 		let headers = allHTTPHeaderFields?.description ?? ""
 		guard let data = httpBody else { return headers }
-		return .init(data: data, encoding: .utf8) ?? ""
+		return [headers, .init(data: data, encoding: .utf8) ?? ""].joined(separator: "\n")
 	}
 	
 	func debugLogRequest() {
