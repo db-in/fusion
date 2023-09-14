@@ -103,7 +103,7 @@ public extension UIImage {
 		
 		return .animatedImage(with: images, duration: duration)
 #else
-		return .init(data: data)
+		return .init(data: gifData)
 #endif
 	}
 	
