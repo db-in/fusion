@@ -102,7 +102,10 @@ public extension Array where Element == UIView {
 // MARK: - Extension - UIView
 
 public extension UIView {
-
+	
+	/// Frame in the view's window coordinate.
+	var frameInWindow: CGRect { convert(bounds, to: window) }
+	
 // MARK: - Constructors
 	
 	convenience init(width: CGFloat? = nil,
