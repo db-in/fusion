@@ -532,10 +532,11 @@ public extension UIViewController {
 	}
 	
 	/// Dinamically dismisses or pops the current view controller. Depending on the current navigation stack.
-	func dismissOrPop() {
+	func dismissOrPop(completion: Callback? = nil) {
 		if isPresentingAsModal && !hasNavigationStack {
-			dismiss(animated: true)
+			dismiss(animated: true, completion: completion)
 		} else {
+			CATransaction.setCompletionBlock(completion)
 			navigationController?.popViewController(animated: true)
 		}
 	}
@@ -543,7 +544,7 @@ public extension UIViewController {
 	/// Navigates back to the root view controller in the navigation stack.
 	///
 	/// - Parameter completion: An optional closure to be executed when the navigation operation completes.
-	func backToRootViewController(completion: (() -> Void)? = nil) {
+	func backToRootViewController(completion: Callback? = nil) {
 		if let callback = completion {
 			CATransaction.setCompletionBlock { callback() }
 		}
