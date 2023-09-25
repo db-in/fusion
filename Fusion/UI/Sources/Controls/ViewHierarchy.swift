@@ -536,8 +536,10 @@ public extension UIViewController {
 		if isPresentingAsModal && !hasNavigationStack {
 			dismiss(animated: true, completion: completion)
 		} else {
+			CATransaction.begin()
 			CATransaction.setCompletionBlock(completion)
 			navigationController?.popViewController(animated: true)
+			CATransaction.commit()
 		}
 	}
 	
