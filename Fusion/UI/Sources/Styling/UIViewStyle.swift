@@ -175,8 +175,7 @@ public extension UIView {
 	///
 	/// - Returns: Returns self same instance for convenience.
 	@discardableResult func makeCapsule() -> Self {
-		cornerRadius = frame.height * 0.5
-		return self
+		make(radius: frame.height * 0.5)
 	}
 	
 	/// Applies a soft curve rounded corners with options to expand and distort the rect by its edges.
