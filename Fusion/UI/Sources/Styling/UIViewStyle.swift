@@ -107,8 +107,6 @@ public extension UIRectCorner {
 	
 	var maskedCorners: CACornerMask { .init(rawValue: rawValue) }
 	
-	var maskedCorners: CACornerMask { .init(rawValue: rawValue) }
-	
 	var hasTopCorners: Bool { contains(.topLeft) || contains(.topRight) }
 	
 	var hasBottomCorners: Bool { contains(.bottomLeft) || contains(.bottomRight) }
