@@ -82,9 +82,31 @@ public extension UIColor {
 		}
 	}
 	
+	/// Returns the resulted CGColor with a given style.
+	/// 
+	/// - Parameter style: A given style. By default its value is ``UIView.interfaceStyle``
+	/// - Returns: The resulting CGColor.
 	func cgResolved(with style: UIUserInterfaceStyle? = UIView.interfaceStyle) -> CGColor {
 		guard let validStyle = style else { return cgColor }
 		return resolved(with: validStyle).cgColor
+	}
+	
+	/// Creates an interpolation/transition between 2 colors given a percentage.
+	///
+	/// - Parameters:
+	///   - toColor: The color to transition to.
+	///   - percentage: The percentage in the range of [0-1].
+	/// - Returns: The resulting interpolation.
+	func interpolated(toColor: UIColor, percentage: CGFloat) -> UIColor {
+		let fromRGB = rgb
+		let toRGB = toColor.rgb
+		
+		return .init(
+			red: (CGFloat(fromRGB.r) + CGFloat(toRGB.r - fromRGB.r) * percentage) / 255,
+			green: (CGFloat(fromRGB.g) + CGFloat(toRGB.g - fromRGB.g) * percentage) / 255,
+			blue: (CGFloat(fromRGB.b) + CGFloat(toRGB.b - fromRGB.b) * percentage) / 255,
+			alpha: alpha + (toColor.alpha - alpha) * percentage
+		)
 	}
 	
 	/// Returns a random color with a given alpha.
@@ -110,24 +132,6 @@ public extension UIColor {
 						 end: CGPoint = .init(x: 0, y: 1),
 						 type: CAGradientLayerType = .axial) -> UIColor {
 		.init(patternImage: UIView(frame: .init(size: size)).make(gradient: colors, start: start, end: end, type: type).snapshot)
-	}
-	
-	/// Creates an interpolation/transition between 2 colors given a percentage.
-	///
-	/// - Parameters:
-	///   - toColor: The color to transition to.
-	///   - percentage: The percentage in the range of [0-1].
-	/// - Returns: The resulting interpolation.
-	func interpolated(toColor: UIColor, percentage: CGFloat) -> UIColor {
-		let fromRGB = rgb
-		let toRGB = toColor.rgb
-		
-		return .init(
-			red: (CGFloat(fromRGB.r) + CGFloat(toRGB.r - fromRGB.r) * percentage) / 255,
-			green: (CGFloat(fromRGB.g) + CGFloat(toRGB.g - fromRGB.g) * percentage) / 255,
-			blue: (CGFloat(fromRGB.b) + CGFloat(toRGB.b - fromRGB.b) * percentage) / 255,
-			alpha: alpha + (toColor.alpha - alpha) * percentage
-		)
 	}
 }
 
