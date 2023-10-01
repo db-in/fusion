@@ -116,11 +116,11 @@ public extension UIImage {
 	///   - storage: A fallback storage to be used. This storage will receive a copy of the cache when cache is available.
 	/// - Returns: The final `UIImage`
 	static func loadCache(url: String, allowsBadge: Bool = true, storage: URL? = nil) -> UIImage? {
+		guard !url.isEmpty else { return nil }
 		if let inMemoryImage = inMemory[url]?.resolve(badge: allowsBadge, key: url) { return inMemoryImage }
 			
 		guard
-			let validURL = URL(string: url),
-			let data = URLCache.shared.cachedResponse(for: .init(url: validURL))?.data ?? storage?.readImageData(withKey: url),
+			let data = URLCache.appGroup.cachedResponse(for: .init(url: url.toURL))?.data ?? storage?.readImageData(withKey: url),
 			let image = url.contains(".gif") ? UIImage.images(gifData: data) : UIImage(data: data)
 		else { return nil }
 		
@@ -139,17 +139,16 @@ public extension UIImage {
 	///   - storage: A fallback storage to be used. This storage will receive a copy of the cache when cache is available.
 	///   - completion: The completion in which the final image will be sent to.
 	static func download(url: String, allowsBadge: Bool = true, storage: URL? = nil, then completion: @escaping (UIImage?) -> Void) {
-		
-		guard let validURL = URL(string: url) else {
+		guard !url.isEmpty else {
 			asyncMain { completion(nil) }
 			return
 		}
 		
-		let request = URLRequest(url: validURL)
+		let request = URLRequest(url: url.toURL)
 		let task = URLSession.shared.dataTask(with: request) { (dataResponse, response, error) in
 			if let data = dataResponse, let validResponse = response {
 				let cachedData = CachedURLResponse(response: validResponse, data: data)
-				URLCache.shared.storeCachedResponse(cachedData, for: request)
+				URLCache.appGroup.storeCachedResponse(cachedData, for: request)
 			}
 			
 			let image = loadCache(url: url, allowsBadge: allowsBadge, storage: storage)
@@ -162,7 +161,7 @@ public extension UIImage {
 	/// Removes all the current cached images.
 	/// - Parameter storage: An alternative storage used to cache.
 	static func flushCache(storage: URL? = nil) {
-		URLCache.shared.removeAllCachedResponses()
+		URLCache.appGroup.removeAllCachedResponses()
 		storage?.flushImageCache()
 		inMemory = [:]
 	}

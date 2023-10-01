@@ -21,13 +21,7 @@ public protocol ImageConvertible {
 extension ImageConvertible where Self : CustomStringConvertible {
 	
 	public func load<T>(on target: T, at path: ReferenceWritableKeyPath<T, UIImage?>) {
-		asyncGlobal {
-			if let image = UIImage.loadCache(url: "\(self)") {
-				syncMain { target[keyPath: path] = image }
-			} else {
-				UIImage.download(url: "\(self)") { target[keyPath: path] = $0 ?? target[keyPath: path] }
-			}
-		}
+		load(on: target, at: path, allowsBadge: true)
 	}
 	
 	/// Same as ``load(on:at:)`` with the option of badge and storage.
