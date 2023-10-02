@@ -27,7 +27,7 @@ public final class PresentationController : UIPresentationController {
 	private var propertyAnimator: UIViewPropertyAnimator?
 	private var nestedViewController: UIViewController? { (presentedViewController as? UINavigationController)?.viewControllers.last ?? presentedViewController }
 	private var scrollView: UIScrollView? { nestedViewController?.view.firstOf() }
-	private var topOffset: CGFloat { (UIWindow.key?.safeAreaInsets.top ?? 0) }
+	private var topOffset: CGFloat { UIWindow.keySafeAreaInsets.top }
 	private var interactor: UIPercentDrivenInteractiveTransition? { allowsInteractiveTransition && isInteracting ? interactiveTransition : nil }
 	private lazy var interactiveTransition: UIPercentDrivenInteractiveTransition = { .init() }()
 	
