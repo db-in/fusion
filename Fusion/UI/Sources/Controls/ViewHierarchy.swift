@@ -451,6 +451,9 @@ public extension UIWindow {
 	/// The bounds of the key window. It can return zero if the key window isn't defined.
 	static var keyBounds: CGRect { key?.bounds ?? .zero }
 	
+	/// The `safeAreaInsets` of the key window. It can return zero if the key window isn't defined.
+	static var keySafeAreaInsets: UIEdgeInsets { key?.safeAreaInsets ?? .zero }
+	
 	/// Removes the window from its scene and hides it.
 	func removeFromScene() {
 		isHidden = true
