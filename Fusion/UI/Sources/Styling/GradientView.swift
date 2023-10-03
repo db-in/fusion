@@ -27,7 +27,7 @@ open class GradientView : UIView {
 // MARK: - Protected Methods
 
 	private func buildUI() {
-		make(gradient: colors)
+		make(gradient: colors, start: start, end: end, type: type)
 	}
 	
 // MARK: - Exposed Methods
