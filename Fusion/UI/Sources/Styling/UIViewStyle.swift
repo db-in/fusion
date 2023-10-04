@@ -70,7 +70,7 @@ public extension CAGradientLayer {
 	///   - style: The style of the gradient layer. Default is `.radial`.
 	convenience init(colors: [UIColor], frame: CGRect, style: Style = .radial) {
 		self.init()
-		self.colors = colors.map(\.cgColor)
+		self.colors = colors.map { $0.cgResolved() }
 		self.frame = frame
 		style.configure(self)
 	}
@@ -212,7 +212,7 @@ public extension UIView {
 		public var shapeLayer: CAShapeLayer {
 			let shape = CAShapeLayer()
 			shape.fillColor = .clear
-			shape.strokeColor = color?.cgColor
+			shape.strokeColor = color?.cgResolved()
 			shape.lineWidth = width
 			if !dashed.isEmpty {
 				shape.lineDashPattern = dashed as [NSNumber]
