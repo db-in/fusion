@@ -26,7 +26,7 @@ extension UIView {
 
 	@IBInspectable var borderColor: UIColor? {
 		get { .init(cgColor: layer.borderColor ?? CGColor(red: 0, green: 0, blue: 0, alpha: 0)) }
-		set { layer.borderColor = newValue?.cgColor }
+		set { layer.borderColor = newValue?.cgResolved() }
 	}
 }
 
@@ -36,7 +36,7 @@ class TweenSampleCell : UICollectionViewCell {
 	
 	private lazy var lineLayer: CAShapeLayer = {
 		let layer = CAShapeLayer()
-		layer.fillColor = UIColor.clear.cgColor
+		layer.fillColor = UIColor.clear.cgResolved()
 		layer.lineWidth = 2.0
 		layer.lineDashPattern = [2, 2]
 		return layer
@@ -96,7 +96,7 @@ class TweenSampleCell : UICollectionViewCell {
 	}
 	
 	fileprivate func updateColors() {
-		lineLayer.strokeColor = UIColor.label.withAlphaComponent(0.5).cgColor
+		lineLayer.strokeColor = UIColor.label.withAlphaComponent(0.5).cgResolved()
 	}
 }
 

@@ -60,7 +60,7 @@ public extension UIImage {
 		
 		context?.addPath(path)
 		context?.closePath()
-		context?.setFillColor(color.cgColor)
+		context?.setFillColor(color.cgResolved())
 		context?.fillPath()
 		
 		let image = UIGraphicsGetImageFromCurrentImageContext()
@@ -89,7 +89,7 @@ public extension UIImage {
 			cgContext.scaleBy(x: 1.0, y: -1.0)
 			cgContext.translateBy(x: 0.0, y: -rect.size.height)
 			cgContext.clip(to: rect, mask: graphicImage)
-			cgContext.setFillColor(color.cgColor)
+			cgContext.setFillColor(color.cgResolved())
 			cgContext.fill(rect)
 		}
 		

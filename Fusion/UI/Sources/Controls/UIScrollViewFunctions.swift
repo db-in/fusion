@@ -78,7 +78,7 @@ extension UIScrollView {
 										  gradient.locations?[1] ?? 0,
 										  NSNumber(value: 1 - gradientLocation - offsetLocation),
 										  NSNumber(value: 1 - offsetLocation)]
-					gradient.colors = [gradient.colors?.first ?? black, black, black, color.cgColor]
+					gradient.colors = [gradient.colors?.first ?? black, black, black, color.cgResolved()]
 					contentInset.bottom = inset
 					scrollInset.bottom = inset
 				default:
@@ -88,7 +88,7 @@ extension UIScrollView {
 										  NSNumber(value: offsetLocation + gradientLocation),
 										  gradient.locations?[2] ?? 0,
 										  gradient.locations?[3] ?? 0]
-					gradient.colors = [color.cgColor, black, black, gradient.colors?.last ?? black]
+					gradient.colors = [color.cgResolved(), black, black, gradient.colors?.last ?? black]
 					contentInset.top = inset
 					scrollInset.top = inset
 				}
