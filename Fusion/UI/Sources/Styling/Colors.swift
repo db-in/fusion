@@ -32,17 +32,17 @@ public extension UIColor {
 // MARK: - Properties
 	
 	/// Returns the RGB object for this color.
-	var rgb: RGB { RGB(ciColor: CIColor(color: self)) }
+	var rgb: RGB { RGB(ciColor: CIColor(color: resolved())) }
 	
 	/// Returns the hexadecimal string for this color.
 	var hexString: String {
-		let values = RGB(ciColor: CIColor(color: self))
+		let values = RGB(ciColor: CIColor(color: resolved()))
 		return String(format: "#%02lX%02lX%02lX", values.r, values.g, values.b)
 	}
 	
 	/// Returns the alpha for this color
 	var alpha: CGFloat {
-		return CIColor(color: self).alpha
+		return CIColor(color: resolved()).alpha
 	}
 	
 	/// Returns the color in its opposite style mode from the current one used by the device settigns.
