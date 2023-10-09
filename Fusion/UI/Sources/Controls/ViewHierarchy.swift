@@ -301,14 +301,21 @@ public extension UIView {
 	///
 	/// - Parameters:
 	///   - child: The child view.
-	///   - edges: The edges values, where `left` represents `leading` and `right` is `trailing`. The default is `zero`.
-	func setConstraintsToSafeAreaFitting(child: UIView, edges: UIEdgeInsets = .zero) {
-		let items = [
-			child.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: edges.top),
-			child.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: edges.left),
-			child.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -edges.bottom),
-			child.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -edges.right)
-		]
+	///   - top: The top constant of the child. The default is `nil`.
+	///   - leading: The leading constant of the child. The default is `nil`.
+	///   - bottom: The bottom constant of the child. The default is `nil`.
+	///   - trailing: The trailing constant of the child. The default is `nil`.
+	func setConstraintsToSafeAreaFitting(child: UIView,
+										 top: CGFloat? = nil,
+										 leading: CGFloat? = nil,
+										 bottom: CGFloat? = nil,
+										 trailing: CGFloat? = nil) {
+		var items: [NSLayoutConstraint] = []
+		
+		if let value = top { items.append(child.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: value)) }
+		if let value = leading { items.append(child.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: value)) }
+		if let value = bottom { items.append(child.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -value)) }
+		if let value = trailing { items.append(child.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -value)) }
 		
 		child.translatesAutoresizingMaskIntoConstraints = false
 		setConstraints(items)
