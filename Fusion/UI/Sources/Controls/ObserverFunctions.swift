@@ -11,6 +11,7 @@ public struct KeyPathName {
 	
 	public static var viewFrame: String = #keyPath(UIView.frame)
 	public static var layerBounds: String = #keyPath(UIView.layer.bounds)
+	public static var clipsToBounds: String = #keyPath(UIView.clipsToBounds)
 	public static var layerPosition: String = #keyPath(UIView.layer.position)
 	public static var scrollOffset: String = #keyPath(UIScrollView.contentOffset)
 }
