@@ -408,11 +408,14 @@ public extension UIView {
 	/// - Parameters:
 	///   - color: The color of the grabber. The default value is black color 20% alpha.
 	///   - size: The size of the grabber. The default vlaue is [36, 5].
-	@discardableResult func makeGrabber(color: UIColor = .black.withAlphaComponent(0.2), size: CGSize = .init(width: 36, height: 5)) -> Self {
+	///   - padding: The padding distance from the top. The default vlaue is 8.
+	@discardableResult func makeGrabber(color: UIColor = .black.withAlphaComponent(0.2),
+										size: CGSize = .init(width: 36, height: 5),
+										padding: CGFloat = 8) -> Self {
 		let view = grabber ?? .init(frame: .init(origin: .zero, size: size), background: color)
 		addSubview(view)
 		view.cornerRadius = size.height * 0.5
-		view.center = .init(x: center.x, y: center.y - (frame.height * 0.5) + 8)
+		view.center = .init(x: center.x, y: center.y - (frame.height * 0.5) + padding)
 		view.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
 		grabber = view
 		return self
