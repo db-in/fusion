@@ -38,6 +38,14 @@ public protocol TextConvertible {
 	/// - Returns: The new attributed string.
 	func styled(_ attributes: TextAttributes, overriding: Bool) -> NSAttributedString
 	
+	/// Apply a given style to the current text over a given text string.
+	///
+	/// - Parameters:
+	///   - attributes: The ``TextAttributes`` to be applied.
+	///   - onText: The text string to be applied the new attributes on.
+	/// - Returns: The new attributed string.
+	func styled(_ attributes: TextAttributes, onText: String) -> NSAttributedString
+	
 	/// Appends two different texts with their given styles and attributes. This function respects RTL concatenation.
 	///
 	/// - Parameter rhs: The new text to be appended (at the trailing side).
@@ -76,8 +84,19 @@ public extension TextConvertible {
 	func render(on: Any?) { }
 	
 	func styled(_ attributes: TextAttributes) -> NSAttributedString { styled(attributes, overriding: true) }
-}
 	
+	func styled(_ attributes: TextAttributes, onText: String) -> NSAttributedString {
+		let attributedString = NSMutableAttributedString(attributedString: styled(self.attributes))
+		let range = (content as NSString).range(of: onText)
+		
+		if range.location != NSNotFound {
+			attributedString.addAttributes(attributes, range: range)
+		}
+		
+		return attributedString
+	}
+}
+
 // MARK: - Extension - TextStyle
 
 public extension TextAttributes {
