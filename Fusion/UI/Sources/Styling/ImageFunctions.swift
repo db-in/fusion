@@ -43,6 +43,13 @@ public extension UIImage {
 		guard allowCache else { return image(named: named, bundle: bundleHint) ?? .init() }
 		return InMemoryCache.getOrSet(key: "\(Self.self)\(named)", newValue: image(named: named, bundle: bundleHint)) ?? .init()
 	}
+}
+#endif
+
+#if canImport(UIKit) && !os(watchOS)
+public extension UIImage {
+	
+// MARK: - Exposed Methods
 	
 	/// Creates a solid color image with the specified color, size, and corner radius.
 	///
@@ -68,13 +75,6 @@ public extension UIImage {
 		
 		return image ?? UIImage()
 	}
-}
-#endif
-
-#if canImport(UIKit) && !os(watchOS)
-public extension UIImage {
-	
-// MARK: - Exposed Methods
 	
 	/// Tints the image with the specified color.
 	///
