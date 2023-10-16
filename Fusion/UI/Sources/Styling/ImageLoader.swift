@@ -146,12 +146,18 @@ public extension UIImage {
 		
 		let request = URLRequest(url: url.toURL)
 		let task = URLSession.shared.dataTask(with: request) { (dataResponse, response, error) in
-			if let data = dataResponse, let validResponse = response {
-				let cachedData = CachedURLResponse(response: validResponse, data: data)
-				URLCache.appGroup.storeCachedResponse(cachedData, for: request)
+			guard
+				let data = dataResponse,
+				let validResponse = response
+			else {
+				asyncMain { completion(nil) }
+				return
 			}
 			
-			let image = loadCache(url: url, allowsBadge: allowsBadge, storage: storage)
+			let cachedData = CachedURLResponse(response: validResponse, data: data)
+			URLCache.appGroup.storeCachedResponse(cachedData, for: request)
+			let rawImage = url.contains(".gif") ? UIImage.images(gifData: data) : UIImage(data: data)
+			let image = rawImage?.resolve(badge: allowsBadge, key: url)
 			asyncMain { completion(image) }
 		}
 		
