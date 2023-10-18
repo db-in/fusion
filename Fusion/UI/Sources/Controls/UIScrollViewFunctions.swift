@@ -159,6 +159,11 @@ extension UIScrollView {
 		asyncMain { self.flashScrollIndicators() }
 	}
 	
+	public func scrollToTop(animated: Bool) {
+		let top = contentInset.top + adjustedContentInset.top
+		setContentOffset(.init(x: 0, y: -top), animated: animated)
+	}
+	
 // MARK: - Overridden Methods
 	
 	open override func observeValue(forKeyPath keyPath: String?,
