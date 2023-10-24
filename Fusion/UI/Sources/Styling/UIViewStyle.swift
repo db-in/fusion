@@ -114,6 +114,14 @@ public extension UIRectCorner {
 	var hasRoundedTop: Bool { contains(.topLeft) && contains(.topRight) }
 	
 	var hasRoundedBottom: Bool { contains(.bottomLeft) && contains(.bottomRight) }
+	
+	static var topCorners: Self { [.topLeft, .topRight] }
+	
+	static var bottomCorners: Self { [.bottomLeft, .bottomRight] }
+	
+	static var leadingCorners: Self { UIWindow.key?.isRTL == true ? [.topRight, .bottomRight] : [.topLeft, .bottomLeft] }
+	
+	static var trailingCorners: Self { UIWindow.key?.isRTL == true ? [.topLeft, .bottomLeft] : [.topRight, .bottomRight] }
 }
 
 public extension CACornerMask {
