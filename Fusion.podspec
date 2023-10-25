@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "Fusion"
-  s.version = "1.1.11"
+  s.version = "1.1.12"
   s.summary = "Micro Feature"
   s.description = <<-DESC
                   Fusion is resposible for ...
@@ -17,6 +17,9 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.0'
   s.tvos.deployment_target = '13.0'
   s.watchos.deployment_target = '7.0'
+  s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
+  s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
+  s.info_plist = { 'CFBundleShortVersionString' => '#{s.version}' }
   
   s.subspec 'Core' do |co|
 	  co.public_header_files = 'Fusion/Core/**/*.h'
