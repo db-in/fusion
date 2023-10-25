@@ -33,10 +33,10 @@ extension ImageConvertible where Self : CustomStringConvertible {
 	///   - storage: Defines an alternative storage, which will be used to save the image or load from it in case `URLCache` is not available.
 	/// - SeeAlso: ``load(on:at:)``
 	public func load<T>(on target: T, at path: ReferenceWritableKeyPath<T, UIImage?>, allowsBadge: Bool, storage: URL? = nil) {
-		asyncGlobal {
-			if let image = UIImage.loadCache(url: "\(self)", allowsBadge: allowsBadge, storage: storage) {
-				syncMain { target[keyPath: path] = image }
-			} else {
+		if let image = UIImage.loadCache(url: "\(self)", allowsBadge: allowsBadge, storage: storage) {
+			target[keyPath: path] = image
+		} else {
+			asyncGlobal {
 				UIImage.download(url: "\(self)", allowsBadge: allowsBadge, storage: storage) { target[keyPath: path] = $0 ?? target[keyPath: path] }
 			}
 		}
