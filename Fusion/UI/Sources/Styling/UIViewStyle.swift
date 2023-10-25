@@ -293,17 +293,28 @@ public extension UIView {
 	///
 	/// - Parameters:
 	///   - border: The border settings.
+	///   - immediately: A bool indicating if the border will be rendered immediately.
 	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func make(border: Border) -> Self {
+	@discardableResult func make(border: Border, immediately: Bool = false) -> Self {
+		guard !immediately else {
+			buildBorders([border])
+			return self
+		}
 		asyncMain { self.buildBorders([border]) }
 		return self
 	}
 	
 	/// Makes concentric borders following the current corner configuration. This method does not automatically redraws.
 	///
-	/// - Parameter borders: The array of concentrict borders.
+	/// - Parameters:
+	///   - borders: The array of concentrict borders.
+	///   - immediately: A bool indicating if the border will be rendered immediately.
 	/// - Returns: Returns self same instance for convenience.
-	@discardableResult func make(borders: [Border]) -> Self {
+	@discardableResult func make(borders: [Border], immediately: Bool = false) -> Self {
+		guard !immediately else {
+			buildBorders(borders)
+			return self
+		}
 		asyncMain { self.buildBorders(borders) }
 		return self
 	}
