@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
-  s.name = 'Fusion'
-  s.version = '1.1.14'
+  s.name = "Fusion"
+  s.version = "1.1.14"
   s.summary = 'A generic self encaptulated framework for all purpose projects'
   s.description = <<-DESC
   A generic self encaptulated framework for all purpose projects
