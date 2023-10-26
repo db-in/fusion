@@ -57,7 +57,12 @@ public enum PresentationStyle {
 			let navigation = UIWindow.topNavigation
 			
 			if let existingController = navigation?.first(like: firstController) {
-				navigation?.popToViewController(existingController, animated: true)
+				if existingController === navigation?.children.last {
+					navigation?.popViewController(animated: false)
+					navigation?.pushViewController(firstController, animated: false)
+				} else {
+					navigation?.popToViewController(existingController, animated: true)
+				}
 			} else {
 				navigation?.pushViewController(firstController, animated: true)
 			}
