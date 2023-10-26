@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'Fusion'
-  s.version = '1.1.15'
+  s.version = '1.1.14'
   s.summary = 'A generic self encaptulated framework for all purpose projects'
   s.description = <<-DESC
   A generic self encaptulated framework for all purpose projects
@@ -11,6 +11,7 @@ Pod::Spec.new do |s|
   s.author = 'Diney Bomfim'
   s.source = { :git => "git@github.com:db-in/fusion.git", :tag => "#{s.name}-v#{s.version}", :submodules => true }
   
+  s.requires_arc = true
   s.swift_version = '5.0'
   s.osx.deployment_target = '11.0'
   s.ios.deployment_target = '13.0'
@@ -26,7 +27,10 @@ Pod::Spec.new do |s|
   s.subspec 'Core' do |co|
 	  co.public_header_files = 'Fusion/Core/**/*.h'
 	  co.source_files = 'Fusion/Core/**/*.{h,m,swift}'
-	  co.frameworks = 'Foundation', 'Security', 'CommonCrypto', 'UserNotifications'
+	  co.frameworks = 'Foundation'
+	  co.frameworks = 'Security'
+	  co.frameworks = 'CommonCrypto'
+	  co.frameworks = 'UserNotifications'
   end
 
   s.subspec 'UI' do |ui|
