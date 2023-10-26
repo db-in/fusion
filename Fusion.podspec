@@ -1,30 +1,32 @@
 Pod::Spec.new do |s|
   s.name = "Fusion"
-  s.version = "1.1.16"
-  s.summary = 'A generic self encaptulated framework for all purpose projects'
+  s.version = "1.1.17"
+  s.summary = "Micro Feature"
   s.description = <<-DESC
-  A generic self encaptulated framework for all purpose projects
-                  DESC
-  s.homepage = 'https://fusion.com'
-  s.documentation_url = 'https://db-in.github.io/fusion/'
-  s.license = { :type => 'MIT', :file => 'LICENSE' }
+				  Fusion is resposible for ...
+				  DESC
+  s.homepage = "https://fusion.com"
+  s.documentation_url = "https://db-in.github.io/fusion/"
+  s.license = { :type => "MIT", :file => "LICENSE" }
   s.author = 'Diney Bomfim'
   s.source = { :git => "git@github.com:db-in/fusion.git", :tag => "#{s.name}-v#{s.version}", :submodules => true }
   
-  s.requires_arc = true
   s.swift_version = '5.0'
+  s.requires_arc = true
   s.osx.deployment_target = '11.0'
   s.ios.deployment_target = '13.0'
   s.tvos.deployment_target = '13.0'
   s.watchos.deployment_target = '7.0'
-#  s.info_plist = { 'CFBundleVersion' => "#{s.version}", 'CFBundleShortVersionString' => "#{s.version}" }
   s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES', 'MARKETING_VERSION' => "#{s.version}" }
   s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES', 'MARKETING_VERSION' => "#{s.version}"  }
   
   s.subspec 'Core' do |co|
 	  co.public_header_files = 'Fusion/Core/**/*.h'
 	  co.source_files = 'Fusion/Core/**/*.{h,m,swift}'
-	  co.frameworks = ['Foundation', 'Security', 'CommonCrypto', 'UserNotifications']
+	  co.frameworks = 'Foundation'
+	  co.frameworks = 'Security'
+	  co.frameworks = 'CommonCrypto'
+	  co.frameworks = 'UserNotifications'
   end
 
   s.subspec 'UI' do |ui|
