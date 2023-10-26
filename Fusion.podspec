@@ -17,8 +17,8 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.0'
   s.tvos.deployment_target = '13.0'
   s.watchos.deployment_target = '7.0'
-#  s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
-#  s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
+  s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
+  s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
   s.info_plist = {
 	  "CFBundleVersion" => "#{s.version}",
 	  "CFBundleShortVersionString" => "#{s.version}"
