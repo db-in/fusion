@@ -197,6 +197,7 @@
 		603A99682A94B81700BFFCDC /* ObserverFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObserverFunctions.swift; sourceTree = "<group>"; };
 		605F3A932A70F0CC00CB4C97 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		605F3B062A77830D00CB4C97 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
+		608E0F122AEA49B000CE531D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Info.plist; sourceTree = "<group>"; };
 		609484022A4C5766008E21A1 /* Fusion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fusion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		609484272A4C5A70008E21A1 /* Tween.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tween.swift; sourceTree = "<group>"; };
 		609484282A4C5A70008E21A1 /* Ease.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ease.swift; sourceTree = "<group>"; };
@@ -385,6 +386,7 @@
 				60A859B82A06BC7600D3B283 /* Fusion.podspec */,
 				600E5E832A24CD72001810AE /* Fusion.xctestplan */,
 				60A859AE2A06BBD300D3B283 /* FusionTests */,
+				608E0F122AEA49B000CE531D /* Info.plist */,
 				60A859B02A06BBD300D3B283 /* LICENSE */,
 				60A859A82A06BBD300D3B283 /* Package.swift */,
 				60CC2EB32A50C61B00E43713 /* Packages */,
