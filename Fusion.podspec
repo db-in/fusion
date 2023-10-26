@@ -19,7 +19,10 @@ Pod::Spec.new do |s|
   s.watchos.deployment_target = '7.0'
 #  s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
 #  s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
-  s.info_plist = { 'CFBundleShortVersionString' => '#{s.version}' }
+  s.info_plist = {
+	  "CFBundleVersion" => "#{s.version}",
+	  "CFBundleShortVersionString" => "#{s.version}"
+  }
   
   s.subspec 'Core' do |co|
 	  co.public_header_files = 'Fusion/Core/**/*.h'
