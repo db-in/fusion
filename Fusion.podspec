@@ -17,14 +17,9 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.0'
   s.tvos.deployment_target = '13.0'
   s.watchos.deployment_target = '7.0'
-  s.user_target_xcconfig = { 'CODE_SIGNING_REQUIRED' => 'NO', 'EXPANDED_CODE_SIGN_IDENTITY' => "" }
-  s.pod_target_xcconfig = { 'CODE_SIGNING_ALLOWED' => 'NO', 'EXPANDED_CODE_SIGN_IDENTITY' => "" }
-#  s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
-#  s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
-#  s.info_plist = {
-#	  'CFBundleVersion' => "#{s.version}",
-#	  'CFBundleShortVersionString' => "#{s.version}"
-#  }
+  s.info_plist = { 'CFBundleVersion' => "#{s.version}", 'CFBundleShortVersionString' => "#{s.version}" }
+  s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
+  s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
   
   s.subspec 'Core' do |co|
 	  co.public_header_files = 'Fusion/Core/**/*.h'
