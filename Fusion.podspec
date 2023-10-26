@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "Fusion"
-  s.version = "1.1.14"
+  s.version = "1.1.15"
   s.summary = 'A generic self encaptulated framework for all purpose projects'
   s.description = <<-DESC
   A generic self encaptulated framework for all purpose projects
@@ -17,6 +17,8 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.0'
   s.tvos.deployment_target = '13.0'
   s.watchos.deployment_target = '7.0'
+  s.user_target_xcconfig = { 'CODE_SIGNING_REQUIRED' => 'NO' }
+  s.pod_target_xcconfig = { 'CODE_SIGNING_ALLOWED' => 'NO' }
 #  s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
 #  s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
 #  s.info_plist = {
@@ -27,10 +29,7 @@ Pod::Spec.new do |s|
   s.subspec 'Core' do |co|
 	  co.public_header_files = 'Fusion/Core/**/*.h'
 	  co.source_files = 'Fusion/Core/**/*.{h,m,swift}'
-	  co.frameworks = 'Foundation'
-	  co.frameworks = 'Security'
-	  co.frameworks = 'CommonCrypto'
-	  co.frameworks = 'UserNotifications'
+	  co.frameworks = ['Foundation', 'Security', 'CommonCrypto', 'UserNotifications']
   end
 
   s.subspec 'UI' do |ui|
