@@ -5,6 +5,25 @@
 #if canImport(UIKit)
 import UIKit
 
+private struct LoaderControl {
+	
+	@ThreadSafe
+	private static var loaders: [String : Int] = [:]
+	
+	let key: String
+	let reference: Int
+	
+	init<T>(target: T) {
+		self.key = "\(target)".replacing(regex: ".*?0x(.*?);.*", with: "$1")
+		self.reference = .random(in: 0...9999999)
+		Self.loaders[key] = reference
+	}
+	
+	static func isValid(_ control: LoaderControl) -> Bool { loaders[control.key] == control.reference }
+	
+	static func flush(_ control: LoaderControl) { loaders[control.key] = nil }
+}
+
 // MARK: - Type - ImageConvertible
 
 public protocol ImageConvertible {
@@ -33,11 +52,15 @@ extension ImageConvertible where Self : CustomStringConvertible {
 	///   - storage: Defines an alternative storage, which will be used to save the image or load from it in case `URLCache` is not available.
 	/// - SeeAlso: ``load(on:at:)``
 	public func load<T>(on target: T, at path: ReferenceWritableKeyPath<T, UIImage?>, allowsBadge: Bool, storage: URL? = nil) {
+		let control = LoaderControl(target: target)
 		if let image = UIImage.loadCache(url: "\(self)", allowsBadge: allowsBadge, storage: storage) {
 			target[keyPath: path] = image
+			LoaderControl.flush(control)
 		} else {
-			asyncGlobal {
-				UIImage.download(url: "\(self)", allowsBadge: allowsBadge, storage: storage) { target[keyPath: path] = $0 ?? target[keyPath: path] }
+			UIImage.download(url: "\(self)", allowsBadge: allowsBadge, storage: storage) {
+				guard LoaderControl.isValid(control) else { return }
+				target[keyPath: path] = $0 ?? target[keyPath: path]
+				LoaderControl.flush(control)
 			}
 		}
 	}

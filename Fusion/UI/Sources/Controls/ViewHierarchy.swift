@@ -56,6 +56,11 @@ public extension NSLayoutConstraint {
 		secondAnchor === other.secondAnchor &&
 		relation == other.relation
 	}
+	
+	func priority(new: UILayoutPriority) -> Self {
+		priority = new
+		return self
+	}
 }
 
 // MARK: - Extension - NSLayoutConstraint.Relation
@@ -264,11 +269,16 @@ public extension UIView {
 	///   - width: The width constant. If `nil`, the existing width constraint will be remove.
 	///   - height: The height constant. If `nil`, the existing height constraint will be remove.
 	///   - relation: The relation of the value with the constraints. The default is `equal`.
+	///   - priority: The UILayoutPriority of the constraints. The default is `required`.
 	///   - allowAutoresizing: Indicates the value to be set at `translatesAutoresizingMaskIntoConstraints`. The default is `false`.
-	func setConstraints(width: CGFloat?, height: CGFloat?, relation: NSLayoutConstraint.Relation = .equal, allowAutoresizing: Bool = false) {
+	func setConstraints(width: CGFloat?,
+						height: CGFloat?,
+						relation: NSLayoutConstraint.Relation = .equal,
+						priority: UILayoutPriority = .required,
+						allowAutoresizing: Bool = false) {
 		let items = [
-			relation.constraint(widthAnchor, constant: width ?? 0.0),
-			relation.constraint(heightAnchor, constant: height ?? 0.0)
+			relation.constraint(widthAnchor, constant: width ?? 0.0).priority(new: priority),
+			relation.constraint(heightAnchor, constant: height ?? 0.0).priority(new: priority)
 		]
 		
 		let validItems = zip([width, height], items).compactMap { $0 != nil ? $1 : nil }
