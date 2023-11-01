@@ -131,7 +131,7 @@ public struct UserFlowUniversalLink {
 	}
 }
 
-public typealias UserFlowMapping = (UserFlow, UIViewController) -> UIViewController?
+public typealias UserFlowMapping = (UserFlow) -> UIViewController?
 
 // MARK: - Type -
 
@@ -144,17 +144,10 @@ public struct UserFlow {
 	public let map: UserFlowMapping?
 	
 	/// The original storyboard initial controller or an empty new `UIViewController` if no initial is found.
-	public var initial: UIViewController {
-		UIStoryboard(name: name, bundle: bundle).instantiateInitialViewController() ?? UIViewController()
-	}
+	public var initial: UIViewController { UIStoryboard(name: name, bundle: bundle).instantiateInitialViewController() ?? UIViewController() }
 	
 	/// Mapped controller, after the UserFlow mapping function is executed.
-	public var mapped: UIViewController {
-		let initialViewController = initial
-		guard let controller = map?(self, initialViewController) else { return initialViewController }
-		controller.tabBarItem = initialViewController.tabBarItem
-		return controller
-	}
+	public var mapped: UIViewController { map?(self) ?? initial }
 	
 // MARK: - Constructors
 
