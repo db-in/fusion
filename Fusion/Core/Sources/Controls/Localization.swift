@@ -33,6 +33,8 @@ public extension Bundle {
 	/// Hints are the first bundles to be scanned for loading contents. Including (but not limited to) languages, images, url, etc.
 	static var hints: [Bundle] = []
 	
+	static var languageSet: Set<String> = { Set(main.localizations) }()
+	
 // MARK: - Protected Methods
 	
 	/// Returns the language bundle inside this given bundle for a given language code, otherwise it returns `nil`.
@@ -177,7 +179,7 @@ public extension Locale {
 
 // MARK: - Properties
 	
-	private static var preferredLanguage: String { Locale.preferredLanguages.first ?? "en" }
+	private static var preferredLanguage: String { Locale.preferredLanguages.first(where: { Bundle.languageSet.contains($0) }) ?? "en" }
 	
 	/// Standard UTC/GMT locale.
 	static var utc: Locale { Locale(identifier: "UTC") }
