@@ -246,7 +246,7 @@ public extension Optional where Wrapped == TextConvertible {
 			case let label as UILabel:
 				label.text = nil
 			case let button as UIButton:
-				button.setTitle(nil, for: .normal)
+				button.setTitle("", for: .normal)
 				button.setAttributedTitle(nil, for: .normal)
 			case let textView as UITextView:
 				textView.text = nil
