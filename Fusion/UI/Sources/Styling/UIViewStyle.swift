@@ -511,6 +511,15 @@ public extension UIView {
 		return view
 	}
 	
+	func embededInScrollView(edges: UIEdgeInsets = .zero) -> UIScrollView {
+		let view = UIScrollView(frame: .init(origin: .zero, size: frame.size))
+		view.showsHorizontalScrollIndicator = false
+		view.showsVerticalScrollIndicator = false
+		view.addSubview(self)
+		view.setConstraintsFitting(child: self, edges: edges)
+		return view
+	}
+	
 	static func spacer(width: CGFloat? = nil, height: CGFloat? = nil, backgroundColor: UIColor? = nil) -> UIView {
 		let view = UIView(frame: .init(x: 0, y: 0, width: width ?? 0, height: height ?? 0))
 		view.backgroundColor = backgroundColor
