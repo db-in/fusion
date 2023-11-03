@@ -187,6 +187,9 @@ public extension Locale {
 	/// Returns the current language code ISO 3166-2 format (2 alpha codes) in lower case. For example `"en"`.
 	static var preferredLanguageCodeISO2: String { "\(preferredLanguage.prefix(2))".lowercased() }
 	
+	/// Returns the current preferred locale.
+	static var preferredLocale: Locale { Locale(identifier: preferredLanguageCodeISO2) }
+	
 	/// Returns the language code in ISO 639-1 format (2 alpha codes).
 	var languageCodeISO2: String {
 		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
