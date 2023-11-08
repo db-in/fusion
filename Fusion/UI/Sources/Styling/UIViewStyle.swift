@@ -452,7 +452,7 @@ public extension UIView {
 public extension UIView {
 	
 	/// Returns true if the given view is being rendered as right to left layout direction.
-	var isRTL: Bool { traitCollection.layoutDirection == .rightToLeft }
+	var isRTL: Bool { semanticContentAttribute == .forceRightToLeft || traitCollection.layoutDirection == .rightToLeft }
 	
 	var hasSuperview: Bool { superview != nil }
 	
