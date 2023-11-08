@@ -146,8 +146,9 @@ public extension TextConvertible {
 				linebreak: NSLineBreakMode? = nil,
 				alignment: NSTextAlignment? = nil,
 				overriding: Bool = true) -> NSAttributedString {
-		styled(.attributed(font: font, color: color, lineSpacing: lineSpacing, lineHeight: lineHeight, linebreak: linebreak, alignment: alignment),
-			   overriding: overriding)
+		let align = Locale.preferredLocale.isRTL ? alignment?.mirror : alignment
+		return styled(.attributed(font: font, color: color, lineSpacing: lineSpacing, lineHeight: lineHeight, linebreak: linebreak, alignment: align),
+					  overriding: overriding)
 	}
 }
 
