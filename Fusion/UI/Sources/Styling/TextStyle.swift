@@ -270,6 +270,7 @@ public extension UILabel {
 					 aligment: NSTextAlignment = .natural,
 					 minimumScale: CGFloat = 0.7,
 					 lines: Int = 0) {
+		let isRTL = Locale.preferredLocale.isRTL
 		let size = text?.content.sizeThatFits(font: aFont, width: fitting.width, height: fitting.height) ?? .zero
 		self.init(frame: CGRect(origin: .zero, size: size))
 		font = aFont
