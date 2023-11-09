@@ -87,13 +87,15 @@ import UIKit
 
 public extension NSTextAlignment {
 	
-	/// Mirrors the alignment.
-	var mirror: NSTextAlignment {
+	/// Safer RTL compatible alignment.
+	var rtlSafe: NSTextAlignment {
+		let isRTL = Locale.preferredLocale.isRTL
+		
 		switch self {
-		case .left:
-			return .right
+		case .left, .natural:
+			return isRTL ? .right : .left
 		case .right:
-			return .left
+			return isRTL ? .left : .right
 		default:
 			return self
 		}
@@ -120,7 +122,7 @@ public extension TextAttributes {
 		
 		if lineSpacing != nil || lineHeight != nil || alignment != nil {
 			let paragraph = NSMutableParagraphStyle()
-			paragraph.alignment = alignment ?? .natural
+			paragraph.alignment = (alignment ?? .natural).rtlSafe
 			paragraph.lineSpacing = lineSpacing ?? 0
 			paragraph.lineHeightMultiple = lineHeight ?? 0
 			paragraph.lineBreakMode = linebreak ?? .byTruncatingTail
@@ -146,9 +148,8 @@ public extension TextConvertible {
 				linebreak: NSLineBreakMode? = nil,
 				alignment: NSTextAlignment? = nil,
 				overriding: Bool = true) -> NSAttributedString {
-		let align = Locale.preferredLocale.isRTL ? alignment?.mirror : alignment
-		return styled(.attributed(font: font, color: color, lineSpacing: lineSpacing, lineHeight: lineHeight, linebreak: linebreak, alignment: align),
-					  overriding: overriding)
+		styled(.attributed(font: font, color: color, lineSpacing: lineSpacing, lineHeight: lineHeight, linebreak: linebreak, alignment: alignment),
+			   overriding: overriding)
 	}
 }
 
@@ -271,7 +272,6 @@ public extension UILabel {
 					 aligment: NSTextAlignment = .natural,
 					 minimumScale: CGFloat = 0.7,
 					 lines: Int = 0) {
-		let isRTL = Locale.preferredLocale.isRTL
 		let size = text?.content.sizeThatFits(font: aFont, width: fitting.width, height: fitting.height) ?? .zero
 		self.init(frame: CGRect(origin: .zero, size: size))
 		font = aFont
@@ -280,7 +280,7 @@ public extension UILabel {
 		adjustsFontSizeToFitWidth = true
 		minimumScaleFactor = minimumScale
 		numberOfLines = lines
-		textAlignment = isRTL ? aligment.mirror : aligment
+		textAlignment = aligment.rtlSafe
 		text.render(on: self)
 	}
 	
@@ -295,14 +295,6 @@ public extension UILabel {
 		newFrame.size = size + CGSize(width: 0, height: 20)
 		
 		frame = newFrame
-	}
-	
-	/// Automatically aligns the text accordingly to the view direction. Either Left or Right. All the other alignment parameters
-	/// remain unchanged.
-	///
-	/// - Parameter direction: The text alignment.
-	func textAlignment(to direction: NSTextAlignment) {
-		textAlignment = isRTL ? direction.mirror : direction
 	}
 }
 
