@@ -5,15 +5,15 @@
 #if canImport(UIKit)
 import UIKit
 
-// MARK: - Extension - UIImage Catalogue
+// MARK: - Extension - UIImage
 
 public extension UIImage {
 	
 // MARK: - Properties
 	
-	static let photoPlaceholder: UIImage = .anyImage(named: "photo")
+	static let photoPlaceholder: UIImage = .anyImageNonTrait(named: "photo")
 	
-	static let starFilled: UIImage = .anyImage(named: "star.fill")
+	static let starFilled: UIImage = .anyImageNonTrait(named: "star.fill")
 	
 	/// Returns the image with `alwaysOriginal` rendering mode.
 	var original: UIImage { withRenderingMode(.alwaysOriginal) }
@@ -25,8 +25,12 @@ public extension UIImage {
 
 // MARK: - Protected Methods
 	
+	private static func inAnyBundle(_ named: String) -> UIImage? {
+		Bundle.allAvailable.firstMap { .init(named: named, in: $0, with: nil) } ?? .init(systemName: named)?.template
+	}
+	
 	private static func image(named: String, bundle: Bundle) -> UIImage? {
-		.init(named: named, in: bundle, with: nil) ?? Bundle.allAvailable.firstMap { .init(named: named, in: $0, with: nil) } ?? .init(systemName: named)?.template
+		.init(named: named, in: bundle, with: nil) ?? .inAnyBundle(named)
 	}
 	
 // MARK: - Exposed Methods
@@ -39,7 +43,7 @@ public extension UIImage {
 	///   - allowCache: Indicates if cache can be used to optimize loading. The default value is `true`.
 	///   - bundleHint: A given bundle to be the first try for the given resource. Default is `main`.
 	/// - Returns: An image object, if available; otherwise, a system image or an empty image.
-	static func anyImage(named: String, allowCache: Bool = true, bundleHint: Bundle = .main) -> UIImage {
+	static func anyImageNonTrait(named: String, allowCache: Bool = true, bundleHint: Bundle = .main) -> UIImage {
 		guard allowCache else { return image(named: named, bundle: bundleHint) ?? .init() }
 		return InMemoryCache.getOrSet(key: "\(Self.self)\(named)", newValue: image(named: named, bundle: bundleHint)) ?? .init()
 	}
@@ -48,6 +52,35 @@ public extension UIImage {
 
 #if canImport(UIKit) && !os(watchOS)
 public extension UIImage {
+	
+ // MARK: - Protected Methods
+	 
+	 private static func inAnyBundle(_ named: String, trait: UITraitCollection) -> UIImage? {
+		 Bundle.allAvailable.firstMap { .init(named: named, in: $0, compatibleWith: trait) } ?? .init(systemName: named)?.template
+	 }
+	 
+	 private static func image(named: String, bundle: Bundle, trait: UITraitCollection) -> UIImage? {
+		 .init(named: named, in: bundle, compatibleWith: trait) ?? .inAnyBundle(named, trait: trait)
+	 }
+	 
+ // MARK: - Exposed Methods
+	 
+	 /// Returns an image object with the specified name and style from any available bundle. If there are multiple bundles with the same
+	 /// valid image name, only the first is returned with application bundles as priority over frameworks.
+	 ///
+	 /// - Parameters:
+	 ///   - named: The name of the image resource.
+	 ///   - allowCache: Indicates if cache can be used to optimize loading. The default value is `true`.
+	 ///   - bundleHint: A given bundle to be the first try for the given resource. Default is `main`.
+	 ///   - trait: A given `UITraitCollection`. Default is ``.preferredLocale``.
+	 /// - Returns: An image object, if available; otherwise, a system image or an empty image.
+	 static func anyImage(named: String,
+						  allowCache: Bool = true,
+						  bundleHint: Bundle = .main,
+						  trait: UITraitCollection = .preferredLocaleDirection) -> UIImage {
+		 guard allowCache else { return image(named: named, bundle: bundleHint, trait: trait) ?? .init() }
+		 return InMemoryCache.getOrSet(key: "\(Self.self)\(named)", newValue: image(named: named, bundle: bundleHint, trait: trait)) ?? .init()
+	 }
 	
 // MARK: - Exposed Methods
 	
@@ -186,5 +219,13 @@ public extension UIImage {
 		guard let cgImage = context.createCGImage(outputCIImage, from: outputCIImage.extent) else { return self }
 		return UIImage(cgImage: cgImage, scale: self.scale, orientation: self.imageOrientation)
 	}
+}
+
+// MARK: - Extension - UITraitCollection
+
+public extension UITraitCollection {
+	
+	/// Returns the current preferred locale direction.
+	static var preferredLocaleDirection: Self { .init(layoutDirection: Locale.preferredLocale.isRTL ? .rightToLeft : .leftToRight) }
 }
 #endif
