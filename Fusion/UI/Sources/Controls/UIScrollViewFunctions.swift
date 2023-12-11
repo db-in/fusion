@@ -164,6 +164,11 @@ extension UIScrollView {
 		setContentOffset(.init(x: 0, y: -top), animated: animated)
 	}
 	
+	public func scrollToBotom(animated: Bool) {
+		let bottom = contentInset.bottom + adjustedContentInset.bottom
+		setContentOffset(.init(x: 0, y: contentSize.height - bounds.height + bottom), animated: animated)
+	}
+	
 // MARK: - Overridden Methods
 	
 	open override func observeValue(forKeyPath keyPath: String?,
