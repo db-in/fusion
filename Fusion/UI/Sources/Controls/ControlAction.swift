@@ -43,15 +43,22 @@ public struct ControlAction {
 	public let image: UIImage?
 	public let isEnabled: Bool
 	public let isSelected: Bool
+	public let isHighlighted: Bool
 	public let action: ControlHandler?
 	
 // MARK: - Constructors
 	
-	public init(title: TextConvertible? = nil, image: UIImage? = nil, enabled: Bool = true, selected: Bool = false, action: ControlHandler? = nil) {
+	public init(title: TextConvertible? = nil,
+				image: UIImage? = nil,
+				enabled: Bool = true,
+				selected: Bool = false,
+				highlighted: Bool = false,
+				action: ControlHandler? = nil) {
 		self.title = title
 		self.image = image
 		self.action = action
 		self.isEnabled = enabled
+		self.isHighlighted = highlighted
 		self.isSelected = selected
 	}
 	
@@ -65,7 +72,7 @@ public struct ControlAction {
 // MARK: - Extension - UIButton ControlAction
 
 //public extension UIButton {
-//	
+//
 //	var spacing: CGFloat {
 //		get { contentEdgeInsets.left * 3 }
 //		set {
@@ -75,12 +82,12 @@ public struct ControlAction {
 //			contentEdgeInsets = .init(top: 0, left: inset, bottom: 0, right: inset)
 //		}
 //	}
-//	
+//
 //	convenience init(frame: CGRect, image: UIImage) {
 //		self.init(frame: frame)
 //		self.setImage(image, for: .normal)
 //	}
-//	
+//
 //	convenience init(action newAction: ControlAction) {
 //		self.init(frame: .init(origin: .zero, size: .init(squared: 44)))
 //		contentEdgeInsets = UIEdgeInsets(top: 8, left: 4, bottom: 8, right: 4)
@@ -93,9 +100,9 @@ public struct ControlAction {
 //		titleLabel?.minimumScaleFactor = 0.6
 //		setAction(newAction)
 //	}
-//	
+//
 //	func setAction(_ action: ControlAction?, in inAn: Animation? = nil, out outAn: Animation? = nil) {
-//		
+//
 //		let define = { [weak self] in
 //			if let validAction = action {
 //				action?.title.render(on: self)
@@ -106,7 +113,7 @@ public struct ControlAction {
 //				self?.setAction(nil)
 //			}
 //		}
-//		
+//
 //		if let outAnimation = outAn {
 //			animate(with: outAnimation)
 //			asyncMain(after: .osDefault) { [weak self] in
