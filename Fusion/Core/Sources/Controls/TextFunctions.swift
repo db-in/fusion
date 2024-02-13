@@ -68,6 +68,12 @@ public extension TextConvertible {
 		return attributed.attributes(at: 0, effectiveRange: nil)
 	}
 	
+	/// Replaces the text matched by the specified regular expression with the provided text.
+	///
+	/// - Parameters:
+	///   - regex: The regular expression pattern to search for.
+	///   - withText: The text to replace the matched pattern.
+	/// - Returns: A `TextConvertible` object with the replaced text.
 	func replacing(regex: String, withText: TextConvertible) -> TextConvertible {
 		if let range = content.range(of: regex, options: [.regularExpression, .caseInsensitive]) {
 			let mutableText: NSMutableAttributedString
