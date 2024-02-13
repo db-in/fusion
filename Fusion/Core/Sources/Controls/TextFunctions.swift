@@ -68,17 +68,56 @@ public extension TextConvertible {
 		return attributed.attributes(at: 0, effectiveRange: nil)
 	}
 	
-	func replacing(regex: String, withString: String) -> TextConvertible {
-		guard let attributed = self as? NSAttributedString else { return content.replacing(regex: regex, with: withString) }
-				
+	func replacing(regex: String, withText: TextConvertible) -> TextConvertible {
 		if let range = content.range(of: regex, options: [.regularExpression, .caseInsensitive]) {
+			let mutableText: NSMutableAttributedString
 			let nsRange = NSRange(range, in: content)
-			let mutableText = NSMutableAttributedString(attributedString: attributed)
-			mutableText.replaceCharacters(in: nsRange, with: withString)
-			return mutableText as NSAttributedString
+			
+			if let attributed = self as? NSAttributedString {
+				mutableText = NSMutableAttributedString(attributedString: attributed)
+			} else {
+				mutableText = NSMutableAttributedString(string: content)
+			}
+			
+			let preText = mutableText.attributedSubstring(from: NSRange(location: 0, length: nsRange.lowerBound))
+			let postText = mutableText.attributedSubstring(from: NSRange(location: nsRange.upperBound, length: mutableText.length - nsRange.upperBound))
+			
+			return preText.appending(withText).appending(postText)
 		}
 		
 		return self
+	}
+	
+	/// This function will find and replace placeholders inside a string with other values, the placeholders can be named of unnamed.
+	///
+	/// ```
+	/// "{KG}kg is equal {gr}g".replace(["5", "5000"]) // results in "5kg is equal 5000g"
+	/// ```
+	///
+	/// ```
+	/// let string = "{KG}kg is equal {gr}g"
+	/// string.replace(["5000", "5"], placeholders: ["{KG}", "{gr}"]) // results in "5kg is equal 5000g"
+	/// ```
+	///
+	/// - Parameters:
+	///   - template: An array containing the actual values to be replaced
+	///   - placeholders: An array containing the named placeholders. Ommiting this parameter takes advantage of default placeholders.
+	/// - Returns: A string with placeholders being replaced.
+	///
+	func replacing(with template: [TextConvertible], placeholders: [String]? = nil) -> TextConvertible {
+		let elements = placeholders ?? Array(repeating: "{.*?}", count: template.count)
+		let pattern = elements.map { $0.replacingOccurrences(of: "{", with: "\\{").replacingOccurrences(of: "}", with: "\\}") }
+		var result: TextConvertible = self
+		zip(pattern, template).forEach { result = result.replacing(regex: $0, withText: $1) }
+		return result
+	}
+	
+	/// Replaces the default placeholders in a given string with the new values.
+	///
+	/// - Parameter template: The new values.
+	/// - Returns: A string with the replaces values.
+	func replacing(_ template: TextConvertible...) -> TextConvertible {
+		replacing(with: template)
 	}
 	
 	func render(on: Any?) { }

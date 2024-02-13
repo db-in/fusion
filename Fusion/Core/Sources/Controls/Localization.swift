@@ -130,47 +130,6 @@ public extension String {
 		string.originalKey = originalKey ?? self
 		return string.replacingOccurrences(of: "amp;", with: "").replacingOccurrences(of: "\\", with: "")
 	}
-	
-	/// This function will find and replace placeholders inside a string with other values, the placeholders can be named of unnamed.
-	///
-	/// ```
-	/// "{KG}kg is equal {gr}g".replace(["5", "5000"]) // results in "5kg is equal 5000g"
-	/// ```
-	///
-	/// ```
-	/// let string = "{KG}kg is equal {gr}g"
-	/// string.replace(["5000", "5"], placeholders: ["{KG}", "{gr}"]) // results in "5kg is equal 5000g"
-	/// ```
-	///
-	/// - Parameters:
-	///   - template: An array containing the actual values to be replaced
-	///   - placeholders: An array containing the named placeholders. Ommiting this parameter takes advantage of default placeholders.
-	/// - Returns: A string with placeholders being replaced.
-	func replacing(with template: [String], placeholders: [String]? = nil) -> String {
-		
-		let suffix = placeholders != nil ? "?" : ""
-		let elements = placeholders ?? Array(repeating: "{.*?}", count: template.count)
-		let pattern = elements.map { string -> String in
-			var item = string.replacingOccurrences(of: "{", with: "\\{")
-			item = item.replacingOccurrences(of: "}", with: "\\}")
-			
-			return "(.*?)\(item)(.*\(suffix))"
-		}
-		
-		let newString = pattern.enumerated().reduce (self) { result, string in
-			result.replacingOccurrences(of: string.element, with: "$1\(template[string.offset])$2", options: .regularExpression)
-		}
-		
-		return newString
-	}
-	
-	/// Replaces the default placeholders in a given string with the new values.
-	///
-	/// - Parameter template: The new values.
-	/// - Returns: A string with the replaces values.
-	func replacing(_ template: String...) -> String {
-		replacing(with: template)
-	}
 }
 
 // MARK: - Extension - Locale
