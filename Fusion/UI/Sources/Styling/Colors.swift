@@ -109,6 +109,38 @@ public extension UIColor {
 		)
 	}
 	
+	/// Adjusts the color by making it darker. A value of 0.0 leaves the color unchanged, while a value of 1.0 results in full darkness.
+	///
+	/// - Parameter factor: A CGFloat value representing the amount by which to darken the color.
+	/// - Returns: A darker version of the original color.
+	func darker(by factor: CGFloat) -> UIColor {
+		var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+		guard getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return self }
+		
+		let newRed = max(red - factor, 0)
+		let newGreen = max(green - factor, 0)
+		let newBlue = max(blue - factor, 0)
+		
+		return UIColor(red: newRed, green: newGreen, blue: newBlue, alpha: alpha)
+	}
+	
+	/// Adjusts the color by modifying its saturation and brightness. Positive values increase, while negative values decrease.
+	/// Value of 0.0 keeps it unchanged.
+	///
+	/// - Parameters:
+	///   - saturation: A CGFloat value representing the change in saturation. Default is 0.0.
+	///   - brightness: A CGFloat value representing the change in brightness. Default is 0.0.
+	/// - Returns: An adjusted version of the original color.
+	func adjust(saturation: CGFloat = 0.0, brightness: CGFloat = 0.0) -> UIColor {
+		var hue: CGFloat = 0, sat: CGFloat = 0, bright: CGFloat = 0, alpha: CGFloat = 0
+		guard getHue(&hue, saturation: &sat, brightness: &bright, alpha: &alpha) else { return self }
+		
+		let newSaturation = min(max(sat + saturation, 0), 1)
+		let newBrightness = min(max(bright + brightness, 0), 1)
+		
+		return UIColor(hue: hue, saturation: newSaturation, brightness: newBrightness, alpha: alpha)
+	}
+	
 	/// Returns a random color with a given alpha.
 	/// - Parameter alpha: The alpha between [0.0, 1.0], the default value is 1.0.
 	/// - Returns: A random generated UIColor.
