@@ -128,17 +128,19 @@ public extension UIColor {
 	/// Value of 0.0 keeps it unchanged.
 	///
 	/// - Parameters:
+	///   - saturation: A CGFloat value representing the change in HUE. Default is 0.0, which means no change. Values can be between [-1.0, 1.0].
 	///   - saturation: A CGFloat value representing the change in saturation. Default is 0.0.
 	///   - brightness: A CGFloat value representing the change in brightness. Default is 0.0.
 	/// - Returns: An adjusted version of the original color.
-	func adjust(saturation: CGFloat = 0.0, brightness: CGFloat = 0.0) -> UIColor {
-		var hue: CGFloat = 0, sat: CGFloat = 0, bright: CGFloat = 0, alpha: CGFloat = 0
-		guard getHue(&hue, saturation: &sat, brightness: &bright, alpha: &alpha) else { return self }
-		
-		let newSaturation = min(max(sat + saturation, 0), 1)
-		let newBrightness = min(max(bright + brightness, 0), 1)
-		
-		return UIColor(hue: hue, saturation: newSaturation, brightness: newBrightness, alpha: alpha)
+	func adjust(hue: CGFloat = 0.0, saturation: CGFloat = 0.0, brightness: CGFloat = 0.0) -> UIColor {
+		var currentHue: CGFloat = 0, currentSaturation: CGFloat = 0, currentBrightness: CGFloat = 0, alpha: CGFloat = 0
+		guard getHue(&currentHue, saturation: &currentSaturation, brightness: &currentBrightness, alpha: &alpha) else { return self }
+
+		let newHue = (currentHue + hue).truncatingRemainder(dividingBy: 1)
+		let newSaturation = min(max(currentSaturation + saturation, 0), 1)
+		let newBrightness = min(max(currentBrightness + brightness, 0), 1)
+
+		return UIColor(hue: newHue, saturation: newSaturation, brightness: newBrightness, alpha: alpha)
 	}
 	
 	/// Returns a random color with a given alpha.
