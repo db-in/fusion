@@ -13,10 +13,10 @@ public final class PresentationController : UIPresentationController {
 	public struct Config {
 		
 		/// Defines the default initial ``cornerRadius`` for future ``PresentationController``.
-		public static var cornerRadius: CGFloat = 20
+		public static var cornerRadius: RectCorners = .init(all: 20)
 		
 		/// Defines the default initial ``topSafeArea`` for future ``PresentationController``.
-		public static var topSafeArea: CGFloat = 20
+		public static var extraSafeArea: CGFloat = 20
 	}
 	
 // MARK: - Properties
@@ -44,10 +44,16 @@ public final class PresentationController : UIPresentationController {
 	public var allowsDismiss: Bool = true
 	
 	/// The corner radius of the drawer frame.
-	public var cornerRadius: CGFloat = Config.cornerRadius
+	public var cornerRadius: RectCorners = Config.cornerRadius
 	
 	/// Defines a safe space at the top that will never be exceeded, this is in addition to any top existing window safe.
-	public var topSafeArea: CGFloat = Config.topSafeArea
+	public var extraSafeArea: CGFloat = Config.extraSafeArea
+	
+	/// Defines the presenting side of the new controller.
+	public var presentingSide: UIRectEdge = .bottom
+	
+	/// Keeps the previous View Controller visible on top, the return navigation is done by tapping on it.
+	public var picInPic: Bool = false
 	
 	/// A closure to be executed after the presentation is dismissed in the future.
 	public var onDismissal: Callback?
@@ -56,22 +62,29 @@ public final class PresentationController : UIPresentationController {
 	public private(set) lazy var dimmingView: UIView = { .init(background: .black.withAlphaComponent(0.5)) }()
 	
 	public override var frameOfPresentedViewInContainerView: CGRect {
-		let navigation = presentedViewController as? UINavigationController
-		let header = (navigation?.navigationBar.frame.height ?? 0) + (navigation?.additionalSafeAreaInsets.top ?? 0)
-		
 		guard
 			let containerBounds = containerView?.bounds,
 			let controller = nestedViewController,
 			let screenSafeArea = UIWindow.key?.safeAreaInsets
 		else { return UIWindow.keyBounds }
-
+		
+		let navigation = presentedViewController as? UINavigationController
+		let header = (navigation?.navigationBar.frame.height ?? 0) + (navigation?.additionalSafeAreaInsets.top ?? 0)
 		let viewSafeArea = controller.additionalSafeAreaInsets
 		let extraPadding = header + screenSafeArea.bottom + viewSafeArea.top + viewSafeArea.bottom
-		
 		var frame = containerBounds
-		frame.size.height = min(controller.preferredHeight + extraPadding, containerBounds.height - topOffset - topSafeArea)
-		frame.origin.y = containerBounds.height - frame.size.height
-		originalHeight = originalHeight > 0 ? originalHeight : controller.preferredHeight
+		originalHeight = originalHeight > 0 ? originalHeight : controller.preferredSize.height
+		
+		switch presentingSide {
+		case .left, .right:
+			frame.size.width = min(controller.preferredSize.width, containerBounds.width - extraSafeArea)
+			frame.origin.x = containerBounds.width - frame.width
+		case .top, .bottom:
+			frame.size.height = min(controller.preferredSize.height + extraPadding, containerBounds.height - topOffset - extraSafeArea)
+			frame.origin.y = containerBounds.height - frame.size.height
+		default:
+			break
+		}
 		
 		return frame
 	}
@@ -164,7 +177,38 @@ public final class PresentationController : UIPresentationController {
 	}
 	
 // MARK: - Exposed Methods
-
+	
+	public func prepareInitialLayout() {
+		guard
+			let containerBounds = containerView?.bounds,
+			let targetView = presentedView
+		else { return }
+		
+		targetView.layoutIfNeeded()
+		targetView.frame = frameOfPresentedViewInContainerView
+		targetView.layer.masksToBounds = true
+		targetView.make(bezierCorners: cornerRadius)
+		
+//		nestedViewController?.additionalSafeAreaInsets = .init(top: 0, left: 60, bottom: 0, right: 0)
+		
+		switch presentingSide {
+		case .left:
+			targetView.autoresizingMask = [.flexibleHeight, .flexibleRightMargin]
+			targetView.frame.origin.x = -containerBounds.width
+		case .right:
+			targetView.autoresizingMask = [.flexibleHeight, .flexibleLeftMargin]
+			targetView.frame.origin.x = containerBounds.width
+		case .top:
+			targetView.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
+			targetView.frame.origin.y = -containerBounds.height
+		case .bottom:
+			targetView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
+			targetView.frame.origin.y = containerBounds.height
+		default:
+			break
+		}
+	}
+	
 // MARK: - Overridden Methods
 	
 	public override func presentationTransitionWillBegin() {
@@ -176,13 +220,7 @@ public final class PresentationController : UIPresentationController {
 		containerView?.addSubview(targetView)
 		containerView?.insertSubview(dimmingView, at: 0)
 		updateGrabber()
-		
-		targetView.layoutIfNeeded()
-		targetView.frame = frameOfPresentedViewInContainerView
-		targetView.frame.origin.y = containerBounds.height
-		targetView.layer.masksToBounds = true
-		targetView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-		targetView.make(radius: cornerRadius, corners: [.topLeft, .topRight])
+		prepareInitialLayout()
 		
 		dimmingView.frame = containerBounds
 		dimmingView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -237,15 +275,17 @@ extension PresentationController : UIViewControllerAnimatedTransitioning {
 		propertyAnimator = .init(duration: Constant.duration, timingParameters: UICubicTimingParameters(animationCurve: .easeOut))
 
 		let isPresenting = presentedViewController.isBeingPresented
-		let original = transitionContext.viewController(forKey: isPresenting ? .from : .to)?.view
-		let modal = transitionContext.view(forKey: isPresenting ? .to : .from)
+		let sourceController = transitionContext.viewController(forKey: isPresenting ? .from : .to)
+		let targetController = transitionContext.viewController(forKey: isPresenting ? .to : .from)
 		
 		propertyAnimator?.addAnimations { [weak self] in
 			if isPresenting {
-				modal?.frame = self?.frameOfPresentedViewInContainerView ?? .zero
+				sourceController?.view.make(radius: 50).transform = .identity.scaledBy(x: 0.88, y: 0.88)
+				targetController?.view.frame = self?.frameOfPresentedViewInContainerView ?? .zero
 			} else {
-				original?.transform = .identity
-				modal?.frame.origin.y = transitionContext.containerView.frame.maxY
+//				sourceController?.view.make(radius: 0).transform = .identity
+				sourceController?.view.transform = .identity
+				targetController?.presentation.prepareInitialLayout()
 			}
 		}
 		
@@ -279,22 +319,25 @@ private struct Keys {
 
 public extension UIViewController {
 	
-	fileprivate var preferredHeight: CGFloat {
+	fileprivate var preferredSize: CGSize {
 		let target = (self as? UINavigationController)?.topViewController ?? self
 		let size = target.preferredContentSize
-		guard size.height == 0 else { return size.height }
-		
-		let insets = target.view.safeAreaInsets.top + target.view.safeAreaInsets.bottom
-		var height = max(0, target.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height - insets)
-		
+		guard size == .zero else { return size }
+
+		let verticalInsets = target.view.safeAreaInsets.top + target.view.safeAreaInsets.bottom
+		let horizontalInsets = target.view.safeAreaInsets.left + target.view.safeAreaInsets.right
+		var height = max(0, target.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height - verticalInsets)
+		var width = max(0, target.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).width - horizontalInsets)
+
 		if let mainScroll = target.view as? UIScrollView {
 			height += mainScroll.contentSize.height + mainScroll.contentInset.top + mainScroll.contentInset.bottom
-			return height
+			width += mainScroll.contentSize.width + mainScroll.contentInset.left + mainScroll.contentInset.right
+			return CGSize(width: width, height: height)
 		}
-		
+
 		let scrollViews: [UIScrollView] = target.view.allSubviewOf()
 		target.view.layoutIfNeeded()
-		
+
 		height += scrollViews.reduce(CGFloat(0), { result, scrollView in
 			if scrollView.intrinsicContentSize.height <= 0 {
 				return result + scrollView.contentSize.height + scrollView.contentInset.top + scrollView.contentInset.bottom - 50
@@ -302,13 +345,21 @@ public extension UIViewController {
 				return result
 			}
 		})
-		
-		return height
+
+		width += scrollViews.reduce(CGFloat(0), { result, scrollView in
+			if scrollView.intrinsicContentSize.width <= 0 {
+				return result + scrollView.contentSize.width + scrollView.contentInset.left + scrollView.contentInset.right
+			} else {
+				return result
+			}
+		})
+
+		return CGSize(width: width, height: height)
 	}
 	
 	/// Automatically creates and returns the ``PresentationController`` that will be used on the next ``presentOver(_:style:)`` action.
 	/// - Important: This instance will be valid only for one round of presentation. Any changes will be discarded after the presentation is over.
-	var presentationController: PresentationController {
+	var presentation: PresentationController {
 		guard let sheet = objc_getAssociatedObject(self, &Keys.presentationKey) as? PresentationController else {
 			let newSheet = PresentationController(presentedViewController: self, presenting: nil)
 			objc_setAssociatedObject(self, &Keys.presentationKey, newSheet, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -327,26 +378,27 @@ public extension UIViewController {
 	/// - Parameters:
 	///   - target: The new view controller to be presented on top.
 	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
-	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none) {
+	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom) {
+		target.presentation.presentingSide = side
 #if os(iOS) && !os(xrOS)
 		if #available(iOS 15.0, *), style == .pageSheet || style == .formSheet {
 			target.modalPresentationStyle = style
 			target.transitioningDelegate = nil
 			let sheet = target.sheetPresentationController
 			if #available(iOS 16.0, *) {
-				let dent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { _ in target.preferredHeight }
-				sheet?.detents = [dent]
+				let detent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { _ in target.preferredSize.height }
+				sheet?.detents = [detent]
 			} else {
 				sheet?.detents = [.large()]
 			}
 			
-			sheet?.preferredCornerRadius = target.presentationController.cornerRadius
-			sheet?.prefersGrabberVisible = target.presentationController.isGrabberVisible
+			sheet?.preferredCornerRadius = target.presentation.cornerRadius.topLeft
+			sheet?.prefersGrabberVisible = target.presentation.isGrabberVisible
 			sheet?.prefersEdgeAttachedInCompactHeight = true
 			sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
 		} else {
 			target.modalPresentationStyle = style.isModal ? .custom : style
-			target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
+			target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentation : target.transitioningDelegate
 		}
 #else
 		target.modalPresentationStyle = style.isModal ? .custom : style
@@ -366,8 +418,8 @@ public extension UIViewController {
 	/// Presents this instance over the key window's top view.
 	///
 	/// - Parameter style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
-	func presentOverWindow(style: UIModalPresentationStyle = .none) {
-		UIWindow.topViewController?.presentOver(self, style: style)
+	func presentOverWindow(style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom) {
+		UIWindow.topViewController?.presentOver(self, style: style, from: side)
 	}
 }
 #endif

@@ -43,6 +43,7 @@ public enum PresentationStyle {
 	case modal
 	case modalWithPush
 	case fullScreen
+	case side(edge: UIRectEdge)
 	
 	fileprivate func present(_ userFlow: UserFlow) {
 		let controller = userFlow.mapped
@@ -80,6 +81,8 @@ public enum PresentationStyle {
 			}
 		case .fullScreen:
 			controller.presentOverWindow(style: .fullScreen)
+		case .side(edge: let edge):
+			controller.presentOverWindow(from: .right)
 		}
 	}
 }
