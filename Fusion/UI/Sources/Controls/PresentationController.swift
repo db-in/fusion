@@ -7,6 +7,15 @@ import UIKit
 
 // MARK: - Definitions -
 
+public extension UIRectEdge {
+	
+	/// Returns true when the edge is either `top` or `bottom`. Returns false for `all`.
+	var isVertical: Bool { self == .top || self == .bottom }
+	
+	/// Returns true when the edge is either `left` or `right`. Returns false for `all`.
+	var isHorizontal: Bool { self == .left || self == .right }
+}
+
 /// A presentation controller that has a dimming view and presents from the bottom, as a drawer behavior.
 public final class PresentationController : UIPresentationController {
 	
@@ -21,6 +30,7 @@ public final class PresentationController : UIPresentationController {
 	
 // MARK: - Properties
 	
+	private weak var snapshotView: UIView?
 	private var isDismissing: Bool = false
 	private var isInteracting: Bool = false
 	private var originalHeight: CGFloat = 0
@@ -178,7 +188,7 @@ public final class PresentationController : UIPresentationController {
 	
 // MARK: - Exposed Methods
 	
-	public func prepareInitialLayout() {
+	public func prepareInitialLayout(closing: Bool = false) {
 		guard
 			let containerBounds = containerView?.bounds,
 			let targetView = presentedView
@@ -189,15 +199,18 @@ public final class PresentationController : UIPresentationController {
 		targetView.layer.masksToBounds = true
 		targetView.make(bezierCorners: cornerRadius)
 		
-//		nestedViewController?.additionalSafeAreaInsets = .init(top: 0, left: 60, bottom: 0, right: 0)
+		snapshotView?.transform = .identity
+		if closing {
+			CATransaction.setCompletionBlock { [weak self] in self?.snapshotView?.removeFromSuperview() }
+		}
 		
 		switch presentingSide {
 		case .left:
 			targetView.autoresizingMask = [.flexibleHeight, .flexibleRightMargin]
-			targetView.frame.origin.x = -containerBounds.width
+//			targetView.frame.origin.x = -containerBounds.width
 		case .right:
 			targetView.autoresizingMask = [.flexibleHeight, .flexibleLeftMargin]
-			targetView.frame.origin.x = containerBounds.width
+//			targetView.frame.origin.x = containerBounds.width
 		case .top:
 			targetView.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
 			targetView.frame.origin.y = -containerBounds.height
@@ -206,6 +219,23 @@ public final class PresentationController : UIPresentationController {
 			targetView.frame.origin.y = containerBounds.height
 		default:
 			break
+		}
+	}
+	
+	public func prepareFinalLayout(source: UIViewController?) {
+		guard
+			let containerBounds = containerView?.bounds,
+			let targetView = presentedView
+		else { return }
+		
+		targetView.frame = frameOfPresentedViewInContainerView
+		
+		if presentingSide == .right || presentingSide == .left {
+			let imageView = UIImageView(image: source?.view.superview?.snapshot)
+			nestedViewController?.view.addSubview(imageView)
+			imageView.make(radius: 50).transform = .identity.scaledBy(x: 0.8, y: 0.8).translatedBy(x: -UIWindow.keyBounds.width + 40, y: 0)
+			UITapGestureRecognizer.set(on: imageView) { [weak self] _ in self?.handleDismiss() }
+			snapshotView = imageView
 		}
 	}
 	
@@ -265,27 +295,30 @@ public final class PresentationController : UIPresentationController {
 
 extension PresentationController : UIViewControllerAnimatedTransitioning {
 	
-	public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval { Constant.duration }
+	public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+		let isPresenting = presentedViewController.isBeingPresented
+		let targetController = transitionContext?.viewController(forKey: isPresenting ? .to : .from)
+		return Constant.duration * (targetController?.presentation.presentingSide.isHorizontal == true ? 0.7 : 1.0)
+	}
 	
 	public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
 		interruptibleAnimator(using: transitionContext).startAnimation()
 	}
 	
 	public func interruptibleAnimator(using transitionContext: UIViewControllerContextTransitioning) -> UIViewImplicitlyAnimating {
-		propertyAnimator = .init(duration: Constant.duration, timingParameters: UICubicTimingParameters(animationCurve: .easeOut))
+		let duration = transitionDuration(using: transitionContext)
+		propertyAnimator = .init(duration: duration, timingParameters: UICubicTimingParameters(animationCurve: .easeOut))
 
 		let isPresenting = presentedViewController.isBeingPresented
 		let sourceController = transitionContext.viewController(forKey: isPresenting ? .from : .to)
 		let targetController = transitionContext.viewController(forKey: isPresenting ? .to : .from)
+		let containerView = transitionContext.containerView
 		
 		propertyAnimator?.addAnimations { [weak self] in
 			if isPresenting {
-				sourceController?.view.make(radius: 50).transform = .identity.scaledBy(x: 0.88, y: 0.88)
-				targetController?.view.frame = self?.frameOfPresentedViewInContainerView ?? .zero
+				targetController?.presentation.prepareFinalLayout(source: sourceController)
 			} else {
-//				sourceController?.view.make(radius: 0).transform = .identity
-				sourceController?.view.transform = .identity
-				targetController?.presentation.prepareInitialLayout()
+				targetController?.presentation.prepareInitialLayout(closing: true)
 			}
 		}
 		
