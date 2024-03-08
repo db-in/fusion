@@ -435,7 +435,7 @@ public extension UIViewController {
 #endif
 		
 		guard let current = presentedViewController else {
-			present(target, animated: true)
+			present(target as UIViewController, animated: true)
 			return
 		}
 		
