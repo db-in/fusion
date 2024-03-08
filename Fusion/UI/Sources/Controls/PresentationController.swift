@@ -295,11 +295,7 @@ public final class PresentationController : UIPresentationController {
 
 extension PresentationController : UIViewControllerAnimatedTransitioning {
 	
-	public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-		let isPresenting = presentedViewController.isBeingPresented
-		let targetController = transitionContext?.viewController(forKey: isPresenting ? .to : .from)
-		return Constant.duration * (targetController?.presentation.presentingSide.isHorizontal == true ? 0.7 : 1.0)
-	}
+	public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval { Constant.duration }
 	
 	public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
 		interruptibleAnimator(using: transitionContext).startAnimation()

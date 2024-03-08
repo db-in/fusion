@@ -76,7 +76,7 @@ public extension Constant {
 
 public extension Constant {
 	
-	static let duration: TimeInterval = 0.33
+	static var duration: TimeInterval = 0.33
 	static let maxFps: FPoint = 60.0
 	static let cycle: FPoint = 1.0 / maxFps
 	static let cycleUsec: UInt64 = UInt64(cycle * 1000000.0)
