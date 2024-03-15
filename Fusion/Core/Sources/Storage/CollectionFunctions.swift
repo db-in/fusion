@@ -55,6 +55,9 @@ public extension Array {
 	/// - Complexity: O(1) for both reading / writing.
 	@inlinable subscript(safe index: Int) -> Element?{ indices.contains(index) ? self[index] : nil }
 	
+	/// Returns true if the collection has more than 1 element.
+	var isMoreThanOne: Bool { count > 1 }
+	
 	/// Filters the array over the given fields by any combination in the current text direction (LTR or RTL).
 	///
 	/// - Parameters:
