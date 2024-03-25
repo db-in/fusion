@@ -82,7 +82,7 @@ public enum PresentationStyle {
 		case .fullScreen:
 			controller.presentOverWindow(style: .fullScreen)
 		case .side(edge: let edge):
-			controller.presentOverWindow(from: edge)
+			controller.presentOverWindow(from: edge.rtlSafe)
 		}
 	}
 }
