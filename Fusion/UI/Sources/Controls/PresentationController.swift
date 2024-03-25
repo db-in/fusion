@@ -447,7 +447,7 @@ public extension UIViewController {
 		}
 #else
 		target.modalPresentationStyle = style.isModal ? .custom : style
-		target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController : target.transitioningDelegate
+		target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController as? UIViewControllerTransitioningDelegate : target.transitioningDelegate
 #endif
 		
 		guard let current = presentedViewController else {
