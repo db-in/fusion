@@ -170,7 +170,7 @@ public extension String {
 	
 // MARK: - Protected Methods
 	
-	internal func decimalComponents(locale: Locale = .autoupdatingCurrent) -> (integer: String, fraction: String) {
+	internal func decimalComponents(locale: Locale = .preferredLocale) -> (integer: String, fraction: String) {
 		let decimalSeparator = locale.decimalSeparator ?? ""
 		let components = components(separatedBy: decimalSeparator)
 		let integer = components.first?.replacingOccurrences(of: "\\D", with: "", options: .regularExpression) ?? ""
@@ -201,7 +201,7 @@ public extension String {
 	///
 	/// - Parameter locale: The target locale of the new numerals.
 	/// - Returns: The new string with the converted numerals.
-	func convertedDigitsToLocale(_ locale: Locale = .autoupdatingCurrent) -> String {
+	func convertedDigitsToLocale(_ locale: Locale = .preferredLocale) -> String {
 		let digitsOnly = components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
 		let formatter = NumberFormatter()
 		formatter.locale = locale
@@ -264,7 +264,7 @@ public extension String {
 	@inlinable static func + (lhs: TextConvertible, rhs: String) -> NSAttributedString { lhs + NSAttributedString(string: rhs) }
 	
 	@inlinable static func + (lhs: String, rhs: String) -> String {
-		if Locale.autoupdatingCurrent.isRTL {
+		if Locale.preferredLocale.isRTL {
 			return "\(rhs)\(lhs)"
 		} else {
 			return "\(lhs)\(rhs)"
@@ -327,7 +327,7 @@ public extension NSAttributedString {
 	@inlinable static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSAttributedString {
 		let copy = NSMutableAttributedString(attributedString: lhs)
 		
-		if Locale.autoupdatingCurrent.isRTL {
+		if Locale.preferredLocale.isRTL {
 			copy.insert(rhs, at: 0)
 		} else {
 			copy.append(rhs)

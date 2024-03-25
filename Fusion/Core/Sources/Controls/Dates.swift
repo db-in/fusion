@@ -51,12 +51,12 @@ public extension DateFormatter {
 	///   the standard library merges the styles with the templates wisely regarding each locale.
 	///   Default is `nil`.
 	///   - timeZone: The timezone to convert the date to. The default value is `current`
-	///   - locale: The locale to convert the date to. The default value is `autoupdatingCurrent`
+	///   - locale: The locale to convert the date to. The default value is `preferredLocale`
 	convenience init(dateStyle: DateFormatter.Style = .none,
 					 timeStyle: DateFormatter.Style = .none,
 					 template: CustomStringConvertible? = nil,
 					 timeZone: TimeZone = .current,
-					 locale: Locale = .autoupdatingCurrent) {
+					 locale: Locale = .preferredLocale) {
 		self.init()
 		self.calendar = .autoupdatingCurrent
 		self.dateStyle = dateStyle
@@ -73,8 +73,8 @@ public extension DateFormatter {
 	///
 	/// - Parameters:
 	///   - format: The given fixed format.
-	///   - locale: The locale to convert the date to. The default value is `autoupdatingCurrent`
-	convenience init(format: String, locale: Locale = .autoupdatingCurrent) {
+	///   - locale: The locale to convert the date to. The default value is `preferredLocale`
+	convenience init(format: String, locale: Locale = .preferredLocale) {
 		self.init()
 		self.locale = locale
 		self.dateFormat = format
