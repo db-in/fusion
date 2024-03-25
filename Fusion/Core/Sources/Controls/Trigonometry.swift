@@ -23,6 +23,9 @@ public struct RectEdges {
 	/// The value for the right edge.
 	public var right: CGFloat
 	
+	/// Safer RTL compatible edges.
+	public var rtlSafe: Self { Locale.preferredLocale.isRTL ? .init(top: top, left: right, bottom: bottom, right: left) : self }
+	
 	/// Creates a `RectEdges` with all edges set to zero.
 	public static var zero: Self { .init(all: 0) }
 	
@@ -85,6 +88,9 @@ public struct RectCorners {
 	
 	/// The value for the bottom-right corner.
 	public var bottomRight: CGFloat
+	
+	/// Safer RTL compatible corners.
+	public var rtlSafe: Self { Locale.preferredLocale.isRTL ? .init(topLeft: topRight, topRight: topLeft, bottomLeft: bottomRight, bottomRight: bottomLeft) : self }
 	
 	/// Creates a `RectCorners` with all edges set to zero.
 	public static var zero: Self { .init(all: 0) }
