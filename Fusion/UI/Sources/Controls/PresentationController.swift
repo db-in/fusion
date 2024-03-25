@@ -14,6 +14,20 @@ public extension UIRectEdge {
 	
 	/// Returns true when the edge is either `left` or `right`. Returns false for `all`.
 	var isHorizontal: Bool { self == .left || self == .right }
+	
+	/// Safer RTL compatible alignment.
+	var rtlSafe: Self {
+		let isRTL = Locale.preferredLocale.isRTL
+		
+		switch self {
+		case .left:
+			return isRTL ? .right : .left
+		case .right:
+			return isRTL ? .left : .right
+		default:
+			return self
+		}
+	}
 }
 
 /// A presentation controller that has a dimming view and presents from the bottom, as a drawer behavior.
