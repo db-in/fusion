@@ -244,10 +244,12 @@ public final class PresentationController : UIPresentationController {
 		
 		targetView.frame = frameOfPresentedViewInContainerView
 		
-		if presentingSide == .right || presentingSide == .left {
+		if presentingSide.isHorizontal {
+			let delta: CGFloat = presentingSide == .right ? 1 : -1
+			let posX = -(UIWindow.keyBounds.width * delta) + (40 * delta)
 			let imageView = UIImageView(image: source?.view.superview?.snapshot)
 			nestedViewController?.view.addSubview(imageView)
-			imageView.make(radius: 50).transform = .identity.scaledBy(x: 0.8, y: 0.8).translatedBy(x: -UIWindow.keyBounds.width + 40, y: 0)
+			imageView.make(radius: 50).transform = .identity.scaledBy(x: 0.8, y: 0.8).translatedBy(x: posX, y: 0)
 			UITapGestureRecognizer.set(on: imageView) { [weak self] _ in self?.handleDismiss() }
 			snapshotView = imageView
 		}
