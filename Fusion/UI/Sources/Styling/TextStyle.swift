@@ -120,7 +120,7 @@ public extension TextAttributes {
 			attributes[.foregroundColor] = newColor
 		}
 		
-		if lineSpacing != nil || lineHeight != nil || alignment != nil {
+		if lineSpacing != nil || lineHeight != nil || linebreak != nil || alignment != nil {
 			let paragraph = NSMutableParagraphStyle()
 			paragraph.alignment = (alignment ?? .natural).rtlSafe
 			paragraph.lineSpacing = lineSpacing ?? 0
