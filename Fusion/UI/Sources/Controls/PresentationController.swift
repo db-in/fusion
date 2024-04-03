@@ -251,6 +251,7 @@ public final class PresentationController : UIPresentationController {
 			nestedViewController?.view.addSubview(imageView)
 			imageView.make(radius: 50).transform = .identity.scaledBy(x: 0.8, y: 0.8).translatedBy(x: posX, y: 0)
 			UITapGestureRecognizer.set(on: imageView) { [weak self] _ in self?.handleDismiss() }
+			UIPanGestureRecognizer.set(on: imageView) { [weak self] _ in self?.handleDismiss() }
 			snapshotView = imageView
 		}
 	}
