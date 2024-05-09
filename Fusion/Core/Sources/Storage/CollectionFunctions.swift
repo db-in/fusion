@@ -117,6 +117,21 @@ public extension Array {
 		}
 		return nil
 	}
+	
+	/// Inserts a new element into the array at the specified index, ensuring safe insertion even if the index is out of bounds.
+	///
+	/// If the specified index is greater than the array's count, the new element will be appended to the end of the array.
+	/// If the specified index is less than zero, the new element will be inserted at the beginning of the array.
+	///
+	/// - Parameters:
+	///   - newElement: The element to insert into the array.
+	///   - index: The index at which to insert the new element.
+	///
+	/// - Complexity: O(*n*), where *n* is the length of the array.
+	mutating func insertSafely(_ newElement: Element, at index: Int) {
+		let insertionIndex = Swift.min(index, count)
+		insert(newElement, at: Swift.max(0, insertionIndex))
+	}
 }
 
 // MARK: - Extension - Array Hashable
