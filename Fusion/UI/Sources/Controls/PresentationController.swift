@@ -101,7 +101,7 @@ public final class PresentationController : UIPresentationController {
 		
 		switch presentingSide {
 		case .left, .right:
-			frame.size.width = min(controller.preferredSize.width, containerBounds.width - extraSafeArea)
+//			frame.size.width = min(controller.preferredSize.width, containerBounds.width - extraSafeArea)
 			frame.origin.x = containerBounds.width - frame.width
 		case .top, .bottom:
 			frame.size.height = min(controller.preferredSize.height + extraPadding, containerBounds.height - topOffset - extraSafeArea)
