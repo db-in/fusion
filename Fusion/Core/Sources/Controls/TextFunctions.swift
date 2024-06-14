@@ -46,11 +46,12 @@ public protocol TextConvertible {
 	/// - Returns: The new attributed string.
 	func styled(_ attributes: TextAttributes, onText: String) -> NSAttributedString
 	
-	/// Appends two different texts with their given styles and attributes. This function respects RTL concatenation.
+	/// Appends multiple arguments to the current attributed string.
+	/// Places each argument in the right, regardless of the language direction.
 	///
-	/// - Parameter rhs: The new text to be appended (at the trailing side).
-	/// - Returns: The new attributed string.
-	func appending(_ rhs: TextConvertible) -> NSAttributedString
+	/// - Parameter rhs: A variable number of arguments to be appended, each of which can be a `TextConvertible`.
+	/// - Returns: A new `NSAttributedString` with the concatenated result.
+	func appending(_ rhs: TextConvertible...) -> NSAttributedString
 }
 
 extension String : TextConvertible { }
@@ -257,7 +258,7 @@ public extension String {
 		return query.contains(criteria)
 	}
 	
-	@inlinable func appending(_ rhs: TextConvertible) -> NSAttributedString { NSAttributedString(string: self).appending(rhs) }
+	@inlinable func appending(_ rhs: TextConvertible...) -> NSAttributedString { rhs.reduce(NSAttributedString(string: self)) { $0.appending($1) } }
 	
 	@inlinable static func + (lhs: String, rhs: TextConvertible) -> NSAttributedString { NSAttributedString(string: lhs) + rhs }
 	
@@ -280,7 +281,7 @@ public extension String.SubSequence {
 	
 	var content: String { string }
 	
-	func appending(_ rhs: TextConvertible) -> NSAttributedString { string.appending(rhs) }
+	func appending(_ rhs: TextConvertible...) -> NSAttributedString { rhs.reduce(NSAttributedString(string: string)) { $0.appending($1) } }
 	
 	func styled(_ attributes: TextAttributes, overriding: Bool) -> NSAttributedString { string.styled(attributes) }
 }
@@ -302,17 +303,15 @@ public extension NSAttributedString {
 		return Self.init(attributedString: copy)
 	}
 	
-	/// Places a new argument in the right always. Ignores the language direction.
-	///
-	/// - Parameter rhs: The right argument that will stay in the right, regardless the direction.
-	/// - Returns: The final concatenated result.
-	@inlinable func appending(_ rhs: TextConvertible) -> NSAttributedString {
+	@inlinable func appending(_ rhs: TextConvertible...) -> NSAttributedString {
 		let copy = NSMutableAttributedString(attributedString: self)
 		
-		if let rhsAttr = rhs as? NSAttributedString {
-			copy.append(rhsAttr)
-		} else if let rhsString = rhs as? String {
-			copy.append(NSAttributedString(string: rhsString))
+		rhs.forEach { arg in
+			if let attr = arg as? NSAttributedString {
+				copy.append(attr)
+			} else if let string = arg as? String {
+				copy.append(NSAttributedString(string: string))
+			}
 		}
 		
 		return NSAttributedString(attributedString: copy)
