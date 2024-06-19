@@ -97,11 +97,32 @@ public extension UIApplication {
 	}
 }
 
+// MARK: - Extension - CGFloat
+
+public extension CGFloat {
+	
+	func proximity(to index: Int, within count: Int) -> CGFloat {
+		guard count > 1 else { return self }
+		let length = 1.0 / CGFloat(count)
+		let position = CGFloat(index) * length
+		let offset = abs((self - position) / length)
+		guard index < count - 1 || self < 1.0 - length else { return 1.0 }
+		let proximity = (0.0...1.0).clamped(1.0 - offset)
+		return proximity
+	}
+}
+
 // MARK: - Extension - [UIView]
 
 public extension Array where Element == UIView {
 	
 	func removeAllFromSuperview() { forEach { $0.removeFromSuperview() } }
+	
+	func transitionViews(to percentage: CGFloat) {
+		enumerated().forEach { index, view in
+			view.alphaVisible = percentage.proximity(to: index, within: count)
+		}
+	}
 }
 
 // MARK: - Extension - UIView
