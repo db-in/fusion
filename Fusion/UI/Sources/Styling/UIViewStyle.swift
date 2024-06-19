@@ -134,6 +134,14 @@ public extension UIView {
 
 // MARK: - Properties
 	
+	@IBInspectable var alphaVisible: CGFloat {
+		get { alpha }
+		set {
+			alpha = newValue
+			isHidden = newValue <= 0
+		}
+	}
+	
 	@IBInspectable var cornerRadius: CGFloat {
 		get { layer.cornerRadius }
 		set {
