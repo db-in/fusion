@@ -139,7 +139,7 @@ extension UIScrollView {
 		}
 	}
 	
-	public var pageAtCenter: Int { Int(contentOffset.x + bounds.size.width * 0.5 / bounds.size.width) }
+	public var pageAtCenter: Int { Int((contentOffset.x + (bounds.size.width * 0.5)) / bounds.size.width) }
 	
 // MARK: - Constructors
 
