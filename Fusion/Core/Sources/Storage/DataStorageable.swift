@@ -18,10 +18,12 @@ public protocol DataStorageable {
 
 extension UserDefaults : DataStorageable {
 	
-	public static let shared: DataStorageable = UserDefaults(suiteName: Bundle.appGroup) ?? UserDefaults.standard
+	public static let appGroup: UserDefaults = UserDefaults(suiteName: Bundle.appGroup) ?? UserDefaults.standard
+	public static var shared: DataStorageable { appGroup }
 	
 	public func value<T : Decodable>(forKey key: String) -> T? { value(forKey: key) as? T }
 	public func set<T : Encodable>(_ value: T?, forKey key: String) { set(value as Any, forKey: key) }
+	public func removeAllKeys() { dictionaryRepresentation().keys.forEach(removeObject(forKey:)) }
 }
 
 // MARK: - Extension - FileManager DataStorageable
