@@ -386,7 +386,7 @@ public extension UIViewController {
 
 		height += scrollViews.reduce(CGFloat(0), { result, scrollView in
 			if scrollView.intrinsicContentSize.height <= 0 {
-				return result + scrollView.contentSize.height + scrollView.contentInset.top + scrollView.contentInset.bottom - 50
+				return result + scrollView.contentSize.height + scrollView.contentInset.top + scrollView.contentInset.bottom
 			} else {
 				return result
 			}
