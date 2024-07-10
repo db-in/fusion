@@ -36,6 +36,11 @@ public extension String {
 	func hasMatch(regex: String) -> Bool { range(of: regex, options: .regEx) != nil }
 	
 	func replacing(regex: String, with: String) -> Self { replacingOccurrences(of: regex, with: with, options: .regEx) }
+	
+	func hmacSHA512(key: String) -> String {
+		guard let bytes = data(using: .utf8)?.hmacSHA512(key: key) else { return self }
+		return Data(bytes).map { String(format: "%02hhx", $0) }.joined()
+	}
 }
 
 // MARK: - Extension - Sequence Encryption
@@ -47,7 +52,7 @@ public extension Sequence where Self.Element == UInt8 {
 
 // MARK: - Extension - Data Encryption
 
-extension Data {
+public extension Data {
 	
 	func sha256(header: [UInt8]? = nil) -> [UInt8] {
 		var keyWithHeader = header != nil ? Data(header!) : Data()
