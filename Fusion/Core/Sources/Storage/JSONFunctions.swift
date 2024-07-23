@@ -142,7 +142,8 @@ public extension Encodable {
 		self[keyPath: keyPath] = value
 	}
 	
-	/// Updates the value of a given keypath and returns a copy
+	/// Updates the value of a given keypath and returns a copy of it.
+	///
 	/// - Parameters:
 	///   - keyPath: The keypath.
 	///   - value: The value to be updated.
@@ -218,6 +219,23 @@ public extension Decodable {
 		let fileManager = FileManager.default
 		let url = fileManager.appGroup.appendingPathComponent(validKey.hash.description)
 		try? fileManager.removeItem(at: url)
+	}
+}
+
+// MARK: - Extension - Codable
+
+public extension Decodable where Self : Encodable {
+	
+	/// Updates the value of a given a key and returns a copy of it.
+	///
+	/// - Parameters:
+	///   - key: The key to be updated.
+	///   - value: The value to be updated.
+	/// - Returns: Returns a new copy of the target.
+	func updating<T>(_ key: String, to value: T) -> Self {
+		var dict = dictionaryObject
+		dict[key] = value
+		return Self.load(jsonObject: dict) ?? self
 	}
 }
 
