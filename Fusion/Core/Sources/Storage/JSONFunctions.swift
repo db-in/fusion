@@ -243,8 +243,8 @@ public extension Decodable where Self : Encodable {
 
 public extension String {
 	
-	/// Returns a `Date` using `DateFormatter.validFormats`.
-	var toDate: Date? { DateFormatter.date(from: self) }
+	/// Returns a `Date` using `DateFormatter.validFormats`. Returns current date if the format is invalid.
+	var toDate: Date { DateFormatter.date(from: self) }
 	
 	/// Returns the current string as URL.
 	var toURL: URL { .init(string: self) ?? .init(fileURLWithPath: "") }
