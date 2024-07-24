@@ -79,7 +79,7 @@ public enum Logger {
 
 // MARK: - Properties
 	
-	public static var global: Logger = .basic
+	public static var global: Logger = Constant.isDebug ? .basic : .none
 
 	public static var localCache: [LogEntry] { LogStorage.allLogs }
 	
