@@ -244,7 +244,8 @@ public extension Decodable where Self : Encodable {
 public extension String {
 	
 	/// Returns a `Date` using `DateFormatter.validFormats`. Returns current date if the format is invalid.
-	var toDate: Date { DateFormatter.date(from: self) }
+	/// This property takes advantage of `InMemoryCache` and is optimized for maximum performance.
+	var toDate: Date { InMemoryCache.getOrSet(key: "Date-\(Self.self)", newValue: DateFormatter.date(from: self)) ?? .init() }
 	
 	/// Returns the current string as URL.
 	var toURL: URL { .init(string: self) ?? .init(fileURLWithPath: "") }
