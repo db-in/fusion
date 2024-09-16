@@ -60,7 +60,7 @@ public extension DateFormatter {
 		self.init()
 		self.calendar = .autoupdatingCurrent
 		self.dateStyle = dateStyle
-		self.timeStyle = locale.isRTL ? .long : timeStyle
+		self.timeStyle = locale.isRTL && timeStyle != .none ? .long : timeStyle
 		self.timeZone = timeZone
 		self.locale = locale.isRTL ? Locale(identifier: "ar_AE") : locale
 		
