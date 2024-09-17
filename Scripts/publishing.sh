@@ -10,7 +10,7 @@ if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then
 	echo "- Running Tests -"
 	MODE="Debug"
 	WORKSPACE=$(basename $(find . -name *.xcworkspace))
-		DESTINATION='platform=iOS Simulator,name=iPhone 14 Pro Max,OS=16.1'
+		DESTINATION='platform=iOS Simulator,name=iPhone 15 Pro Max,OS=16.1'
 	xcodebuild test -workspace "$WORKSPACE" -scheme "${WORKSPACE%%.*}Clip" -destination "$DESTINATION" -configuration "$MODE" | xcpretty
 else
 	echo "--- 🤖 CD Pipeline Started ---"
