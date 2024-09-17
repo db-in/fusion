@@ -2,7 +2,7 @@ source 'https://cdn.cocoapods.org/'
 
 inhibit_all_warnings!
 use_frameworks!
-platform :ios, '13.0'
+platform :ios, '15.0'
 workspace 'Fusion.xcworkspace'
 
 def local

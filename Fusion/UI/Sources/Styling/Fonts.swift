@@ -24,8 +24,8 @@ public extension UIFont.TextStyle {
 private extension UIFontDescriptor {
 
 	var monospacedDigit: UIFontDescriptor {
-		let settings = [[UIFontDescriptor.FeatureKey.featureIdentifier : kNumberSpacingType,
-						 UIFontDescriptor.FeatureKey.typeIdentifier : kMonospacedNumbersSelector]]
+		let settings = [[UIFontDescriptor.FeatureKey.type : kNumberSpacingType,
+						 UIFontDescriptor.FeatureKey.selector : kMonospacedNumbersSelector]]
 		let attributes = [UIFontDescriptor.AttributeName.featureSettings: settings]
 		return addingAttributes(attributes)
 	}

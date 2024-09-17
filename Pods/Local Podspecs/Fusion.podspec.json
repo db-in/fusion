@@ -18,10 +18,10 @@
   "swift_versions": "5.0",
   "requires_arc": true,
   "platforms": {
-    "osx": "11.0",
-    "ios": "13.0",
-    "tvos": "13.0",
-    "watchos": "7.0"
+    "osx": "12.0",
+    "ios": "15.0",
+    "tvos": "15.0",
+    "watchos": "9.0"
   },
   "user_target_xcconfig": {
     "GENERATE_INFOPLIST_FILE": "YES",
