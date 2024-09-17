@@ -439,7 +439,7 @@ public extension UIModalPresentationStyle {
 
 public extension UIWindow {
 	
-#if os(iOS) && !os(xrOS)
+#if os(iOS) && !os(visionOS)
 	/// The frame of the status bar.
 	var statusBarFrame: CGRect {
 		guard #available(iOS 13.0, *) else { return UIApplication.main?.statusBarFrame ?? .zero }

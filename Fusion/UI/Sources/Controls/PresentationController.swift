@@ -237,10 +237,7 @@ public final class PresentationController : UIPresentationController {
 	}
 	
 	public func prepareFinalLayout(source: UIViewController?) {
-		guard
-			let containerBounds = containerView?.bounds,
-			let targetView = presentedView
-		else { return }
+		guard let targetView = presentedView else { return }
 		
 		targetView.frame = frameOfPresentedViewInContainerView
 		
@@ -325,9 +322,8 @@ extension PresentationController : UIViewControllerAnimatedTransitioning {
 		let isPresenting = presentedViewController.isBeingPresented
 		let sourceController = transitionContext.viewController(forKey: isPresenting ? .from : .to)
 		let targetController = transitionContext.viewController(forKey: isPresenting ? .to : .from)
-		let containerView = transitionContext.containerView
 		
-		propertyAnimator?.addAnimations { [weak self] in
+		propertyAnimator?.addAnimations {
 			if isPresenting {
 				targetController?.presentation.prepareFinalLayout(source: sourceController)
 			} else {
@@ -426,7 +422,7 @@ public extension UIViewController {
 	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
 	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom) {
 		target.presentation.presentingSide = side
-#if os(iOS) && !os(xrOS)
+#if os(iOS) && !os(visionOS)
 		if #available(iOS 15.0, *), style == .pageSheet || style == .formSheet {
 			target.modalPresentationStyle = style
 			target.transitioningDelegate = nil
