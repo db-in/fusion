@@ -1,6 +1,6 @@
 {
   "name": "Fusion",
-  "version": "1.1.58",
+  "version": "1.1.59",
   "summary": "Micro Feature",
   "description": "Fusion is resposible for ...",
   "homepage": "https://fusion.com",
@@ -11,8 +11,8 @@
   },
   "authors": "Diney Bomfim",
   "source": {
-    "git": "git@github.com:db-in/fusion.git",
-    "tag": "Fusion-v1.1.58",
+    "git": "https://github.com/db-in/fusion.git",
+    "tag": "Fusion-v1.1.59",
     "submodules": true
   },
   "swift_versions": "5.0",
@@ -25,11 +25,11 @@
   },
   "user_target_xcconfig": {
     "GENERATE_INFOPLIST_FILE": "YES",
-    "MARKETING_VERSION": "1.1.58"
+    "MARKETING_VERSION": "1.1.59"
   },
   "pod_target_xcconfig": {
     "GENERATE_INFOPLIST_FILE": "YES",
-    "MARKETING_VERSION": "1.1.58"
+    "MARKETING_VERSION": "1.1.59"
   },
   "subspecs": [
     {

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "Fusion"
-  s.version = "1.1.59"
+  s.version = "1.1.60"
   s.summary = "Micro Feature"
   s.description = <<-DESC
 				  Fusion is resposible for ...
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.documentation_url = "https://db-in.github.io/fusion/"
   s.license = { :type => "MIT", :file => "LICENSE" }
   s.author = 'Diney Bomfim'
-  s.source = { :git => "git@github.com:db-in/fusion.git", :tag => "#{s.name}-v#{s.version}", :submodules => true }
+  s.source = { :git => "https://github.com/db-in/fusion.git", :tag => "#{s.name}-v#{s.version}", :submodules => true }
   
   s.swift_version = '5.0'
   s.requires_arc = true
