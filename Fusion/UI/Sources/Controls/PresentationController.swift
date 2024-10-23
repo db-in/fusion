@@ -421,7 +421,7 @@ public extension UIViewController {
 	///   - target: The new view controller to be presented on top.
 	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
 	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom) {
-		let shouldUsePresentation = target.modalPresentationStyle.isModal
+		let isModal = style.isModal
 #if os(iOS) && !os(visionOS)
 		if #available(iOS 15.0, *), style == .pageSheet || style == .formSheet {
 			target.modalPresentationStyle = style
@@ -434,7 +434,7 @@ public extension UIViewController {
 				sheet?.detents = [.large()]
 			}
 			
-			if shouldUsePresentation {
+			if isModal {
 				sheet?.preferredCornerRadius = target.presentation.cornerRadius.topLeft
 				sheet?.prefersGrabberVisible = target.presentation.isGrabberVisible
 			}
@@ -442,15 +442,15 @@ public extension UIViewController {
 			sheet?.prefersEdgeAttachedInCompactHeight = true
 			sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
 		} else {
-			if shouldUsePresentation {
+			if isModal {
 				target.presentation.presentingSide = side
 			}
-			target.modalPresentationStyle = style.isModal ? .custom : style
-			target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentation : target.transitioningDelegate
+			target.modalPresentationStyle = isModal ? .custom : style
+			target.transitioningDelegate = isModal ? target.presentation : target.transitioningDelegate
 		}
 #else
-		target.modalPresentationStyle = style.isModal ? .custom : style
-		target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentationController as? UIViewControllerTransitioningDelegate : target.transitioningDelegate
+		target.modalPresentationStyle = isModal ? .custom : style
+		target.transitioningDelegate = isModal ? target.presentationController as? UIViewControllerTransitioningDelegate : target.transitioningDelegate
 #endif
 		
 		guard let current = presentedViewController else {
