@@ -421,7 +421,7 @@ public extension UIViewController {
 	///   - target: The new view controller to be presented on top.
 	///   - style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
 	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom) {
-		target.presentation.presentingSide = side
+		let shouldUsePresentation = target.modalPresentationStyle.isModal
 #if os(iOS) && !os(visionOS)
 		if #available(iOS 15.0, *), style == .pageSheet || style == .formSheet {
 			target.modalPresentationStyle = style
@@ -434,11 +434,17 @@ public extension UIViewController {
 				sheet?.detents = [.large()]
 			}
 			
-			sheet?.preferredCornerRadius = target.presentation.cornerRadius.topLeft
-			sheet?.prefersGrabberVisible = target.presentation.isGrabberVisible
+			if shouldUsePresentation {
+				sheet?.preferredCornerRadius = target.presentation.cornerRadius.topLeft
+				sheet?.prefersGrabberVisible = target.presentation.isGrabberVisible
+			}
+			
 			sheet?.prefersEdgeAttachedInCompactHeight = true
 			sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
 		} else {
+			if shouldUsePresentation {
+				target.presentation.presentingSide = side
+			}
 			target.modalPresentationStyle = style.isModal ? .custom : style
 			target.transitioningDelegate = target.modalPresentationStyle.isModal ? target.presentation : target.transitioningDelegate
 		}
