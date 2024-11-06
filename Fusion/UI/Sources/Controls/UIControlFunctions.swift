@@ -7,10 +7,6 @@ import UIKit
 
 // MARK: - Definitions -
 
-public typealias Callback = () -> Void
-
-public typealias ConfirmationCallback = (Bool) -> Void
-
 private class EventWrapper : NSObject {
 
 	private var event: UIControl.Event

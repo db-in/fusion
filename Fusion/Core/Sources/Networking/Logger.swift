@@ -6,12 +6,6 @@ import Foundation
 
 // MARK: - Definitions -
 
-public struct LogEntry : Codable, Equatable {
-	public let date: Date
-	public let basic: String?
-	public let full: String?
-}
-
 fileprivate extension Data {
 	
 	func appendToFile(key: String? = nil, newLine: Bool = true) {
@@ -60,73 +54,119 @@ fileprivate struct LogStorage : DataManageable {
 		InMemoryCache.getOrSet(key: namespace(Key.logs), newValue: rawLogs) ?? []
 	}
 	
-	fileprivate static func append(basic: String?, full: String?) {
+	fileprivate static func append(entry: LogEntry) {
 		let namespace = namespace(Key.logs)
 		InMemoryCache.flush(key: namespace)
-		LogEntry(date: Date(), basic: basic, full: full).data?.appendToFile(key: namespace, newLine: true)
+		entry.data?.appendToFile(key: namespace, newLine: true)
+	}
+}
+
+public typealias LogString = () -> String?
+
+/// A structure that represents a log entry with a `basic` and `full` log message.
+public struct LogEntry: Codable, Equatable, CustomStringConvertible {
+	
+	/// The date the log entry was created.
+	public let date: Date
+	
+	/// The basic log message.
+	public let basic: String?
+	
+	/// The full log message.
+	public let full: String?
+	
+	/// A computed description of the log entry, including both basic and full messages, joined by a newline.
+	public var description: String { [basic, full].compactMap({ $0 }).joined(separator: "\n") }
+	
+	/// Initializes a new `LogEntry` instance with optional basic and full log messages.
+	///
+	/// - Parameters:
+	///   - date: The date of the log entry. Default is the current date.
+	///   - basic: The basic log message. Default is `nil`.
+	///   - full: The full log message. Default is `nil`.
+	public init(date: Date = Date(), basic: String? = nil, full: String? = nil) {
+		self.date = date
+		self.basic = basic
+		self.full = full
+	}
+	
+	/// Prints the log entry to the debug console and returns the log entry instance.
+	///
+	/// - Returns: The log entry instance.
+	@discardableResult public func printing() -> Self {
+		debugPrint(self)
+		return self
 	}
 }
 
 // MARK: - Type -
 
-/// The Logger object, capable of doing adhoc logs or using global shared level.
+/// Logger is an enumeration that defines different logging levels.
 public enum Logger {
 	
-	case none
-	case silent
+	/// The basic logging level, prints minimal log details.
 	case basic
+	
+	/// The full logging level, prints detailed log information.
 	case full
+	
+	/// The silent logging level, does not print any logs.
+	case silent
+	
+	/// No logging is performed.
+	case none
 
 // MARK: - Properties
-	
+
+	/// The global logger configuration, determined by the `Constant.isDebug` flag.
 	public static var global: Logger = Constant.isDebug ? .basic : .none
-
+	
+	/// A local cache of all log entries.
 	public static var localCache: [LogEntry] { LogStorage.allLogs }
-	
+
 // MARK: - Exposed Methods
-	
-	public func log(basic: @autoclosure () -> String) {
-		switch self {
-		case .none:
-			return
-		case .basic, .full:
-			debugPrint(basic())
-		default:
-			break
-		}
-		
-		LogStorage.append(basic: basic(), full: nil)
-	}
 
-	public func log(full: @autoclosure () -> String) {
-		switch self {
-		case .none:
-			return
-		case .full:
-			debugPrint(full())
-		default:
-			break
-		}
+	/// Logs the basic and/or full log messages depending on the current logging level.
+	///
+	/// - Parameters:
+	///   - basic: A closure that provides the basic log message. Default is `nil`.
+	///   - full: A closure that provides the full log message. Default is `nil`.
+	///   - save: A Boolean indicating whether to save the log entry to storage. Default is `true`.
+	public func log(basic: @autoclosure LogString = nil, full: @autoclosure LogString = nil, save: Bool = true) {
+		let log: LogEntry
 		
-		LogStorage.append(basic: nil, full: full())
-	}
-
-	public func log(basic: @autoclosure () -> String, full: @autoclosure () -> String) {
 		switch self {
-		case .none:
-			return
 		case .basic:
-			debugPrint(basic())
+			log = .init(basic: basic()).printing()
 		case .full:
-			debugPrint(basic())
-			debugPrint(full())
-		default:
-			break
+			log = .init(basic: basic(), full: full()).printing()
+		case .silent:
+			log = .init(basic: basic(), full: full())
+		case .none:
+			return
 		}
 		
-		LogStorage.append(basic: basic(), full: full())
+		guard save else { return }
+		LogStorage.append(entry: log)
 	}
 	
+	/// Logs the execution time of a closure, formatted with a specified precision.
+	///
+	/// - Parameters:
+	///   - basic: A closure that provides the basic log message. Default is `nil`.
+	///   - full: A closure that provides the full log message. Default is `nil`.
+	///   - precision: The number of decimal places to display for the elapsed time. Default is `5`.
+	///   - save: A Boolean indicating whether to save the log entry to storage. Default is `false`.
+	///   - closure: The closure whose execution time will be logged.
+	public func logTimeProfile(basic: @autoclosure LogString = nil, full: @autoclosure LogString = nil, precision: Int = 5, save: Bool = false, closure: Callback) {
+		let date = Date()
+		closure()
+		let elapsedTime = Date().timeIntervalSince(date)
+		let timeLog = [String(format: "⏱️ Time Profile: %.\(precision)fs", elapsedTime), basic()].compactMap({ $0 }).joined(separator: " - ")
+		log(basic: timeLog, full: full(), save: save)
+	}
+	
+	/// Clears all local cached logs.
 	public static func flushLocalCache() {
 		LogStorage.removeAllKeys()
 	}

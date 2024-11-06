@@ -6,6 +6,10 @@ import Foundation
 
 // MARK: - Definitions -
 
+public typealias Callback = () -> Void
+
+public typealias ConfirmationCallback = (Bool) -> Void
+
 public struct Constant { }
 
 // MARK: - Extension - Constant DataType
