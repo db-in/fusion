@@ -21,8 +21,8 @@ public typealias Headers = [String : String]
 	DispatchQueue.main.asyncAfter(deadline: .now() + after) { callback() }
 }
 
-@inlinable public func asyncGlobal(_ callback: @escaping () -> Void) {
-	DispatchQueue.global().async { callback() }
+@inlinable public func asyncGlobal(qos: DispatchQoS.QoSClass = .default, callback: @escaping () -> Void) {
+	DispatchQueue.global(qos: qos).async { callback() }
 }
 
 @inlinable public func asyncResponse<T>(_ callback: Response<T>?) -> Response<T> {

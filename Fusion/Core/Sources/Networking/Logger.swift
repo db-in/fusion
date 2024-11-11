@@ -93,8 +93,16 @@ public struct LogEntry: Codable, Equatable, CustomStringConvertible {
 	/// Prints the log entry to the debug console and returns the log entry instance.
 	///
 	/// - Returns: The log entry instance.
-	@discardableResult public func printing() -> Self {
-		debugPrint(self)
+	@discardableResult public func printing(_ logLevel: Logger) -> Self {
+		switch logLevel {
+		case .basic:
+			debugPrint(basic ?? "")
+		case.full:
+			debugPrint(self)
+		default:
+			break
+		}
+		
 		return self
 	}
 }
@@ -136,12 +144,8 @@ public enum Logger {
 		let log: LogEntry
 		
 		switch self {
-		case .basic:
-			log = .init(basic: basic()).printing()
-		case .full:
-			log = .init(basic: basic(), full: full()).printing()
-		case .silent:
-			log = .init(basic: basic(), full: full())
+		case .basic, .full, .silent:
+			log = .init(basic: basic(), full: full()).printing(self)
 		case .none:
 			return
 		}
