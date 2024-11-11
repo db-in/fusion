@@ -74,6 +74,8 @@
 		60A859802A06BB2500D3B283 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A8597F2A06BB2500D3B283 /* MainViewController.swift */; };
 		60A859832A06BB2500D3B283 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 60A859812A06BB2500D3B283 /* Main.storyboard */; };
 		60A859CD2A08229700D3B283 /* JSONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A859CC2A08229700D3B283 /* JSONTests.swift */; };
+		60A9DC932CE26A6F0025D685 /* AsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A9DC922CE26A6F0025D685 /* AsyncOperation.swift */; };
+		60A9DC952CE26E540025D685 /* AsyncOperationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A9DC942CE26E540025D685 /* AsyncOperationTests.swift */; };
 		60B8D81F2A69563C001A9DE7 /* PresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B8D81E2A69563C001A9DE7 /* PresentationController.swift */; };
 		60CC2E292A4F5DA700E43713 /* SwiftUIStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E272A4F5DA700E43713 /* SwiftUIStyle.swift */; };
 		60CC2E2A2A4F5DA700E43713 /* UIViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CC2E282A4F5DA700E43713 /* UIViewStyle.swift */; };
@@ -254,6 +256,8 @@
 		60A859B82A06BC7600D3B283 /* Fusion.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		60A859C72A06DB9500D3B283 /* Sample-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Sample-iOS-Info.plist"; sourceTree = SOURCE_ROOT; };
 		60A859CC2A08229700D3B283 /* JSONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTests.swift; sourceTree = "<group>"; };
+		60A9DC922CE26A6F0025D685 /* AsyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncOperation.swift; sourceTree = "<group>"; };
+		60A9DC942CE26E540025D685 /* AsyncOperationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncOperationTests.swift; sourceTree = "<group>"; };
 		60B8D81E2A69563C001A9DE7 /* PresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationController.swift; sourceTree = "<group>"; };
 		60CC2E272A4F5DA700E43713 /* SwiftUIStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftUIStyle.swift; sourceTree = "<group>"; };
 		60CC2E282A4F5DA700E43713 /* UIViewStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewStyle.swift; sourceTree = "<group>"; };
@@ -541,6 +545,7 @@
 		6094843E2A4C5A70008E21A1 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
+				60A9DC922CE26A6F0025D685 /* AsyncOperation.swift */,
 				6094843F2A4C5A70008E21A1 /* Constants.swift */,
 				609484432A4C5A70008E21A1 /* Dates.swift */,
 				609484412A4C5A70008E21A1 /* Localization.swift */,
@@ -607,6 +612,7 @@
 		60A859AE2A06BBD300D3B283 /* FusionTests */ = {
 			isa = PBXGroup;
 			children = (
+				60A9DC942CE26E540025D685 /* AsyncOperationTests.swift */,
 				B5D0AB712A32F39A008F6DA0 /* Data Models */,
 				B50DDFB92A3305710027AD8F /* EncryptionTests.swift */,
 				B578B2862A331F4C00EF9C9E /* HTTPCookieTests.swift */,
@@ -1094,6 +1100,7 @@
 				B51DDE672A30D57500E0BCB1 /* LoggerTests.swift in Sources */,
 				601B18B42A210E8D0050644B /* TweenTests.swift in Sources */,
 				B5D0AB6C2A32EE55008F6DA0 /* NetworkingTests.swift in Sources */,
+				60A9DC952CE26E540025D685 /* AsyncOperationTests.swift in Sources */,
 				B578B2872A331F4C00EF9C9E /* HTTPCookieTests.swift in Sources */,
 				B578B2892A3349C000EF9C9E /* RESTAuthenticatorTests.swift in Sources */,
 				601B18B52A224C730050644B /* TimerTests.swift in Sources */,
@@ -1144,6 +1151,7 @@
 				605F3B072A77830D00CB4C97 /* AnyCodable.swift in Sources */,
 				609484492A4C5A70008E21A1 /* RESTRequest.swift in Sources */,
 				609484502A4C5A70008E21A1 /* DataManageable.swift in Sources */,
+				60A9DC932CE26A6F0025D685 /* AsyncOperation.swift in Sources */,
 				60CC2E2E2A4F617200E43713 /* Colors.swift in Sources */,
 				60CC2E3A2A506ACD00E43713 /* UIScrollViewFunctions.swift in Sources */,
 				60CC2ECC2A50CEFA00E43713 /* ImageLoader.swift in Sources */,
