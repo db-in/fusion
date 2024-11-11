@@ -126,35 +126,25 @@ private extension URLRequest {
 	}
 }
 
-// MARK: - Extension - URLRequest Pending Retries
-
-public extension URLRequest {
-	
-	typealias PendingRequest = (request: URLRequest, completion: Response<Data>?)
-	
-	@ThreadSafe
-	private static var suspended: [PendingRequest] = []
-	
-	static var autoSuspendStatus: [Int] = []
-	
-	static var isFrozen: Bool = false {
-		didSet {
-			guard !isFrozen else { return }
-			while !Self.suspended.isEmpty, !Self.isFrozen {
-				let item = Self.suspended.removeFirst()
-				item.request.mapDataResponse(to: item.completion)
-			}
-		}
-	}
-}
-
 // MARK: - Extension - URLRequest REST Tasks
 
 public extension URLRequest {
 
-	var currentTime: TimeInterval { CFAbsoluteTimeGetCurrent() }
+	@ThreadSafe
+	private static var restQueue = AsyncOperationQueue(maxConcurrentTasks: 16)
 	
+	/// Returns the current absolute time in seconds since system boot.
+	var currentTime: TimeInterval { CFAbsoluteTimeGetCurrent() }
+
+	/// Returns the absolute string representation of the request's URL, or an empty string if the URL is nil.
 	var urlString: String { url?.absoluteString ?? "" }
+	
+	/// Maximum number of concurrent network requests allowed.
+	/// The default value is 8, but this can be modified by setting a new value.
+	static var maxConcurrentRequests: Int {
+		get { restQueue.maxConcurrentTasks }
+		set { restQueue.maxConcurrentTasks = newValue }
+	}
 	
 	private func responseResult(_ code: Int, _ data: Data) -> Result<Data, Error> {
 		switch code {
@@ -164,41 +154,42 @@ public extension URLRequest {
 			return .failure(RESTError.unkown(data))
 		}
 	}
-	
+
+	/// Maps the response data to a `Result<Data, Error>`.
+	/// - Parameters:
+	///   - completion: A closure that receives the result of the data mapping.
 	func mapDataResponse(to completion: Response<Data>?) {
-		guard !Self.isFrozen else {
-			Self.suspended.append((self, completion))
-			return
+		URLRequest.restQueue.addTask { operation in
+			debugLogRequest()
+			let time = currentTime
+			
+			RESTAuthenticator.session.dataTask(with: self) { (data, response, error) in
+				self.debugLog(response: response, seconds: currentTime - time)
+				
+				let result: Result<Data, Error>
+				let statusCode = response?.httpStatusCode ?? 0
+				
+				if let validData = data {
+					self.debugLog(data: validData)
+					result = responseResult(statusCode, validData)
+				} else {
+					let fail = error ?? RESTError.unkown(nil)
+					self.debugLog(error: fail)
+					result = .failure(fail)
+				}
+				
+				HTTPCookieStorage.appGroup.sync()
+				completion?(result, response)
+				
+				operation.complete()
+			}.resume()
 		}
-		
-		debugLogRequest()
-		let time = currentTime
-		
-		RESTAuthenticator.session.dataTask(with: self) { (data, response, error) in
-			self.debugLog(response: response, seconds: currentTime - time)
-			
-			let result: Result<Data, Error>
-			let statusCode = response?.httpStatusCode ?? 0
-			
-			if Self.autoSuspendStatus.contains(statusCode) {
-				Self.suspended.append((self, completion))
-			}
-			
-			if let validData = data {
-				self.debugLog(data: validData)
-				result = responseResult(statusCode, validData)
-			} else {
-				let fail = error ?? RESTError.unkown(nil)
-				self.debugLog(error: fail)
-				result = .failure(fail)
-			}
-			
-			HTTPCookieStorage.appGroup.sync()
-			completion?(result, response)
-		}.resume()
 	}
-	
-	func mapJSONResponse<T : Codable>(to completion: Response<T>?) {
+
+	/// Maps the response data to a `Result<T, Error>`, where `T` is a `Codable` type.
+	/// - Parameters:
+	///   - completion: A closure that receives the result of the JSON decoding.
+	func mapJSONResponse<T: Codable>(to completion: Response<T>?) {
 		mapDataResponse { result, response in
 			switch result {
 			case .failure(let error):
@@ -214,7 +205,11 @@ public extension URLRequest {
 			}
 		}
 	}
-	
+
+	/// Uploads the given data and maps the response.
+	/// - Parameters:
+	///   - data: The data to upload.
+	///   - completion: A closure that receives the result of the upload operation.
 	func mapUpload(data: Data, to completion: Response<Data?>?) {
 		debugLogRequest()
 		let time = currentTime
