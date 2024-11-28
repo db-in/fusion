@@ -36,7 +36,6 @@ class LoggerTests: XCTestCase {
 		Logger.silent.log(basic: log1Basic, full: log1Full)
 		DispatchQueue.main.async {
 			Logger.silent.log(basic: self.log2Basic, full: self.log2Full)
-			print(Logger.localCache.first!.date, Logger.localCache.last!.date)
 			XCTAssertTrue(Logger.localCache.first!.date >= Logger.localCache.last!.date)
 			expectation.fulfill()
 		}

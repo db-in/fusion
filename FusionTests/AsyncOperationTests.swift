@@ -39,7 +39,6 @@ class AsyncOperationTests : XCTestCase {
 		let operation = AsyncOperation { _ in }
 		XCTAssert(!operation.isCancelled)
 		operation.cancel()
-		print(operation.state)
 		XCTAssert(operation.isCancelled)
 	}
 	
