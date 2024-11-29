@@ -37,6 +37,10 @@ public enum HTTPMethod : String {
 	case delete = "DELETE"
 }
 
+public extension Headers {
+	static var sr: Headers { ["sr": "1"] }
+}
+
 public enum RESTError : Error {
 	case unkown(Data?)
 }
@@ -100,6 +104,8 @@ public extension URLResponse {
 
 private extension URLRequest {
 	
+	var hasLog: Bool { allHTTPHeaderFields?.keys.contains("sr") != true }
+		
 	var fullRequest: String {
 		let headers = allHTTPHeaderFields?.description ?? ""
 		guard let data = httpBody else { return headers }
@@ -107,10 +113,12 @@ private extension URLRequest {
 	}
 	
 	func debugLogRequest() {
+		guard hasLog else { return }
 		Logger.global.log(basic: "=== 🚀 REQUEST === \(httpMethod ?? "") \(urlString)", full: fullRequest)
 	}
 	
 	func debugLog(response: URLResponse?, seconds: TimeInterval) {
+		guard hasLog else { return }
 		let code = response?.httpStatusCode ?? 0
 		let icon = code >= 200 && code < 400 ? "📦" : "📦‼️"
 		let time = Int(seconds * 1000)
@@ -118,10 +126,12 @@ private extension URLRequest {
 	}
 	
 	func debugLog(data: Data) {
+		guard hasLog else { return }
 		Logger.global.log(basic: "=== 📥 RECEIVED === \(urlString) (\(data.byteCount))", full: "\(String(data: data, encoding: .utf8) ?? "")")
 	}
 	
 	func debugLog(error: Error) {
+		guard hasLog else { return }
 		Logger.global.log(basic: "=== ❌ ERROR === \(urlString) \(error)")
 	}
 }
