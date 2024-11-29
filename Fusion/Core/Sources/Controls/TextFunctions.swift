@@ -46,6 +46,11 @@ public protocol TextConvertible {
 	/// - Returns: The new attributed string.
 	func styled(_ attributes: TextAttributes, onText: String) -> NSAttributedString
 	
+	/// Applies HTML tag-based styling to specific tagged portions of text
+	/// - Parameter tagStyles: Dictionary mapping HTML tags to their corresponding TextAttributes
+	/// - Returns: Styled NSAttributedString with HTML tags removed
+	func styledHTML(_ tags: [String: TextAttributes]) -> TextConvertible
+	
 	/// Appends multiple arguments to the current attributed string.
 	/// Places each argument in the right, regardless of the language direction.
 	///
@@ -140,6 +145,20 @@ public extension TextConvertible {
 		}
 		
 		return attributedString
+	}
+	
+	func styledHTML(_ tags: [String: TextAttributes]) -> TextConvertible {
+		var result: TextConvertible = self
+		
+		tags.forEach { tag, style in
+			let pattern = "<\(tag).*?>(.*?)</\(tag).*?>"
+			while result.content.hasMatch(regex: pattern) {
+				let styled = result.content.replacing(regex: ".*\(pattern).*", with: "$1").styled(style)
+				result = result.replacing(regex: pattern, withText: styled)
+			}
+		}
+		
+		return result
 	}
 }
 
