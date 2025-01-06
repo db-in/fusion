@@ -153,7 +153,7 @@ public extension TextConvertible {
 		tags.forEach { tag, style in
 			let pattern = "<\(tag).*?>(.*?)</\(tag).*?>"
 			while result.content.hasMatch(regex: pattern) {
-				let styled = result.content.replacing(regex: ".*\(pattern).*", with: "$1").styled(style)
+				let styled = result.content.replacing(regex: ".*?\(pattern).*", with: "$1").styled(style)
 				result = result.replacing(regex: pattern, withText: styled)
 			}
 		}
