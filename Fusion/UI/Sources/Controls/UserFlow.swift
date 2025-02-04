@@ -215,7 +215,7 @@ public struct UserFlow {
 	/// - Returns: A Bool indicating if the activity was successfully handled or not.
 	@discardableResult public static func handle(_ activity: NSUserActivity) -> Bool {
 		
-		guard let url = activity.referrerURL else { return false }
+		guard let url = activity.webpageURL ?? activity.referrerURL else { return false }
 		let link = url.absoluteString
 		
 		for (userFlow, links) in UserFlowUniversalLink.record {
