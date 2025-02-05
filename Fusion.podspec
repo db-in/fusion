@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "Fusion"
-  s.version = "1.1.70"
+  s.version = "1.1.71"
   s.summary = "Micro Feature"
   s.description = <<-DESC
 				  Fusion is resposible for ...

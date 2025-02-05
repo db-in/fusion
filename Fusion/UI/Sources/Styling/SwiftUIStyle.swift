@@ -20,6 +20,15 @@ public extension UIView {
 			return self
 		}
 	}
+	
+	func modifier<T: ViewModifier>(_ modifier: T) -> UIView {
+		ZStack {
+			UIKitView { self }
+		}
+		.frame(idealWidth: frame.width, maxWidth: .infinity, idealHeight: frame.height, maxHeight: .infinity, alignment: .center)
+		.modifier(modifier)
+		.uiHost(cached: false).view
+	}
 }
 
 // MARK: - Extension - View
@@ -27,7 +36,7 @@ public extension UIView {
 public extension View {
 	
 	/// Returns a consistent persistent cached `UIView` from a SwiftUI view.
-	/// For a non cahceable version, use ``uiHost(cached:)`` instead.
+	/// For a non cached version, use ``uiHost(cached:)`` instead.
 	/// This routine discards the original UIHostingController, making the view fully independent.
 	var uiView: UIView {
 		guard let view = InMemoryCache.getOrSet(key: "View-\(Self.self)", newValue: UIHostingController(rootView: self).view) else { return .init() }
@@ -44,9 +53,9 @@ public extension View {
 	}
 }
 
-// MARK: - Type - UIViewPreview
+// MARK: - Type - UIKitView
 
-struct UIViewPreview<T : UIView>: UIViewRepresentable {
+struct UIKitView<T : UIView>: UIViewRepresentable {
 	
 // MARK: - Properties
 	
@@ -54,41 +63,28 @@ struct UIViewPreview<T : UIView>: UIViewRepresentable {
 	
 // MARK: - Constructors
 	
-	init(_ builder: @escaping () -> T) {
-		view = builder()
-	}
+	init(_ builder: @escaping () -> T) { view = builder() }
 	
-// MARK: - Protected Methods
-
 // MARK: - Exposed Methods
 	
-	func makeUIView(context: Context) -> UIView {
-		return view
-	}
+	func makeUIView(context: Context) -> UIView { view }
 	
-	func updateUIView(_ view: UIView, context: Context) {
-		view.superview?.setConstraintsFitting(child: view)
-	}
+	func updateUIView(_ view: UIView, context: Context) { view.superview?.setConstraintsFitting(child: view) }
 }
 
-// MARK: - Type - UIViewControllerPreview
+// MARK: - Type - UIKitViewController
 
-struct UIViewControllerPreview<T : UIViewController>: UIViewControllerRepresentable {
+struct UIKitViewController<T : UIViewController>: UIViewControllerRepresentable {
 	
 	let viewController: T
 
-	init(_ builder: @escaping () -> T) {
-		viewController = builder()
-	}
+	init(_ builder: @escaping () -> T) { viewController = builder() }
 
-	// MARK: - UIViewControllerRepresentable
-	func makeUIViewController(context: Context) -> T {
-		viewController
-	}
+// MARK: - UIViewControllerRepresentable
+	
+	func makeUIViewController(context: Context) -> T { viewController }
 
-	func updateUIViewController(_ uiViewController: T, context: UIViewControllerRepresentableContext<UIViewControllerPreview<T>>) {
-		return
-	}
+	func updateUIViewController(_ uiViewController: T, context: UIViewControllerRepresentableContext<UIKitViewController<T>>) { return }
 }
 
 // MARK: - Extension - Image
