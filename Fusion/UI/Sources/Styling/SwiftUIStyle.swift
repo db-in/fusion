@@ -31,6 +31,23 @@ public extension UIView {
 	}
 }
 
+// MARK: - Extension - UIViewController
+
+public extension UIViewController {
+
+	/// Returns a view controller with a clear background.
+	var transparent: Self { background(.clear) }
+	
+	/// Sets the background color of the view controller.
+	///
+	/// - Parameter color: The color to set.
+	/// - Returns: The view controller with the background color set.
+	func background(_ color: UIColor) -> Self {
+		view.backgroundColor = color
+		return self
+	}
+}
+
 // MARK: - Extension - View
 
 public extension View {
@@ -39,8 +56,7 @@ public extension View {
 	/// To use non-cached version, use ``uiHost(cached:).view`` instead.
 	/// This routine discards the original UIHostingController, making the view fully independent.
 	var uiView: UIView {
-		guard let view = InMemoryCache.getOrSet(key: "View-\(Self.self)", newValue: UIHostingController(rootView: self).view) else { return .init() }
-		view.backgroundColor = .clear
+		guard let view = InMemoryCache.getOrSet(key: "View-\(Self.self)", newValue: UIHostingController(rootView: self).transparent.view) else { return .init() }
 		return view
 	}
 	
@@ -48,8 +64,8 @@ public extension View {
 	/// - Parameter cached: Defines if cache will be generated for this host.
 	/// - Returns: An UIHostingController for this view.
 	func uiHost(cached: Bool = true) -> UIHostingController<Self> {
-		guard cached else { return .init(rootView: self) }
-		return InMemoryCache.getOrSet(key: "Host-\(Self.self)", newValue: .init(rootView: self)) ?? .init(rootView: self)
+		guard cached else { return .init(rootView: self).background(.clear) }
+		return InMemoryCache.getOrSet(key: "Host-\(Self.self)", newValue: .init(rootView: self).transparent) ?? .init(rootView: self).transparent
 	}
 }
 
