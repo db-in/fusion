@@ -45,7 +45,7 @@ public extension UIImage {
 	/// - Returns: An image object, if available; otherwise, a system image or an empty image.
 	static func anyImageNonTrait(named: String, allowCache: Bool = true, bundleHint: Bundle = .main) -> UIImage {
 		guard allowCache else { return image(named: named, bundle: bundleHint) ?? .init() }
-		return InMemoryCache.getOrSet(key: "\(Self.self)\(named)", newValue: image(named: named, bundle: bundleHint)) ?? .init()
+		return InMemoryCache.getOrSet(key: "\(Self.self)-\(named)", newValue: image(named: named, bundle: bundleHint)) ?? .init()
 	}
 }
 #endif
@@ -55,11 +55,11 @@ public extension UIImage {
 	
  // MARK: - Protected Methods
 	 
-	 private static func inAnyBundle(_ named: String, trait: UITraitCollection) -> UIImage? {
+	 private static func inAnyBundle(_ named: String, trait: UITraitCollection?) -> UIImage? {
 		 Bundle.allAvailable.firstMap { .init(named: named, in: $0, compatibleWith: trait) } ?? .init(systemName: named)?.template
 	 }
 	 
-	 private static func image(named: String, bundle: Bundle, trait: UITraitCollection) -> UIImage? {
+	 private static func image(named: String, bundle: Bundle, trait: UITraitCollection?) -> UIImage? {
 		 .init(named: named, in: bundle, compatibleWith: trait) ?? .inAnyBundle(named, trait: trait)
 	 }
 	 
@@ -79,7 +79,7 @@ public extension UIImage {
 						  bundleHint: Bundle = .main,
 						  trait: UITraitCollection = .preferredLocaleDirection) -> UIImage {
 		 guard allowCache else { return image(named: named, bundle: bundleHint, trait: trait) ?? .init() }
-		 return InMemoryCache.getOrSet(key: "\(Self.self)\(named)", newValue: image(named: named, bundle: bundleHint, trait: trait)) ?? .init()
+		 return InMemoryCache.getOrSet(key: "\(Self.self)-\(named)", newValue: image(named: named, bundle: bundleHint, trait: trait)) ?? .init()
 	 }
 	
 // MARK: - Exposed Methods
