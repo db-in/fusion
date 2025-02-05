@@ -36,7 +36,7 @@ public extension UIView {
 public extension View {
 	
 	/// Returns a consistent persistent cached `UIView` from a SwiftUI view.
-	/// For a non cached version, use ``uiHost(cached:)`` instead.
+	/// To use non-cached version, use ``uiHost(cached:).view`` instead.
 	/// This routine discards the original UIHostingController, making the view fully independent.
 	var uiView: UIView {
 		guard let view = InMemoryCache.getOrSet(key: "View-\(Self.self)", newValue: UIHostingController(rootView: self).view) else { return .init() }
