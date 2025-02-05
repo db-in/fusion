@@ -55,36 +55,36 @@ public extension View {
 
 // MARK: - Type - UIKitView
 
-struct UIKitView<T : UIView>: UIViewRepresentable {
+public struct UIKitView<T : UIView>: UIViewRepresentable {
 	
 // MARK: - Properties
 	
-	let view: T
+	public let view: T
 	
 // MARK: - Constructors
 	
-	init(_ builder: @escaping () -> T) { view = builder() }
+	public init(_ builder: @escaping () -> T) { view = builder() }
 	
 // MARK: - Exposed Methods
 	
-	func makeUIView(context: Context) -> UIView { view }
+	public func makeUIView(context: Context) -> UIView { view }
 	
-	func updateUIView(_ view: UIView, context: Context) { view.superview?.setConstraintsFitting(child: view) }
+	public func updateUIView(_ view: UIView, context: Context) { view.superview?.setConstraintsFitting(child: view) }
 }
 
 // MARK: - Type - UIKitViewController
 
-struct UIKitViewController<T : UIViewController>: UIViewControllerRepresentable {
+public struct UIKitViewController<T : UIViewController>: UIViewControllerRepresentable {
 	
-	let viewController: T
+	public let viewController: T
 
-	init(_ builder: @escaping () -> T) { viewController = builder() }
+	public init(_ builder: @escaping () -> T) { viewController = builder() }
 
 // MARK: - UIViewControllerRepresentable
 	
-	func makeUIViewController(context: Context) -> T { viewController }
+	public func makeUIViewController(context: Context) -> T { viewController }
 
-	func updateUIViewController(_ uiViewController: T, context: UIViewControllerRepresentableContext<UIKitViewController<T>>) { return }
+	public func updateUIViewController(_ uiViewController: T, context: UIViewControllerRepresentableContext<UIKitViewController<T>>) { return }
 }
 
 // MARK: - Extension - Image
