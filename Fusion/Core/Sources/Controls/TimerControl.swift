@@ -53,7 +53,7 @@ final public class TimerControl {
 // MARK: - Constructors
 	
 	public init() {
-		timer = newDispatch()
+		startIfNeeded()
 		setupNotifications()
 	}
 
@@ -65,6 +65,11 @@ final public class TimerControl {
 		source.setEventHandler(handler: handleTimerTick)
 		source.activate()
 		return source
+	}
+	
+	private func startIfNeeded() {
+		guard !items.isEmpty else { return }
+		timer = newDispatch()
 	}
 	
 	private func cancelIfNeeded() {
@@ -121,6 +126,7 @@ final public class TimerControl {
 	///   - callback: The callback which will be called on every loop.
 	public func addItem(key: String, queue: DispatchQueue = .main, callback: @escaping TimerCallback) {
 		items[key] = (callback, queue)
+		startIfNeeded()
 	}
 	
 	/// Removes a callback item from the timer associated with a key.

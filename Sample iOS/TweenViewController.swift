@@ -53,7 +53,7 @@ class TweenSampleCell : UICollectionViewCell {
 	@IBOutlet weak var colorView: UIView!
 	
 	private func drawContent(with tween: Ease) {
-		let margin: Double = 20
+		let margin: Double = 40
 		let padding = margin * 2
 		let range = (0...60)
 		let path = UIBezierPath()
@@ -72,12 +72,15 @@ class TweenSampleCell : UICollectionViewCell {
 		
 		lineLayer.path = path.cgPath
 		
-		let optionsX = TweenOption(repetition: .mirrorValuesAndEase, repetitionDelay: 0.5)
-		let optionsY = TweenOption(ease: tween, repetition: .mirrorValuesAndEase, repetitionDelay: 0.5)
+		let optionsX = Tween.Option(repetition: .mirrorValuesAndEase, repetitionDelay: 0.5)
+		let optionsY = Tween.Option(ease: tween, repetition: .mirrorValuesAndEase, repetitionDelay: 0.5)
 		
 		Tween.stopTweens(withTarget: circle)
-		Tween(target: circle, duration: 1, options: optionsX, fromValues: [\.center.x : margin], toValues: [\.center.x : bounds.width - margin])
-		Tween(target: circle, duration: 1, options: optionsY, fromValues: [\.center.y : bounds.height - margin], toValues: [\.center.y : margin])
+		Tween(circle, duration: 1, options: optionsX, fromValues: [\.center.x : margin], toValues: [\.center.x : bounds.width - margin])
+		Tween(circle, duration: 1, options: optionsY, fromValues: [\.center.y : bounds.height - margin], toValues: [\.center.y : margin])
+		Tween(duration: 1, options: optionsY, fromValues: ["val": 10, "foo": 10], toValues: ["val": 100, "val_b": 50]) {
+			print($0, $1)
+		}
 	}
 	
 	func configure(with tween: Ease) {

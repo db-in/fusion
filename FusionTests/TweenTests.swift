@@ -15,26 +15,28 @@ private typealias Value = CGFloat
 class TweenTests: XCTestCase {
 	
 	func testMergeWithTargetView_WhenMergingWithTargetView_ShouldMergeValues() {
-		let targetView = UIView()
 		let dictionary: [Key : Value] = [\UIView.center.x: 100.0, \UIView.alpha: 0.5]
 		let other: [Key : Value] = [\UIView.center.y: 200.0, \UIView.alpha: 1.0]
-		let result = dictionary.merge(with: other, target: targetView)
+		let targetView = Tween.Target(view: .init(), paths: [dictionary, other])
+		let result = dictionary.mapKeys({ "\($0)" }).merge(with: other.mapKeys({ "\($0)" }), target: targetView)
 		
-		XCTAssertEqual(result[\UIView.center.x], [100, 0])
-		XCTAssertEqual(result[\UIView.center.y], [0, 200])
-		XCTAssertEqual(result[\UIView.alpha], [0.5, 1.0])
+		XCTAssertEqual(result["\\UIView.center.x"], [100, 0])
+		XCTAssertEqual(result["\\UIView.center.y"], [0, 200])
+		XCTAssertEqual(result["\\UIView.alpha"], [0.5, 1.0])
 	}
 	
 	func testMergeWithoutTargetView_WhenMergingWithoutTargetView_ShouldReturnEmptyResult() {
 		let dictionary: [Key : Value] = [\UIView.center.x: 100.0, \UIView.alpha: 0.5]
 		let other: [Key : Value] = [\UIView.center.y: 200.0, \UIView.alpha: 1.0]
-		let result = dictionary.merge(with: other, target: nil)
-		XCTAssertTrue(result.isEmpty)
+		let result = dictionary.mapKeys({ "\($0)" }).merge(with: other.mapKeys({ "\($0)" }), target: nil)
+		XCTAssertEqual(result["\\UIView.center.x"], [100, 0])
+		XCTAssertEqual(result["\\UIView.center.y"], [0, 200])
+		XCTAssertEqual(result["\\UIView.alpha"], [0.5, 1.0])
 	}
 	
 	func testRestartTween_WhenRestartingTween_ShouldResetValuesAndRemainPaused() {
 		let targetView = UIView()
-		let tween = Tween(target: targetView, duration: 1.0)
+		let tween = Tween(targetView, duration: 1.0)
 		
 		tween.isPaused = true
 		tween.restartTween()
@@ -50,10 +52,10 @@ class TweenTests: XCTestCase {
 
 	func testStopTweenWithEndOption_WhenStoppingTweenWithEndOption_ShouldResetValuesAndEndAtZeroSize() {
 		let targetView = UIView()
-		let tween = Tween(target: targetView, duration: 1.0)
+		let tween = Tween(targetView, duration: 1.0)
 		
 		tween.isPaused = true
-		tween.stopTween(option: .end)
+		tween.stopTween(option: .final)
 
 		XCTAssertTrue(tween.isPaused)
 		XCTAssertEqual(tween.currentCycle, 0)
@@ -66,7 +68,7 @@ class TweenTests: XCTestCase {
 	func testTweenRestart_WhenRestartingTween_ShouldPerformExpectedBehavior() {
 		let expectation = expectation(description: #function)
 		let view = UIView()
-		let tween = Tween(target: view, duration: 1.0)
+		let tween = Tween(view, duration: 1.0)
 
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 			XCTAssertFalse(tween.isPaused)
@@ -92,7 +94,7 @@ class TweenTests: XCTestCase {
 		let expectation = expectation(description: #function)
 		let view = UIView()
 		let endValue: CGFloat = 100
-		let tween = Tween(target: view,
+		let tween = Tween(view,
 						  duration: 0.5,
 						  options: .init(ease: .strongIn, isReversed: true, repetition: .mirrorValuesAndEase, repetitionCount: 2),
 						  toValues: [\.center.x : endValue])
@@ -116,7 +118,7 @@ class TweenTests: XCTestCase {
 		let view = UIView()
 		let endValue: CGFloat = 100
 		let time: FPoint = 0.2
-		let tween = Tween(target: view,
+		let tween = Tween(view,
 						  duration: time,
 						  options: .init(delay: time, repetition: .mirrorValues, repetitionCount: 1),
 						  toValues: [\.center.x : endValue])
@@ -143,7 +145,7 @@ class TweenTests: XCTestCase {
 		let expectation = expectation(description: #function)
 		let view = UIView()
 		let endValue: CGFloat = 100
-		let tween = Tween(target: view,
+		let tween = Tween(view,
 						  duration: 0.2,
 						  options: .init(isReversed: true, repetition: .mirrorValues),
 						  toValues: [\.center.x : endValue])
@@ -164,9 +166,9 @@ class TweenTests: XCTestCase {
 	func testTweenStopWithEndState_WhenStoppingTweenWithEndState_ShouldSetTargetToExpectedState() {
 		let view = UIView()
 		let endValue: CGFloat = 100
-		let tween = Tween(target: view, duration: 1.0, toValues: [\.center.x : endValue])
+		let tween = Tween(view, duration: 1.0, toValues: [\.center.x : endValue])
 
-		tween.stopTween(option: .end)
+		tween.stopTween(option: .final)
 		
 		XCTAssertEqual(view.center.x, endValue)
 	}
@@ -176,9 +178,9 @@ class TweenTests: XCTestCase {
 		let view2 = UIView()
 		let view3 = UIView()
 
-		let tween1 = Tween(target: view1, duration: 1.0)
-		let tween2 = Tween(target: view2, duration: 2.0)
-		let tween3 = Tween(target: view3, duration: 3.0)
+		let tween1 = Tween(view1, duration: 1.0)
+		let tween2 = Tween(view2, duration: 2.0)
+		let tween3 = Tween(view3, duration: 3.0)
 		let tweens = Tween.tweens(withTarget: view2)
 
 		XCTAssertEqual(tweens.count, 1)
@@ -194,9 +196,9 @@ class TweenTests: XCTestCase {
 		let view2 = UIView()
 		let view3 = UIView()
 
-		let tween1 = Tween(target: view1, duration: 1.0, options: .init(name: "Tween1"))
-		let tween2 = Tween(target: view2, duration: 2.0, options: .init(name: "Tween2"))
-		let tween3 = Tween(target: view3, duration: 3.0, options: .init(name: "Tween2"))
+		let tween1 = Tween(view1, duration: 1.0, options: .init(name: "Tween1"))
+		let tween2 = Tween(view2, duration: 2.0, options: .init(name: "Tween2"))
+		let tween3 = Tween(view3, duration: 3.0, options: .init(name: "Tween2"))
 
 		let tweens = Tween.tweens(withName: "Tween2")
 
@@ -213,9 +215,9 @@ class TweenTests: XCTestCase {
 		let view2 = UIView()
 		let view3 = UIView()
 
-		Tween(target: view1, duration: 1.0)
-		Tween(target: view2, duration: 2.0)
-		Tween(target: view3, duration: 3.0)
+		Tween(view1, duration: 1.0)
+		Tween(view2, duration: 2.0)
+		Tween(view3, duration: 3.0)
 		Tween.stopTweens(withTarget: view2)
 		
 		let tween1 = Tween.tweens(withTarget: view1)
@@ -234,9 +236,9 @@ class TweenTests: XCTestCase {
 		let view2 = UIView()
 		let view3 = UIView()
 
-		Tween(target: view1, duration: 1.0, options: .init(name: "Stop1"))
-		Tween(target: view2, duration: 2.0, options: .init(name: "Stop2"))
-		Tween(target: view3, duration: 3.0, options: .init(name: "Stop2"))
+		Tween(view1, duration: 1.0, options: .init(name: "Stop1"))
+		Tween(view2, duration: 2.0, options: .init(name: "Stop2"))
+		Tween(view3, duration: 3.0, options: .init(name: "Stop2"))
 		Tween.stopTweens(withName: "Stop2")
 		
 		let tweens1 = Tween.tweens(withName: "Stop1")
