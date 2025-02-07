@@ -159,27 +159,26 @@ public final class PresentationController : UIPresentationController {
 			let containerView = containerView
 		else { return }
 		
-		limitScrollView(gesture)
-		let percent = gesture.translation(in: containerView).y / containerView.bounds.height
+		let translation = gesture.translation(in: containerView)
+		let velocity = gesture.velocity(in: containerView).y
+		let percent = max(0, min(1, translation.y / containerView.bounds.height))
 		
 		switch gesture.state {
 		case .began:
+			isInteracting = true
+			interactiveTransition = .init()
 			if !presentedViewController.isBeingDismissed && scrollView?.contentOffset.y ?? 0 <= 0 {
-				isInteracting = true
 				presentedViewController.dismiss(animated: true)
 			}
 		case .changed:
-			interactiveTransition.update(percent)
-		case .cancelled:
-			interactiveTransition.cancel()
-			isInteracting = false
-		case .ended:
-			let velocity = gesture.velocity(in: containerView).y
-			interactiveTransition.completionSpeed = 0.9
+			limitScrollView(gesture)
+			interactor?.update(percent)
+		case .cancelled, .ended:
+			interactor?.completionSpeed = 0.9
 			if percent > 0.3 || velocity > 1600 {
-				interactiveTransition.finish()
+				interactor?.finish()
 			} else {
-				interactiveTransition.cancel()
+				interactor?.cancel()
 			}
 			isInteracting = false
 		default:
