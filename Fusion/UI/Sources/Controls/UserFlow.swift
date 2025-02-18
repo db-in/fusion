@@ -214,16 +214,18 @@ public struct UserFlow {
 	/// - Parameter activity: A valid NSUserActivity
 	/// - Returns: A Bool indicating if the activity was successfully handled or not.
 	@discardableResult public static func handle(_ activity: NSUserActivity) -> Bool {
+		let urls = [activity.webpageURL, activity.referrerURL].compactMap { $0 }
+		guard !urls.isEmpty else { return false }
 		
-		guard let url = activity.webpageURL ?? activity.referrerURL else { return false }
-		let link = url.absoluteString
-		
-		for (userFlow, links) in UserFlowUniversalLink.record {
-			if let universalLink = links.first(where: { link.hasMatch(regex: $0.pattern) }) {
-				asyncMain {
-					universalLink.handler(url, userFlow)
+		for url in urls {
+			let urlString = url.absoluteString
+			for (userFlow, links) in UserFlowUniversalLink.record {
+				if let universalLink = links.first(where: { urlString.hasMatch(regex: $0.pattern) }) {
+					asyncMain {
+						universalLink.handler(url, userFlow)
+					}
+					return true
 				}
-				return true
 			}
 		}
 		
