@@ -153,6 +153,16 @@ public extension UIImage {
 		return newImage
 	}
 	
+	/// Rescales the image proportionally to the specified width, height or both.
+	///
+	/// - Parameters:
+	///   - width: Scales the image to this specific width. If height is not provided, it will be automatically calculated.
+	///   - height: Scales the image to this specific height. If width is not provided, it will be automatically calculated.
+	/// - Returns: A resized image.
+	func rescaled(width: CGFloat? = nil, height: CGFloat? = nil) -> UIImage {
+		resized(to: size.rescaled(width: width, height: height))
+	}
+	
 	/// Creates a new image by combining the original image with a shape background of the specified color.
 	///
 	/// - Parameters:

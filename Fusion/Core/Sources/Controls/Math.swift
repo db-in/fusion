@@ -1,4 +1,4 @@
-//  
+//
 //  Created by Diney Bomfim on 5/2/23.
 //
 
@@ -149,6 +149,18 @@ public extension CGSize {
 	/// - Parameter squared: The length of the sides of the square.
 	init(squared: CGFloat) { self.init(width: squared, height: squared) }
 	
+	/// Scales the size proportionally based on the specified width or height.
+	///
+	/// - Parameters:
+	///   - width: The target width. If provided without `height`, the height is scaled proportionally.
+	///   - height: The target height. If provided without `width`, the width is scaled proportionally.
+	/// - Returns: A new `CGSize` with the adjusted dimensions.
+	func rescaled(width: CGFloat? = nil, height: CGFloat? = nil) -> CGSize {
+		if let w = width { return .init(width: w, height: height ?? self.height * (w / self.width)) }
+		if let h = height { return .init(width: self.width * (h / self.height), height: h) }
+		return self
+	}
+	
 	/// Returns a new size by expanding the current size.
 	///
 	/// - Parameters:
@@ -189,28 +201,13 @@ public extension CGRect {
 		self.init(origin: .init(x: 0, y: 0), size: .init(width: width, height: height))
 	}
 	
-//	/// Similar to `insetBy` but safer, this function avoids resulting in negative size.
-//	/// - Parameters:
-//	///   - dx: The X axis insets on both sides.
-//	///   - dy: The Y axis insets on both sides.
-//	/// - Returns: A new `CGRect`.
-//	func insetSafelyBy(dx: CGFloat, dy: CGFloat) -> CGRect {
-//		let normalizedX = dx * 2 > size.width ? 0 : dx
-//		let normalizedY = dy * 2 > size.height ? 0 : dy
-//		return insetBy(dx: normalizedX, dy: normalizedY)
-//	}
-//	
-//	/// Returns a new `CGRect` by expanding the edges of the current `CGRect` with a given criteria.
-//	///
-//	/// - Parameters:
-//	///   - top: The top expansion.
-//	///   - left: The left expansion.
-//	///   - bottom: The bottom expansion.
-//	///   - right: The right expansion.
-//	/// - Returns: A new `CGRect`.
-//	func expandBy(top: CGFloat = 0, left: CGFloat = 0, bottom: CGFloat = 0, right: CGFloat = 0) -> CGRect {
-//		let newOrigin = CGPoint(x: origin.x - left, y: origin.y - top)
-//		let newSize = CGSize(width: width + right + left, height: height + bottom + top)
-//		return .init(origin: newOrigin, size: newSize)
-//	}
+	/// Scales the rectangle proportionally based on the specified width or height.
+	///
+	/// - Parameters:
+	///   - width: The target width. If provided without `height`, the height is scaled proportionally.
+	///   - height: The target height. If provided without `width`, the width is scaled proportionally.
+	/// - Returns: A new `CGRect` with the scaled size while maintaining the original origin.
+	func rescaled(width: CGFloat? = nil, height: CGFloat? = nil) -> CGRect {
+		.init(origin: origin, size: size.rescaled(width: width, height: height))
+	}
 }
