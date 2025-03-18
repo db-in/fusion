@@ -32,7 +32,10 @@ public extension UIViewController {
 	///
 	/// - Parameter flow: The ``UserFlow`` which contains the view controller.
 	/// - Returns: The instantiated view controller.
-	class func instantiate(flow: UserFlow) -> Self? { instantiate(storyboardName: flow.name) }
+	class func instantiate(flow: UserFlow) -> Self? {
+		guard let name = flow.name else { return nil }
+		return instantiate(storyboardName: name)
+	}
 }
 
 public enum PresentationStyle {
@@ -142,15 +145,21 @@ public struct UserFlow {
 	
 // MARK: - Properties
 	
-	public let name: String
-	public let bundle: Bundle
+	public let name: String?
+	public let bundle: Bundle?
 	public let map: UserFlowMapping?
 	
 	/// The original storyboard initial controller or an empty new `UIViewController` if no initial is found.
-	public var initial: UIViewController { UIStoryboard(name: name, bundle: bundle).instantiateInitialViewController() ?? UIViewController() }
+	public var initial: UIViewController {
+		guard let storyboardName = name else { return mapped }
+		return UIStoryboard(name: storyboardName, bundle: bundle).instantiateInitialViewController() ?? .init()
+	}
 	
 	/// Mapped controller, after the UserFlow mapping function is executed.
-	public var mapped: UIViewController { map?(self) ?? initial }
+	public var mapped: UIViewController {
+		guard let storyboardName = name else { return map?(self) ?? .init() }
+		return map?(self) ?? initial
+	}
 	
 // MARK: - Constructors
 
@@ -166,6 +175,16 @@ public struct UserFlow {
 		links.forEach { $0.link(to: self) }
 	}
 	
+	public init(_ map: UserFlowMapping?,
+				hooks: [UserFlowHook] = [],
+				links: [UserFlowUniversalLink] = []) {
+		self.name = nil
+		self.bundle = nil
+		self.map = map
+		hooks.forEach { $0.hook(to: self) }
+		links.forEach { $0.link(to: self) }
+	}
+	
 // MARK: - Protected Methods
 	
 // MARK: - Exposed Methods
@@ -175,7 +194,8 @@ public struct UserFlow {
 	/// - Parameter given: The type of the controller to be instantiated.
 	/// - Returns: The initialized controller or nil if not found.
 	public func identified<T : UIViewController>(_ type: T.Type) -> T? {
-		type.instantiate(storyboardName: name)
+		guard let storyboardName = name else { return nil }
+		return type.instantiate(storyboardName: storyboardName)
 	}
 	
 	/// Presents the mapped controller by using modal.

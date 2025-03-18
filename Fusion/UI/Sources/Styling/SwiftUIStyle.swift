@@ -152,4 +152,11 @@ public extension Font {
 	static var caption1: Font = UIFont.caption1.suiFont
 	static var caption2: Font = UIFont.caption2.suiFont
 }
+
+// MARK: - Extension - UserFlow
+
+public extension UserFlow {
+	
+	@ViewBuilder var uiView: some View { UIKitViewController { mapped } }
+}
 #endif
