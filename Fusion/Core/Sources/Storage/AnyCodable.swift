@@ -27,12 +27,27 @@ public struct AnyCodable {
 // MARK: - Protected Methods
 
 // MARK: - Exposed Methods
-
+	
 	public func map<T : Codable>(to type: T.Type, keyPath: String? = nil) -> T? {
-		if var object = keyedValues {
-			let path = keyPath?.components(separatedBy: ".")
-			path?.forEach { object = object[$0] as? [String : Any] ?? [:] }
-			return type.load(jsonObject: object)
+		if var currentValue: Any = keyedValues {
+			if let path = keyPath {
+				let pattern = #"[.\[]?([^.\[\]]+)\]?"#
+				let matches = try? NSRegularExpression(pattern: pattern, options: []).matches(in: path, range: NSRange(path.startIndex..., in: path))
+				matches?.forEach { match in
+					if let range = Range(match.range(at: 1), in: path) {
+						let key = String(path[range])
+						
+						if let dict = currentValue as? [String: Any] {
+							currentValue = dict[key] ?? [:]
+						} else if let array = currentValue as? [Any] {
+							if let index = Int(key) {
+								currentValue = array.count > index ? array[index] : [:]
+							}
+						}
+					}
+				}
+			}
+			return type.load(jsonObject: currentValue)
 		} else if let validData = data {
 			return type.load(data: validData)
 		}

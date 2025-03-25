@@ -129,7 +129,7 @@ public extension Encodable {
 			let jsonData = try JSONEncoder.standard.encode(self).base64EncodedData()
 			try jsonData.write(to: url, options: isSecure ? [.completeFileProtection, .atomic] : .atomic)
 		} catch {
-			Logger.global.log(full: "Encodable error \(error)")
+			Logger.global.log(basic: "‼️ Encodable error", full: "\(error)")
 		}
 	}
 	
@@ -167,7 +167,7 @@ public extension Decodable {
 		do {
 			return try JSONDecoder.standard.decode(self, from: data)
 		} catch {
-			Logger.global.log(full: "Decodable error: \(error)")
+			Logger.global.log(basic: "‼️ Decodable error", full: "\(error)")
 			return nil
 		}
 	}
@@ -176,7 +176,7 @@ public extension Decodable {
 	///
 	/// - Parameter jsonObject: The JSON data to load the decodable object.
 	/// - Returns: The loaded object or nil in case of error. It prints a console log for the error.
-	static func load(jsonObject: [String : Any]) -> Self? {
+	static func load(jsonObject: Any) -> Self? {
 		guard let data = try? JSONSerialization.data(withJSONObject: jsonObject) else { return nil }
 		return load(data: data)
 	}
