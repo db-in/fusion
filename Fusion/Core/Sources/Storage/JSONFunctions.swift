@@ -10,6 +10,12 @@ public func == <T, V: Equatable>(lhs: KeyPath<T, V>, rhs: V) -> (T) -> Bool { { 
 
 public func != <T, V: Equatable>(lhs: KeyPath<T, V>, rhs: V) -> (T) -> Bool { { $0[keyPath: lhs] != rhs } }
 
+public extension KeyPath {
+	
+	/// Returns a string keypath representation of keypath.
+	var stringValue: String { "\(self)".replacing(regex: ".*?\\.(.*)", with: "$1") }
+}
+
 // MARK: - Extension - DateFormatter
 
 public extension DateFormatter {
@@ -129,7 +135,7 @@ public extension Encodable {
 			let jsonData = try JSONEncoder.standard.encode(self).base64EncodedData()
 			try jsonData.write(to: url, options: isSecure ? [.completeFileProtection, .atomic] : .atomic)
 		} catch {
-			Logger.global.log(basic: "‼️ Encodable error", full: "\(error)")
+			Logger.global.log(full: "Encodable error \(error)")
 		}
 	}
 	
@@ -167,7 +173,7 @@ public extension Decodable {
 		do {
 			return try JSONDecoder.standard.decode(self, from: data)
 		} catch {
-			Logger.global.log(basic: "‼️ Decodable error", full: "\(error)")
+			Logger.global.log(full: "Decodable error: \(error)")
 			return nil
 		}
 	}
@@ -176,7 +182,7 @@ public extension Decodable {
 	///
 	/// - Parameter jsonObject: The JSON data to load the decodable object.
 	/// - Returns: The loaded object or nil in case of error. It prints a console log for the error.
-	static func load(jsonObject: Any) -> Self? {
+	static func load(jsonObject: [String : Any]) -> Self? {
 		guard let data = try? JSONSerialization.data(withJSONObject: jsonObject) else { return nil }
 		return load(data: data)
 	}
@@ -236,6 +242,16 @@ public extension Decodable where Self : Encodable {
 		var dict = dictionaryObject
 		dict[key] = value
 		return Self.load(jsonObject: dict) ?? self
+	}
+	
+	/// Updates the value of a given a key and returns a copy of it.
+	///
+	/// - Parameters:
+	///   - keyPath: The keyPath to be updated.
+	///   - value: The value to be updated.
+	/// - Returns: Returns a new copy of the target.
+	func updating<T>(_ keyPath: KeyPath<Self, T>, to value: T) -> Self {
+		updating(keyPath.stringValue, to: value)
 	}
 }
 
