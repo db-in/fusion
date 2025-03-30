@@ -182,7 +182,7 @@ public extension Decodable {
 	///
 	/// - Parameter jsonObject: The JSON data to load the decodable object.
 	/// - Returns: The loaded object or nil in case of error. It prints a console log for the error.
-	static func load(jsonObject: [String : Any]) -> Self? {
+	static func load(jsonObject: Any) -> Self? {
 		guard let data = try? JSONSerialization.data(withJSONObject: jsonObject) else { return nil }
 		return load(data: data)
 	}
