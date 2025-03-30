@@ -138,6 +138,12 @@ public extension CGSize {
 	/// The size where width and height are both set to the maximum of the original width and height.
 	var squaredByMax: CGSize { .init(squared: max(width, height)) }
 	
+	/// Returns a new size where the curernt height is the minimum value for the width as well. Use for horizontal capsule/pill shapes.
+	var heightAsMinimum: CGSize { width < height ? CGSize(width: height, height: height) : self }
+	
+	/// Returns a new size where the curernt width is the minimum value for the height as well. Use for vertical capsule/pill shapes.
+	var widthAsMinimum: CGSize { height < width ? CGSize(width: width, height: width) : self }
+	
 	/// The size halved by dividing both width and height by 2.
 	var half: CGSize { self * 0.5 }
 	
