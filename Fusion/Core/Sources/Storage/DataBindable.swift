@@ -168,3 +168,98 @@ public extension DataBindable {
 		}
 	}
 }
+
+#if canImport(Combine)
+import Combine
+
+public extension DataBindable {
+	
+	/// Creates a publisher that emits when the specified key receives updates.
+	/// The publisher automatically manages its own lifecycle and cleanup through the SwiftUI view hierarchy.
+	///
+	/// Example usage in SwiftUI:
+	/// ```swift
+	/// .onReceive(Storage.bind(.someKey)) {
+	///     // Handle void notification
+	/// }
+	/// ```
+	///
+	/// - Parameter key: The key to observe for updates
+	/// - Returns: A publisher that emits void when the key receives updates
+	static func bind(key: Key) -> AnyPublisher<Void, Never> {
+		let subject = PassthroughSubject<Void, Never>()
+		let holder = NSObject()
+		bind(key: key, cancellable: holder) { subject.send() }
+		return subject
+			.handleEvents(receiveCancel: {
+				unbind(key: key, cancellable: holder)
+			})
+			.eraseToAnyPublisher()
+	}
+	
+	/// Creates a publisher that emits values when the specified key receives updates.
+	/// The publisher automatically manages its own lifecycle and cleanup through the SwiftUI view hierarchy.
+	///
+	/// Example usage in SwiftUI:
+	/// ```swift
+	/// .onReceive(Storage.bind(.users)) { users in
+	///     self.users = users ?? []
+	/// }
+	/// ```
+	///
+	/// - Parameter key: The key to observe for value updates
+	/// - Returns: A publisher that emits optional values of type T when the key receives updates
+	static func bind<T>(key: Key) -> AnyPublisher<T?, Never> {
+		let subject = PassthroughSubject<T?, Never>()
+		let holder = NSObject()
+		bind(key: key, cancellable: holder) { (value: T?) in subject.send(value) }
+		return subject
+			.handleEvents(receiveCancel: {
+				unbind(key: key, cancellable: holder)
+			})
+			.eraseToAnyPublisher()
+	}
+}
+#endif
+
+#if compiler(>=5.5) && canImport(_Concurrency)
+public extension DataBindable {
+	
+	/// Waits asynchronously for the next notification of the specified key.
+	///
+	/// Example usage:
+	/// ```swift
+	/// await Storage.waitForNotification(.someKey)
+	/// ```
+	///
+	/// - Parameter key: The key to observe for updates
+	static func waitForNotification(key: Key) async {
+		await withCheckedContinuation { continuation in
+			let holder = NSObject()
+			bind(key: key, cancellable: holder) {
+				continuation.resume()
+				unbind(key: key, cancellable: holder)
+			}
+		}
+	}
+	
+	/// Waits asynchronously for the next value update of the specified key.
+	///
+	/// Example usage:
+	/// ```swift
+	/// let newValue = try await Storage.waitForValue(.someKey)
+	/// ```
+	///
+	/// - Parameter key: The key to observe for value updates
+	/// - Returns: The next value received for the specified key
+	static func waitForValue<T>(key: Key) async -> T? {
+		await withCheckedContinuation { continuation in
+			let holder = NSObject()
+			bind(key: key, cancellable: holder) { (value: T?) in
+				continuation.resume(returning: value)
+				unbind(key: key, cancellable: holder)
+			}
+		}
+	}
+}
+#endif
