@@ -138,7 +138,7 @@ public extension Locale {
 
 // MARK: - Properties
 	
-	private static var preferredLanguage: String { Locale.preferredLanguages.first(where: { Bundle.languageSet.contains($0) }) ?? "en" }
+	private static var preferredLanguage: String { Locale.preferredLanguages.first(where: { Bundle.languageSet.contains($0.prefix(2).lowercased()) }) ?? "en" }
 	
 	/// Standard UTC/GMT locale.
 	static var utc: Locale { Locale(identifier: "UTC") }
