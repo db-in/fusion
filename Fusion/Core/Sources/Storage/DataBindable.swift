@@ -155,6 +155,50 @@ public extension DataBindable {
 		Wrapper.all[nameKey]?.removeAll(where: { $0 == wrapper })
 	}
 	
+	/// Binds a closure to be executed only once on the next value update of the specified key.
+	/// The binding is automatically removed after the first value is received.
+	///
+	/// Example usage:
+	/// ```swift
+	/// Storage.bindOnce(.someKey) { (value: String?) in
+	///     // Handle the received value
+	/// }
+	/// ```
+	///
+	/// - Complexity: O(1)
+	/// - Parameters:
+	///   - key: The key to observe for value updates
+	///   - completion: A closure that will be called with the next value received for the key
+	static func bindOnce<T>(key: Key, _ completion: @escaping (T?) -> Void) {
+		let holder = NSObject()
+		bind(key: key, cancellable: holder) { (value: T?) in
+			completion(value)
+			unbind(key: key, cancellable: holder)
+		}
+	}
+	
+	/// Binds a closure to be executed only once on the next notification of the specified key.
+	/// The binding is automatically removed after the first notification is received.
+	///
+	/// Example usage:
+	/// ```swift
+	/// Storage.bindOnce(.someKey) {
+	///     // Handle the notification
+	/// }
+	/// ```
+	///
+	/// - Complexity: O(1)
+	/// - Parameters:
+	///   - key: The key to observe for updates
+	///   - completion: A closure that will be called when the next notification is received
+	static func bindOnce(key: Key, _ completion: @escaping () -> Void) {
+		let holder = NSObject()
+		bind(key: key, cancellable: holder) {
+			completion()
+			unbind(key: key, cancellable: holder)
+		}
+	}
+	
 	/// Sends the update message to all the existing valid closures that has used `bind` on the given key.
 	///
 	/// - Parameters:
@@ -184,6 +228,7 @@ public extension DataBindable {
 	/// }
 	/// ```
 	///
+	/// - Complexity: O(1)
 	/// - Parameter key: The key to observe for updates
 	/// - Returns: A publisher that emits void when the key receives updates
 	static func bind(key: Key) -> AnyPublisher<Void, Never> {
@@ -207,6 +252,7 @@ public extension DataBindable {
 	/// }
 	/// ```
 	///
+	/// - Complexity: O(1)
 	/// - Parameter key: The key to observe for value updates
 	/// - Returns: A publisher that emits optional values of type T when the key receives updates
 	static func bind<T>(key: Key) -> AnyPublisher<T?, Never> {
@@ -232,6 +278,7 @@ public extension DataBindable {
 	/// await Storage.waitForNotification(.someKey)
 	/// ```
 	///
+	/// - Complexity: O(1)
 	/// - Parameter key: The key to observe for updates
 	static func waitForNotification(key: Key) async {
 		await withCheckedContinuation { continuation in
@@ -250,6 +297,7 @@ public extension DataBindable {
 	/// let newValue = try await Storage.waitForValue(.someKey)
 	/// ```
 	///
+	/// - Complexity: O(1)
 	/// - Parameter key: The key to observe for value updates
 	/// - Returns: The next value received for the specified key
 	static func waitForValue<T>(key: Key) async -> T? {
