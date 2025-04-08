@@ -32,6 +32,7 @@
 		603A99692A94B81700BFFCDC /* ObserverFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603A99682A94B81700BFFCDC /* ObserverFunctions.swift */; };
 		605F3A942A70F0CC00CB4C97 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605F3A932A70F0CC00CB4C97 /* GradientView.swift */; };
 		605F3B072A77830D00CB4C97 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605F3B062A77830D00CB4C97 /* AnyCodable.swift */; };
+		606593C32DA582BD00CC4B4A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 606593C22DA582BD00CC4B4A /* PrivacyInfo.xcprivacy */; };
 		6068D6C92CF463F600A5CD30 /* RealityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068D6C82CF463F600A5CD30 /* RealityKit.framework */; };
 		608624352B7B752A0051FB0E /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608624342B7B752A0051FB0E /* LocalizationTests.swift */; };
 		609484172A4C5767008E21A1 /* Fusion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 609484022A4C5766008E21A1 /* Fusion.framework */; };
@@ -200,6 +201,7 @@
 		603A99682A94B81700BFFCDC /* ObserverFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObserverFunctions.swift; sourceTree = "<group>"; };
 		605F3A932A70F0CC00CB4C97 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		605F3B062A77830D00CB4C97 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
+		606593C22DA582BD00CC4B4A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		6068D6C82CF463F600A5CD30 /* RealityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityKit.framework; path = Platforms/XROS.platform/Developer/SDKs/XROS2.1.sdk/System/Library/Frameworks/RealityKit.framework; sourceTree = DEVELOPER_DIR; };
 		608624342B7B752A0051FB0E /* LocalizationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
 		608E0F122AEA49B000CE531D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Info.plist; sourceTree = "<group>"; };
@@ -446,6 +448,7 @@
 			children = (
 				6094842C2A4C5A70008E21A1 /* Core */,
 				609484242A4C5A70008E21A1 /* UI */,
+				606593C22DA582BD00CC4B4A /* PrivacyInfo.xcprivacy */,
 			);
 			path = Fusion;
 			sourceTree = "<group>";
@@ -942,6 +945,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				606593C32DA582BD00CC4B4A /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

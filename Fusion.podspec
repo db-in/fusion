@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "Fusion"
-  s.version = "1.1.87"
+  s.version = "1.1.88"
   s.summary = "Micro Feature"
   s.description = <<-DESC
 				  Fusion is resposible for ...
@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
   s.watchos.deployment_target = '9.0'
   s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES', 'MARKETING_VERSION' => "#{s.version}" }
   s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES', 'MARKETING_VERSION' => "#{s.version}"  }
+  s.resources = 'Fusion/**/*.{xcprivacy}'
   
   s.subspec 'Core' do |co|
 	  co.public_header_files = 'Fusion/Core/**/*.h'
