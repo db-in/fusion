@@ -182,6 +182,9 @@ public extension String {
 	/// Filters the whole string keeping only the digits `usingWesternArabicNumerals`
 	var digits: String { filter("0123456789".contains) }
 	
+	/// Ignores diacritic marks. é = e, ë = e, õ = o, etc.
+	var noDiacritic: String { folding(options: .diacriticInsensitive, locale: nil) }
+	
 	/// Converts any numeral to Western Arabic Numerals (aka ASCII digits, Western digits, Latin digits, or European digits)
 	var usingWesternArabicNumerals: String { convertedDigitsToLocale(.init(identifier: "EN")) }
 	
@@ -248,8 +251,8 @@ public extension String {
 	///   - isCaseSensitive: Defines if the algorithm will consider the character case. Default is `false`.
 	/// - Returns: A `Bool` indicating if the search was successful.
 	func containsCharacters(_ text: String, isCaseSensitive: Bool = false) -> Bool {
-		let criteria = isCaseSensitive ? text : text.lowercased()
-		let query = isCaseSensitive ? self : lowercased()
+		let criteria = (isCaseSensitive ? text : text.lowercased()).noDiacritic
+		let query = (isCaseSensitive ? self : lowercased()).noDiacritic
 		let searchCount = criteria.count
 		var pointer = 0
 		
@@ -272,8 +275,8 @@ public extension String {
 	///   - isCaseSensitive: Defines if the algorithm will consider the character case. Default is `false`.
 	/// - Returns: A `Bool` indicating if the search was successful.
 	func containsSequence(_ text: String, isCaseSensitive: Bool = false) -> Bool {
-		let criteria = isCaseSensitive ? text : text.lowercased()
-		let query = isCaseSensitive ? self : lowercased()
+		let criteria = (isCaseSensitive ? text : text.lowercased()).noDiacritic
+		let query = (isCaseSensitive ? self : lowercased()).noDiacritic
 		return query.contains(criteria)
 	}
 	
