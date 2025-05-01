@@ -74,7 +74,7 @@ public extension UIColor {
 	}
 	
 	private static func color(named: String, bundle: Bundle, trait: UITraitCollection?) -> UIColor? {
-		.init(named: named, in: bundle, compatibleWith: trait) ?? .inAnyBundle(named, trait: trait)
+		.init(named: named, in: bundle, compatibleWith: trait) ?? inAnyBundle(named, trait: trait)
 	}
 
 // MARK: - Exposed Methods
@@ -240,7 +240,7 @@ public extension Color {
 	}
 	
 	private static func color(named: String, bundle: Bundle) -> Color? {
-		.init(named, bundle: bundle).nilIfClear ?? .inAnyBundle(named)
+		.init(named, bundle: bundle).nilIfClear ?? inAnyBundle(named)
 	}
 
 // MARK: - Exposed Methods

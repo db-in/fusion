@@ -114,7 +114,7 @@ public struct FontLoader {
 	private func generateName() -> String {
 		
 		guard
-			let url = Bundle.allAvailable.firstMap({ $0.url(forResource: file, withExtension: "") }),
+			let url = Bundle.url(named: file, bundle: .main),
 			let data = try? Data(contentsOf: url),
 			let provider = CGDataProvider(data: data as CFData),
 			let font = CGFont(provider),

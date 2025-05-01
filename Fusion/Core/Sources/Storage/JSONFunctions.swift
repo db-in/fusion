@@ -16,6 +16,15 @@ public extension KeyPath {
 	var stringValue: String { "\(self)".replacing(regex: ".*?\\.(.*)", with: "$1") }
 }
 
+// MARK: - Extension - Bundle
+
+public extension Bundle {
+	
+	static func url(named: String, bundle: Bundle) -> URL? {
+		bundle.url(forResource: named, withExtension: nil) ?? Bundle.allAvailable.firstMap({ $0.url(forResource: named, withExtension: nil) })
+	}
+}
+
 // MARK: - Extension - DateFormatter
 
 public extension DateFormatter {
