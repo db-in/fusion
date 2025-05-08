@@ -512,13 +512,48 @@ public extension UIView {
 		return self
 	}
 	
-	func embededInView(edges: UIEdgeInsets = .zero) -> UIView {
+	/// Wraps the view in a parent UIView and applies edge constraints.
+	///
+	/// - Parameter edges: Insets to apply between the view and its parent. Defaults to `.zero`.
+	/// - Returns: A new UIView containing the current view.
+	func embededInView(edges: UIEdgeInsets = .zero, centerX: CGFloat? = nil, centerY: CGFloat? = nil) -> UIView {
 		let view = UIView(frame: .init(origin: .zero, size: frame.size))
 		view.addSubview(self)
-		view.setConstraintsFitting(child: self, edges: edges)
+		
+		if centerX != nil || centerY != nil {
+			var constraints: [NSLayoutConstraint] = []
+			
+			if let centerX = centerX {
+				constraints.append(centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: centerX))
+				constraints.append(leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: edges.left))
+				constraints.append(trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -edges.right))
+			} else {
+				constraints.append(leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: edges.left))
+				constraints.append(trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -edges.right))
+			}
+			
+			if let centerY = centerY {
+				constraints.append(centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: centerY))
+				constraints.append(topAnchor.constraint(greaterThanOrEqualTo: view.topAnchor, constant: edges.top))
+				constraints.append(bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor, constant: -edges.bottom))
+			} else {
+				constraints.append(topAnchor.constraint(equalTo: view.topAnchor, constant: edges.top))
+				constraints.append(bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -edges.bottom))
+			}
+			
+			translatesAutoresizingMaskIntoConstraints = false
+			view.setConstraints(constraints)
+		} else {
+			view.setConstraintsFitting(child: self, edges: edges)
+		}
+		
 		return view
 	}
-	
+
+	/// Embeds the view in a UIScrollView and applies edge constraints.
+	///
+	/// - Parameter edges: Insets to apply between the view and the scroll view. Defaults to `.zero`.
+	/// - Returns: A new UIScrollView containing the current view.
 	func embededInScrollView(edges: UIEdgeInsets = .zero) -> UIScrollView {
 		let view = UIScrollView(frame: .init(origin: .zero, size: frame.size))
 		view.showsHorizontalScrollIndicator = false
@@ -527,7 +562,14 @@ public extension UIView {
 		view.setConstraintsFitting(child: self, edges: edges)
 		return view
 	}
-	
+
+	/// Creates a spacer view with optional dimensions and background color.
+	///
+	/// - Parameters:
+	///   - width: The optional width of the spacer.
+	///   - height: The optional height of the spacer.
+	///   - backgroundColor: An optional background color to apply.
+	/// - Returns: A configured spacer UIView.
 	static func spacer(width: CGFloat? = nil, height: CGFloat? = nil, backgroundColor: UIColor? = nil) -> UIView {
 		let view = UIView(frame: .init(x: 0, y: 0, width: width ?? 0, height: height ?? 0))
 		view.backgroundColor = backgroundColor
