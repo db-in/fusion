@@ -117,12 +117,11 @@ public struct FontLoader {
 			let url = Bundle.url(named: file, bundle: .main),
 			let data = try? Data(contentsOf: url),
 			let provider = CGDataProvider(data: data as CFData),
-			let font = CGFont(provider),
-			CTFontManagerRegisterGraphicsFont(font, nil),
-			let fontName = font.postScriptName as? String
+			let font = CGFont(provider)
 		else { return "" }
-
-		Self.inMemory[file] = fontName
+		
+		CTFontManagerRegisterGraphicsFont(font, nil)
+		Self.inMemory[file] = font.postScriptName as? String ?? ""
 		
 		return fontName
 	}
