@@ -126,4 +126,15 @@ public struct FontLoader {
 		return fontName
 	}
 }
+
+public extension Bundle {
+	
+	private static func inAnyBundle(_ named: String) -> URL? {
+		Bundle.allAvailable.firstMap({ $0.url(forResource: named, withExtension: nil) })
+	}
+	
+	static func url(named: String, bundle: Bundle) -> URL? {
+		bundle.url(forResource: named, withExtension: nil) ?? inAnyBundle(named)
+	}
+}
 #endif
