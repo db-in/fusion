@@ -88,10 +88,6 @@ extension String : ImageConvertible { }
 
 // MARK: - Extension - Optional ImageConvertible
 
-public extension Optional where Wrapped : ImageConvertible {
-	func load<T>(on target: T, at path: ReferenceWritableKeyPath<T, UIImage?>) { (self as? ImageConvertible).load(on: target, at: path) }
-}
-
 public extension Optional where Wrapped == ImageConvertible {
 	
 	func load<T>(on target: T, at path: ReferenceWritableKeyPath<T, UIImage?>) {
