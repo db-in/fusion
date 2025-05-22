@@ -164,6 +164,22 @@ public extension UIImage {
 		task.resume()
 	}
 	
+	/// Attempts to load an image from cache. If unavailable, it downloads and caches it.
+	/// This method returns whether the image came from cache or network.
+	///
+	/// - Parameters:
+	///   - url: The URL string of the image.
+	///   - allowsBadge: Indicates if associated badges are allowed.
+	///   - storage: A fallback storage to be used. This storage will receive a copy of the cache when cache is available.
+	///   - completion: The closure with the final `UIImage` and a Boolean indicating if it was loaded from cache.
+	static func loadOrDownload(url: String, allowsBadge: Bool = true, storage: URL? = nil, then completion: @escaping (UIImage?, Bool) -> Void) {
+		if let image = loadCache(url: url, allowsBadge: allowsBadge, storage: storage) {
+			completion(image, true)
+			return
+		}
+		download(url: url, allowsBadge: allowsBadge, storage: storage) { completion($0, false) }
+	}
+	
 	/// Removes all the current cached images.
 	/// - Parameter storage: An alternative storage used to cache.
 	static func flushCache(storage: URL? = nil) {

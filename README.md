@@ -55,30 +55,3 @@ let package = Package(
     ]
 )
 ```
-
-## Programming Guide
-The features are:
-
-- Initialization
-- Feature-1
-- Feature-2
-- Feature-3
-
-#### Initialization
-Start by importing the package in the file you want to use it.
-
-```swift
-import Account
-```
-
-#### Feature-1
-Describe usage of Feature-1
-
-```swift
-// Some code for Feature-1
-```
-
-## FAQ
-> Possible Question-1?
-
-- Answer for Question-1

@@ -100,7 +100,14 @@ public struct FontLoader {
 	public var fontName: String { Self.inMemory[file] ?? generateName() }
 	
 	/// The font if it's found, otherwise return ``systemFont``.
-	public var font: UIFont { .init(name: fontName, size: size) ?? UIFont.systemFont(ofSize: size) }
+	public var font: UIFont {
+		if let validFont = UIFont(name: fontName, size: size) {
+			return validFont
+		} else {
+			_ = generateName()
+			return UIFont(name: fontName, size: size) ?? UIFont.systemFont(ofSize: size)
+		}
+	}
 
 // MARK: - Constructors
 
@@ -120,6 +127,7 @@ public struct FontLoader {
 			let font = CGFont(provider)
 		else { return "" }
 		
+		CTFontManagerUnregisterGraphicsFont(font, nil)
 		CTFontManagerRegisterGraphicsFont(font, nil)
 		Self.inMemory[file] = font.postScriptName as? String ?? ""
 		
