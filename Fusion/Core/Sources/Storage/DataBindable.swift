@@ -22,7 +22,7 @@ private class DeinitCallback: NSObject {
 }
 
 private extension NSObject {
-
+	
 	private var deinitCallback: DeinitCallback {
 		if let callback = objc_getAssociatedObject(self, &Keys.deinitCallbackKey) as? DeinitCallback {
 			return callback
@@ -32,7 +32,7 @@ private extension NSObject {
 			return callback
 		}
 	}
-
+	
 	func onDeinit(_ callback: @escaping () -> Void) {
 		deinitCallback.callbacks.append(callback)
 	}
@@ -303,7 +303,11 @@ public extension DataBindable {
 	static func waitForValue<T>(key: Key) async -> T? {
 		await withCheckedContinuation { continuation in
 			let holder = NSObject()
+			var hasResumed = false
+			
 			bind(key: key, cancellable: holder) { (value: T?) in
+				guard !hasResumed else { return }
+				hasResumed = true
 				continuation.resume(returning: value)
 				unbind(key: key, cancellable: holder)
 			}

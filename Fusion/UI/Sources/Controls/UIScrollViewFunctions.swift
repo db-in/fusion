@@ -162,7 +162,7 @@ extension UIScrollView {
 	}
 	
 	public func scrollToTop(animated: Bool) {
-		let top = contentInset.top + adjustedContentInset.top
+		let top = adjustedContentInset.top
 		setContentOffset(.init(x: 0, y: -top), animated: animated)
 	}
 	
