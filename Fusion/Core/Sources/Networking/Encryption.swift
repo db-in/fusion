@@ -37,6 +37,11 @@ public extension String {
 	
 	func replacing(regex: String, with: String) -> Self { replacingOccurrences(of: regex, with: with, options: .regEx) }
 	
+	func hmacSHA256(key: String) -> String {
+		guard let bytes = data(using: .utf8)?.hmacSHA256(key: key) else { return self }
+		return Data(bytes).map { String(format: "%02hhx", $0) }.joined()
+	}
+	
 	func hmacSHA512(key: String) -> String {
 		guard let bytes = data(using: .utf8)?.hmacSHA512(key: key) else { return self }
 		return Data(bytes).map { String(format: "%02hhx", $0) }.joined()
@@ -62,6 +67,14 @@ public extension Data {
 			_ = CC_SHA256($0.baseAddress, CC_LONG(keyWithHeader.count), &digest)
 		}
 		
+		return digest
+	}
+	
+	func hmacSHA256(key: String) -> [UInt8] {
+		var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+		withUnsafeBytes {
+			CCHmac(CCHmacAlgorithm(kCCHmacAlgSHA256), key, key.count, $0.baseAddress, count, &digest)
+		}
 		return digest
 	}
 	
