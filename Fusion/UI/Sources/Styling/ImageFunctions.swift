@@ -144,12 +144,18 @@ public extension UIImage {
 	/// - Parameter newSize: The new size for the image.
 	/// - Returns: A resized image.
 	func resized(to newSize: CGSize) -> UIImage {
+		if let frames = self.images, frames.count > 0 {
+			let resizedFrames = frames.map { $0.resized(to: newSize) }
+			let duration = self.duration
+			let animated = UIImage.animatedImage(with: resizedFrames, duration: duration)
+			animated?.accessibilityIdentifier = self.accessibilityIdentifier
+			return animated ?? self
+		}
+
 		let renderer = UIGraphicsImageRenderer(size: newSize)
 		let image = renderer.image { _ in self.draw(in: CGRect(origin: .zero, size: newSize)) }
 		let newImage = image.withRenderingMode(renderingMode)
-		
 		newImage.accessibilityIdentifier = accessibilityIdentifier
-		
 		return newImage
 	}
 	
