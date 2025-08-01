@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "Fusion"
-  s.version = "1.2.0"
+  s.version = "1.2.1"
   s.summary = "Micro Feature"
   s.description = <<-DESC
 				  Fusion is resposible for ...
@@ -17,8 +17,8 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '15.0'
   s.tvos.deployment_target = '15.0'
   s.watchos.deployment_target = '9.0'
-  s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
-  s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES' }
+  s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES', 'MARKETING_VERSION' => "#{s.version}" }
+  s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES', 'MARKETING_VERSION' => "#{s.version}"  }
   s.resources = 'Fusion/**/*.{xcprivacy}'
   
   s.subspec 'Core' do |co|
