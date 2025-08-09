@@ -385,3 +385,21 @@ public extension URLCache {
 		return .init(memoryCapacity: .max, diskCapacity: .max, directory: directory)
 	}
 }
+
+// MARK: - Extension - NSUserActivity
+
+public extension NSUserActivity {
+	
+	convenience init?(data: Any, path: String = "data.deeplink") {
+		
+		func extract(_ obj: Any, _ keys: [String]) -> Any? {
+			guard let key = keys.first else { return obj }
+			guard let dict = obj as? [String: Any], let value = dict[key] else { return nil }
+			return extract(value, Array(keys.dropFirst()))
+		}
+		
+		guard let deeplinkString = extract(data, path.components(separatedBy: ".")) as? String else { return nil }
+		self.init(activityType: NSUserActivityTypeBrowsingWeb)
+		webpageURL = deeplinkString.toURL
+	}
+}
