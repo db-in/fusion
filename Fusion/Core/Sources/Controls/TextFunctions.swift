@@ -398,18 +398,21 @@ public extension Numeric {
 	///   - style: The style of the formatted string. Default is `.decimal`.
 	///   - multiplier: A given multiplier to apply before the final string. Default is 1.
 	///   - minimumDecimal: When defined, if sets the minimum fraction digits differently than the decimals.
+	///   - currencySymbol: The currency symbol to use. Default is `nil`.
 	///   When `nil`, the `decimals` is used. Default is `nil`
 	/// - Returns: The formatted value string.
 	func toString(decimals: Int,
 				  locale: Locale,
 				  style: NumberFormatter.Style = .decimal,
 				  multiplier: NSNumber? = 1,
-				  minimumDecimal: Int? = nil) -> String {
+				  minimumDecimal: Int? = nil,
+				  currencySymbol: String? = nil) -> String {
 		let formatter = NumberFormatter()
 		formatter.locale = locale
 		formatter.numberStyle = style
 		formatter.multiplier = multiplier
 		formatter.allowsFloats = true
+		formatter.currencySymbol = currencySymbol
 		formatter.minimumFractionDigits = minimumDecimal ?? decimals
 		formatter.maximumFractionDigits = decimals
 		return formatter.string(for: self) ?? ""
