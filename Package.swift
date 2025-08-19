@@ -1,34 +1,37 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.0
 import PackageDescription
 
 let package = Package(
 	name: "Fusion",
 	platforms: [
-		.macOS(.v11),
-		.iOS(.v13),
-		.tvOS(.v13),
-		.watchOS(.v7)
+		.macOS(.v12),
+		.iOS(.v15),
+		.tvOS(.v15),
+		.watchOS(.v9)
 	],
 	products: [
 		.library(
 			name: "Fusion",
 			targets: ["Fusion"]
+		),
+		.library(
+			name: "FusionCore",
+			targets: ["FusionCore"]
+		),
+		.library(
+			name: "FusionUI",
+			targets: ["FusionUI"]
 		)
 	],
 	dependencies: [
-		// No external dependencies specified
 	],
 	targets: [
 		.target(
 			name: "Fusion",
 			dependencies: ["FusionCore", "FusionUI"],
 			path: "Fusion",
-			sources: ["Core", "UI"],
-			publicHeadersPath: "Core",
-			cSettings: [
-				.headerSearchPath("Core"),
-				.headerSearchPath("UI"),
-				.define("GENERATE_INFOPLIST_FILE")
+			resources: [
+				.process("**/*.xcprivacy")
 			],
 			swiftSettings: [
 				.define("GENERATE_INFOPLIST_FILE")
@@ -38,8 +41,13 @@ let package = Package(
 			name: "FusionCore",
 			dependencies: [],
 			path: "Fusion/Core",
-			sources: ["**/*.{h,m,swift}"],
 			publicHeadersPath: ".",
+			cSettings: [
+				.headerSearchPath(".")
+			],
+			swiftSettings: [
+				.define("GENERATE_INFOPLIST_FILE")
+			],
 			linkerSettings: [
 				.linkedFramework("Foundation"),
 				.linkedFramework("Security"),
@@ -51,16 +59,10 @@ let package = Package(
 			name: "FusionUI",
 			dependencies: ["FusionCore"],
 			path: "Fusion/UI",
-			sources: ["**/*.{h,m,swift}"],
-			resources: [
-				.process("UI/**/*.xib"),
-				.process("UI/**/*.xcassets"),
-				.process("UI/**/*.storyboard"),
-				.process("UI/**/*.json"),
-				.process("UI/**/*.lproj"),
-				.process("UI/**/*.ttf")
-			],
 			publicHeadersPath: ".",
+			cSettings: [
+				.headerSearchPath(".")
+			],
 			swiftSettings: [
 				.define("GENERATE_INFOPLIST_FILE")
 			],

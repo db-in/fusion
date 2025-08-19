@@ -9,14 +9,13 @@ import UIKit
 
 public extension UIEdgeInsets {
 	
+	var rtlSafe: Self { Locale.preferredLocale.isRTL ? .init(top: top, left: right, bottom: bottom, right: left) : self }
+	var vertical: CGFloat { top + bottom }
+	var horizontal: CGFloat { left + right }
 	var flipped: UIEdgeInsets { UIEdgeInsets(top: bottom, left: right, bottom: top, right: left) }
-	
 	var finite: UIEdgeInsets { .init(top: top.finite, left: left.finite, bottom: bottom.finite, right: right.finite) }
-	
 	init(all: CGFloat) { self.init(top: all, left: all, bottom: all, right: all) }
-	
 	init(horizontal: CGFloat = 0, vertical: CGFloat = 0) { self.init(top:vertical, left: horizontal, bottom: vertical, right: horizontal) }
-	
 	static func + (lhs: Self, rhs: Self) -> Self {
 		.init(top: lhs.top + rhs.top, left: lhs.left + rhs.left, bottom: lhs.bottom + rhs.bottom, right: lhs.right + rhs.right)
 	}

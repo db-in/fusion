@@ -8,6 +8,21 @@ import SwiftUI
 
 // MARK: - Extension - UIView
 
+public extension EdgeInsets {
+	
+	var vertical: CGFloat { top + bottom }
+	var horizontal: CGFloat { leading + trailing }
+	var flipped: EdgeInsets { EdgeInsets(top: bottom, leading: trailing, bottom: top, trailing: leading) }
+	var finite: EdgeInsets { .init(top: top.finite, leading: leading.finite, bottom: bottom.finite, trailing: trailing.finite) }
+	init(all: CGFloat) { self.init(top: all, leading: all, bottom: all, trailing: all) }
+	init(horizontal: CGFloat = 0, vertical: CGFloat = 0) { self.init(top:vertical, leading: horizontal, bottom: vertical, trailing: horizontal) }
+	static func + (lhs: Self, rhs: Self) -> Self {
+		.init(top: lhs.top + rhs.top, leading: lhs.leading + rhs.leading, bottom: lhs.bottom + rhs.bottom, trailing: lhs.trailing + rhs.trailing)
+	}
+}
+
+// MARK: - Extension - UIView
+
 public extension UIView {
 	
 	func uiSnapshot() -> Image {
