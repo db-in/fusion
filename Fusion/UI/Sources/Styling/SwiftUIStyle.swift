@@ -174,4 +174,38 @@ public extension UserFlow {
 	
 	@ViewBuilder var uiView: some View { UIKitViewController { mapped } }
 }
+
+// MARK: - Type - AsyncImageCached
+
+public struct AsyncImageCached<Content: View, Placeholder: View>: View {
+	
+	private let url: String?
+	private let storage: URL?
+	private let content: ((Image) -> Content)?
+	private let placeholder: (() -> Placeholder)?
+	
+	@State private var image: UIImage?
+	
+	public init(_ url: String?, storage: URL? = nil, content: ((Image) -> Content)? = nil, placeholder: (() -> Placeholder)? = nil) {
+		self.url = url
+		self.storage = storage
+		self.content = content
+		self.placeholder = placeholder
+	}
+	
+	public var body: some View {
+		Group {
+			if let image = image {
+				content?(Image(uiImage: image))
+			} else {
+				placeholder?()
+			}
+		}
+		.onAppear {
+			UIImage.loadOrDownload(url: url ?? "", allowsBadge: true, storage: storage) { loadedImage, fromCache in
+				self.image = loadedImage
+			}
+		}
+	}
+}
 #endif
