@@ -101,6 +101,10 @@ public extension UIApplication {
 
 public extension CGFloat {
 	
+	static var windowWidth: CGFloat { UIWindow.keyFrame.width }
+	
+	static var windowHeight: CGFloat { UIWindow.keyFrame.height }
+	
 	func proximity(to index: Int, within count: Int) -> CGFloat {
 		guard count > 1 else { return self }
 		let length = 1.0 / CGFloat(count)

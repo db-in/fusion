@@ -188,4 +188,40 @@ public extension UIImage {
 		inMemory = [:]
 	}
 }
+
+// MARK: - Extension - String Image Download Helper
+
+public extension String {
+	
+	/// Convenient helper to download an image if needed, using the existing UIImage loading infrastructure.
+	/// This method attempts to load from cache first, then downloads if not available.
+	///
+	/// - Parameters:
+	///   - allowsBadge: Indicates if associated badges are allowed (default: true).
+	///   - storage: A fallback storage to be used (default: nil).
+	///   - completion: The closure with the final `UIImage` and a Boolean indicating if it was loaded from cache.
+	func downloadImageIfNeeded(allowsBadge: Bool = true, storage: URL? = nil, then completion: @escaping (UIImage?, Bool) -> Void) {
+		UIImage.loadOrDownload(url: self, allowsBadge: allowsBadge, storage: storage, then: completion)
+	}
+	
+	/// Convenient helper to load an image from cache only.
+	///
+	/// - Parameters:
+	///   - allowsBadge: Indicates if associated badges are allowed (default: true).
+	///   - storage: A fallback storage to be used (default: nil).
+	/// - Returns: The cached `UIImage` if available, nil otherwise.
+	func loadCachedImage(allowsBadge: Bool = true, storage: URL? = nil) -> UIImage? {
+		UIImage.loadCache(url: self, allowsBadge: allowsBadge, storage: storage)
+	}
+	
+	/// Convenient helper to force download an image.
+	///
+	/// - Parameters:
+	///   - allowsBadge: Indicates if associated badges are allowed (default: true).
+	///   - storage: A fallback storage to be used (default: nil).
+	///   - completion: The closure with the final `UIImage`.
+	func downloadImage(allowsBadge: Bool = true, storage: URL? = nil, then completion: @escaping (UIImage?) -> Void) {
+		UIImage.download(url: self, allowsBadge: allowsBadge, storage: storage, then: completion)
+	}
+}
 #endif
