@@ -27,6 +27,10 @@ private extension URL {
 	}
 }
 
+public typealias ImageDownloadCallback = (UIImage?) -> Void
+
+public typealias ImageLoadOrDownloadCallback = (UIImage?, Bool) -> Void
+
 // MARK: - Extension - UIImage Loader
 
 public extension UIImage {
@@ -138,9 +142,9 @@ public extension UIImage {
 	///   - allowsBadge: Indicates if associated badges are allowed.
 	///   - storage: A fallback storage to be used. This storage will receive a copy of the cache when cache is available.
 	///   - completion: The completion in which the final image will be sent to.
-	static func download(url: String, allowsBadge: Bool = true, storage: URL? = nil, then completion: @escaping (UIImage?) -> Void) {
+	static func download(url: String, allowsBadge: Bool = true, storage: URL? = nil, then completion: ImageDownloadCallback? = nil) {
 		guard !url.isEmpty else {
-			asyncMain { completion(nil) }
+			asyncMain { completion?(nil) }
 			return
 		}
 		
@@ -150,7 +154,7 @@ public extension UIImage {
 				let data = dataResponse,
 				let validResponse = response
 			else {
-				asyncMain { completion(nil) }
+				asyncMain { completion?(nil) }
 				return
 			}
 			
@@ -158,7 +162,7 @@ public extension UIImage {
 			URLCache.appGroup.storeCachedResponse(cachedData, for: request)
 			let rawImage = url.contains(".gif") ? UIImage.images(gifData: data) : UIImage(data: data)
 			let image = rawImage?.resolve(badge: allowsBadge, key: url)
-			asyncMain { completion(image) }
+			asyncMain { completion?(image) }
 		}
 		
 		task.resume()
@@ -172,12 +176,12 @@ public extension UIImage {
 	///   - allowsBadge: Indicates if associated badges are allowed.
 	///   - storage: A fallback storage to be used. This storage will receive a copy of the cache when cache is available.
 	///   - completion: The closure with the final `UIImage` and a Boolean indicating if it was loaded from cache.
-	static func loadOrDownload(url: String, allowsBadge: Bool = true, storage: URL? = nil, then completion: @escaping (UIImage?, Bool) -> Void) {
+	static func loadOrDownload(url: String, allowsBadge: Bool = true, storage: URL? = nil, then completion: ImageLoadOrDownloadCallback? = nil) {
 		if let image = loadCache(url: url, allowsBadge: allowsBadge, storage: storage) {
-			completion(image, true)
+			completion?(image, true)
 			return
 		}
-		download(url: url, allowsBadge: allowsBadge, storage: storage) { completion($0, false) }
+		download(url: url, allowsBadge: allowsBadge, storage: storage) { completion?($0, false) }
 	}
 	
 	/// Removes all the current cached images.
@@ -189,7 +193,7 @@ public extension UIImage {
 	}
 }
 
-// MARK: - Extension - String Image Download Helper
+// MARK: - Extension - String Image Loader
 
 public extension String {
 	
@@ -200,7 +204,7 @@ public extension String {
 	///   - allowsBadge: Indicates if associated badges are allowed (default: true).
 	///   - storage: A fallback storage to be used (default: nil).
 	///   - completion: The closure with the final `UIImage` and a Boolean indicating if it was loaded from cache.
-	func downloadImageIfNeeded(allowsBadge: Bool = true, storage: URL? = nil, then completion: @escaping (UIImage?, Bool) -> Void) {
+	func downloadImageIfNeeded(allowsBadge: Bool = true, storage: URL? = nil, then completion: ImageLoadOrDownloadCallback? = nil) {
 		UIImage.loadOrDownload(url: self, allowsBadge: allowsBadge, storage: storage, then: completion)
 	}
 	
@@ -220,7 +224,7 @@ public extension String {
 	///   - allowsBadge: Indicates if associated badges are allowed (default: true).
 	///   - storage: A fallback storage to be used (default: nil).
 	///   - completion: The closure with the final `UIImage`.
-	func downloadImage(allowsBadge: Bool = true, storage: URL? = nil, then completion: @escaping (UIImage?) -> Void) {
+	func downloadImage(allowsBadge: Bool = true, storage: URL? = nil, then completion: ImageDownloadCallback? = nil) {
 		UIImage.download(url: self, allowsBadge: allowsBadge, storage: storage, then: completion)
 	}
 }
