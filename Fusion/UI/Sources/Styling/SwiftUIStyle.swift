@@ -208,4 +208,30 @@ public struct AsyncImageCached<Content: View, Placeholder: View>: View {
 		}
 	}
 }
+
+// MARK: - Type - TextConvertible
+
+public extension TextConvertible {
+	
+	/// Converts the current TextConvertible to a SwiftUI AttributedString.
+	/// This property handles the conversion from NSAttributedString when available,
+	/// or creates a new AttributedString from the raw content.
+	///
+	/// - Returns: An AttributedString suitable for SwiftUI Text views.
+	var attributedString: AttributedString { (self as? NSAttributedString).map { .init($0) } ?? .init(content) }
+	
+	/// Creates a SwiftUI Text view from the current TextConvertible without accessibility identifier.
+	/// Use this property when you need a plain Text view without automatic accessibility assignment,
+	/// typically for cases where accessibility will be handled manually or is not required.
+	///
+	/// - Returns: A Text view with the styled content.
+	var textWithoutAccessibility: Text { .init(attributedString) }
+	
+	/// Creates a SwiftUI Text view from the current TextConvertible with automatic accessibility identifier.
+	/// The accessibility identifier is automatically set using the original localization key when available.
+	/// This follows the same pattern as the UIKit render method for consistent accessibility support.
+	///
+	/// - Returns: A modified Text view with accessibility identifier applied.
+	var text: some View { textWithoutAccessibility.accessibilityIdentifier(content.originalKey ?? "") }
+}
 #endif

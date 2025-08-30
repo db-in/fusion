@@ -634,9 +634,12 @@ public extension UIViewController {
 	
 	/// Embeds the current view controller into a navigation controller if it is not already embedded.
 	///
+	/// - Parameter hiddenBar: A Boolean value that determines whether the navigation bar is hidden.
 	/// - Returns: A navigation controller containing the current view controller.
-	func embededInNavigation() -> UINavigationController {
-		self as? UINavigationController ?? UINavigationController(rootViewController: self)
+	func embededInNavigation(hiddenBar: Bool = false) -> UINavigationController {
+		let nav = self as? UINavigationController ?? UINavigationController(rootViewController: self)
+		nav.isNavigationBarHidden = hiddenBar
+		return nav
 	}
 	
 	/// Instantiates the view controller from a storyboard with the specified name.
