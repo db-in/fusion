@@ -195,3 +195,9 @@ public extension Optional where Wrapped: Collection {
 public extension Hashable {
 	static func == (lhs: Self, rhs: Self) -> Bool { lhs.hashValue == rhs.hashValue }
 }
+
+// MARK: - Extension - Identifiable
+
+public extension Identifiable where Self: Hashable {
+	var id: Int { hashValue }
+}
