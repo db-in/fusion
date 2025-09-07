@@ -28,28 +28,47 @@ public struct PressEffect: ViewModifier {
 	var onRelease: (() -> Void)?
 	
 	@State private var isPressed: Bool = false
-	
-	public func body(content: Content) -> some View {
-		content
+		@State private var isFocused: Bool = false
+		
+		public func body(content: Content) -> some View {
+			content
+#if os(tvOS)
+			.scaleEffect(isFocused ? scale : 1.0)
+			.opacity(isFocused ? opacity : 1.0)
+			.focusable(true)
+			.onChange(of: isFocused) { focused in
+				if focused {
+					onPress?()
+				} else {
+					onRelease?()
+				}
+			}
+			.onAppear {
+				withAnimation(.easeOut(duration: duration)) {
+					isFocused = false
+				}
+			}
+#else
 			.scaleEffect(isPressed ? scale : 1.0)
 			.opacity(isPressed ? opacity : 1.0)
 			.simultaneousGesture(
 				DragGesture(minimumDistance: 0)
-					.onChanged({ _ in
+					.onChanged { _ in
 						if !isPressed {
-							withAnimation(.easeOut) {
+							withAnimation(.easeOut(duration: duration)) {
 								isPressed = true
 							}
 							onPress?()
 						}
-					})
-					.onEnded({ _ in
-						withAnimation(.easeOut) {
+					}
+					.onEnded { _ in
+						withAnimation(.easeOut(duration: duration)) {
 							isPressed = false
 						}
 						onRelease?()
-					})
+					}
 			)
+#endif
 	}
 }
 
@@ -74,6 +93,7 @@ public struct SwipeToDismiss: ViewModifier {
 	public func body(content: Content) -> some View {
 		content
 			.offset(dragAmount)
+#if !os(tvOS)
 			.gesture(
 				DragGesture()
 					.onChanged { drag in
@@ -120,6 +140,7 @@ public struct SwipeToDismiss: ViewModifier {
 						}
 					}
 			)
+#endif
 	}
 }
 
