@@ -23,6 +23,7 @@
 /* Begin PBXBuildFile section */
 		299D9F2B254674F5CA75DB03 /* Pods_FusionTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5571FA62A11FF581FCBA25E1 /* Pods_FusionTests.framework */; };
 		3DFD2F5B7FA176B5FFABFA8F /* Pods_Sample_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 776AD69210D859E7E6009DD8 /* Pods_Sample_iOS.framework */; };
+		600484862E6D744B008BB4E3 /* SwiftUIModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600484852E6D744B008BB4E3 /* SwiftUIModifiers.swift */; };
 		6006EE8E2A93E7F100100E52 /* ImageConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6006EE8D2A93E7F100100E52 /* ImageConvertible.swift */; };
 		601B18B42A210E8D0050644B /* TweenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601B18B32A210E8D0050644B /* TweenTests.swift */; };
 		601B18B52A224C730050644B /* TimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A859AF2A06BBD300D3B283 /* TimerTests.swift */; };
@@ -190,6 +191,7 @@
 
 /* Begin PBXFileReference section */
 		5571FA62A11FF581FCBA25E1 /* Pods_FusionTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FusionTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		600484852E6D744B008BB4E3 /* SwiftUIModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIModifiers.swift; sourceTree = "<group>"; };
 		6006EE8D2A93E7F100100E52 /* ImageConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConvertible.swift; sourceTree = "<group>"; };
 		600A7C802A0038C1003B0093 /* FusionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FusionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		600E5E822A23D9B8001810AE /* ios.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = ios.yml; sourceTree = "<group>"; };
@@ -491,6 +493,7 @@
 				6006EE8D2A93E7F100100E52 /* ImageConvertible.swift */,
 				60CC2E2B2A4F617200E43713 /* ImageFunctions.swift */,
 				60CC2ECB2A50CEFA00E43713 /* ImageLoader.swift */,
+				600484852E6D744B008BB4E3 /* SwiftUIModifiers.swift */,
 				60CC2E272A4F5DA700E43713 /* SwiftUIStyle.swift */,
 				60CC2E382A506ACD00E43713 /* TextStyle.swift */,
 				60CC2E282A4F5DA700E43713 /* UIViewStyle.swift */,
@@ -862,8 +865,6 @@
 				60CC2ECA2A50C81000E43713 /* PBXTargetDependency */,
 			);
 			name = "Sample visionOS";
-			packageProductDependencies = (
-			);
 			productName = "Sample visionOS";
 			productReference = 60CC2EB12A50C61A00E43713 /* Sample visionOS.app */;
 			productType = "com.apple.product-type.application";
@@ -1135,6 +1136,7 @@
 				6006EE8E2A93E7F100100E52 /* ImageConvertible.swift in Sources */,
 				609C36672A96C0D000C0E939 /* GeometricalShapes.swift in Sources */,
 				60CC2E3C2A506ACD00E43713 /* HapticControl.swift in Sources */,
+				600484862E6D744B008BB4E3 /* SwiftUIModifiers.swift in Sources */,
 				60CC2E302A50190800E43713 /* ViewHierarchy.swift in Sources */,
 				609484462A4C5A70008E21A1 /* Fonts.swift in Sources */,
 				60B8D81F2A69563C001A9DE7 /* PresentationController.swift in Sources */,
