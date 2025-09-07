@@ -3,6 +3,8 @@
 //
 
 #if canImport(UIKit) && canImport(SwiftUI) && !os(watchOS)
+import SwiftUI
+
 // MARK: - SwiftUI Extensions
 
 /// A view modifier that provides visual feedback when the user presses on a view.
