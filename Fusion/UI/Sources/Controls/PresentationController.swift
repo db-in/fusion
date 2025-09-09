@@ -133,13 +133,20 @@ public final class PresentationController : UIPresentationController {
 	@objc private func keyboardToggled(_ notification: NSNotification) {
 		guard
 			!isDismissing,
-			scrollView?.findFirstResponder() != nil,
 			let keyboard = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue,
 			notification.name == UIResponder.keyboardWillShowNotification || notification.name == UIResponder.keyboardWillHideNotification
 		else { return }
 		
+		let nestedView = nestedViewController?.view
+		var visibleFrame: CGFloat = 0
+		
+		if let scrollView = scrollView, scrollView.findFirstResponder() != nil {
+			visibleFrame = (nestedView?.frame.height ?? 0) - (scrollView.frame.maxY)
+		} else if nestedView?.findFirstResponder() == nil {
+			return
+		}
+
 		let isShowing = notification.name == UIResponder.keyboardWillShowNotification
-		let visibleFrame = (nestedViewController?.view.frame.height ?? 0) - (scrollView?.frame.maxY ?? 0)
 		let extraHeight = keyboard.height - visibleFrame
 		let height = isShowing ? originalHeight + extraHeight : originalHeight
 		
