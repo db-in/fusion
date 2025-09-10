@@ -12,6 +12,11 @@ import SwiftUI
 /// commonly used for buttons and interactive elements.
 public struct PressEffect: ViewModifier {
 	
+	private let cancelOnDragBeyond: CGFloat = 12
+	@State private var isPressed: Bool = false
+	@State private var isFocused: Bool = false
+	@State private var didCancel: Bool = false
+	
 	/// The scale factor to apply when pressed. Default is 0.95.
 	var scale: CGFloat
 	
@@ -27,11 +32,8 @@ public struct PressEffect: ViewModifier {
 	/// Optional callback executed when the press ends.
 	var onRelease: (() -> Void)?
 	
-	@State private var isPressed: Bool = false
-		@State private var isFocused: Bool = false
-		
-		public func body(content: Content) -> some View {
-			content
+	public func body(content: Content) -> some View {
+		content
 #if os(tvOS)
 			.scaleEffect(isFocused ? scale : 1.0)
 			.opacity(isFocused ? opacity : 1.0)
@@ -53,8 +55,18 @@ public struct PressEffect: ViewModifier {
 			.opacity(isPressed ? opacity : 1.0)
 			.simultaneousGesture(
 				DragGesture(minimumDistance: 0)
-					.onChanged { _ in
-						if !isPressed {
+					.onChanged { value in
+						let dx = abs(value.translation.width)
+						let dy = abs(value.translation.height)
+						let moved = max(dx, dy)
+						if moved > cancelOnDragBeyond {
+							if isPressed {
+								withAnimation(.easeOut(duration: duration)) {
+									isPressed = false
+								}
+							}
+							didCancel = true
+						} else if !isPressed && !didCancel {
 							withAnimation(.easeOut(duration: duration)) {
 								isPressed = true
 							}
@@ -62,10 +74,14 @@ public struct PressEffect: ViewModifier {
 						}
 					}
 					.onEnded { _ in
+						let wasCancelled = didCancel
+						didCancel = false
 						withAnimation(.easeOut(duration: duration)) {
 							isPressed = false
 						}
-						onRelease?()
+						if !wasCancelled {
+							onRelease?()
+						}
 					}
 			)
 #endif
