@@ -7,6 +7,11 @@ import SwiftUI
 
 // MARK: - SwiftUI Extensions
 
+private struct PressActiveCountKey: PreferenceKey {
+	static var defaultValue: Int = 0
+	static func reduce(value: inout Int, nextValue: () -> Int) { value += nextValue() }
+}
+
 /// A view modifier that provides visual feedback when the user presses on a view.
 /// This modifier applies scale and opacity changes to simulate a press effect,
 /// commonly used for buttons and interactive elements.
@@ -16,6 +21,7 @@ public struct PressEffect: ViewModifier {
 	@State private var isPressed: Bool = false
 	@State private var isFocused: Bool = false
 	@State private var didCancel: Bool = false
+	@State private var descendantPressCount: Int = 0
 	
 	/// The scale factor to apply when pressed. Default is 0.95.
 	var scale: CGFloat
@@ -66,7 +72,7 @@ public struct PressEffect: ViewModifier {
 								}
 							}
 							didCancel = true
-						} else if !isPressed && !didCancel {
+						} else if !isPressed && !didCancel && descendantPressCount == 0 {
 							withAnimation(.easeOut(duration: duration)) {
 								isPressed = true
 							}
@@ -84,6 +90,18 @@ public struct PressEffect: ViewModifier {
 						}
 					}
 			)
+			.background(Color.clear.preference(key: PressActiveCountKey.self, value: isPressed ? 1 : 0))
+			.onPreferenceChange(PressActiveCountKey.self) { total in
+				let selfContribution = isPressed ? 1 : 0
+				let childCount = max(0, total - selfContribution)
+				descendantPressCount = childCount
+				if childCount > 0 && isPressed {
+					withAnimation(.easeOut(duration: duration)) {
+						isPressed = false
+					}
+					didCancel = true
+				}
+			}
 #endif
 	}
 }
