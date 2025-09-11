@@ -81,6 +81,11 @@ public extension View {
 		guard cached else { return .init(rootView: self).background(.clear) }
 		return InMemoryCache.getOrSet(key: "Host-\(Self.self)", newValue: .init(rootView: self).transparent) ?? .init(rootView: self).transparent
 	}
+	
+	/// Presents the view over the window.
+	func presentOverWindow() {
+		uiHost(cached: false).presentOverWindow()
+	}
 }
 
 // MARK: - Type - UIKitView
