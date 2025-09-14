@@ -144,7 +144,7 @@ public extension Encodable {
 			let jsonData = try JSONEncoder.standard.encode(self).base64EncodedData()
 			try jsonData.write(to: url, options: isSecure ? [.completeFileProtection, .atomic] : .atomic)
 		} catch {
-			Logger.global.log(basic:"❌ Encodable error \(error)")
+			Logger.global.log(basic: "❌ Encodable error \(error)")
 		}
 	}
 	
@@ -182,7 +182,7 @@ public extension Decodable {
 		do {
 			return try JSONDecoder.standard.decode(self, from: data)
 		} catch {
-			Logger.global.log(basic:"❌ Decodable error: \(error)")
+			Logger.global.log(basic: "❌ Decodable error: \(error)")
 			return nil
 		}
 	}
@@ -349,7 +349,7 @@ public extension FileManager {
 		do {
 			try copyItem(at: from, to: to)
 		} catch {
-			Logger.global.log(basic:"❌ Moving error \(from) -> \(to) :: \(error)")
+			Logger.global.log(basic: "❌ Moving error \(from) -> \(to) :: \(error)")
 		}
 	}
 	
