@@ -59,36 +59,20 @@ public struct PressEffect: ViewModifier {
 #else
 			.scaleEffect(isPressed ? scale : 1.0)
 			.opacity(isPressed ? opacity : 1.0)
+			.onLongPressGesture(minimumDuration: 0, maximumDistance: cancelOnDragBeyond, pressing: { pressing in
+				if pressing {
+					if !isPressed && descendantPressCount == 0 {
+						withAnimation(.easeOut(duration: duration)) { isPressed = true }
+						onPress?()
+					}
+				} else {
+					withAnimation(.easeOut(duration: duration)) { isPressed = false }
+				}
+			}, perform: {})
 			.simultaneousGesture(
-				DragGesture(minimumDistance: 0)
-					.onChanged { value in
-						let dx = abs(value.translation.width)
-						let dy = abs(value.translation.height)
-						let moved = max(dx, dy)
-						if moved > cancelOnDragBeyond {
-							if isPressed {
-								withAnimation(.easeOut(duration: duration)) {
-									isPressed = false
-								}
-							}
-							didCancel = true
-						} else if !isPressed && !didCancel && descendantPressCount == 0 {
-							withAnimation(.easeOut(duration: duration)) {
-								isPressed = true
-							}
-							onPress?()
-						}
-					}
-					.onEnded { _ in
-						let wasCancelled = didCancel
-						didCancel = false
-						withAnimation(.easeOut(duration: duration)) {
-							isPressed = false
-						}
-						if !wasCancelled {
-							onRelease?()
-						}
-					}
+				TapGesture().onEnded {
+					if descendantPressCount == 0 { onRelease?() }
+				}
 			)
 			.background(Color.clear.preference(key: PressActiveCountKey.self, value: isPressed ? 1 : 0))
 			.onPreferenceChange(PressActiveCountKey.self) { total in
@@ -96,7 +80,7 @@ public struct PressEffect: ViewModifier {
 				let childCount = max(0, total - selfContribution)
 				descendantPressCount = childCount
 				if childCount > 0 && isPressed {
-					withAnimation(.easeOut(duration: duration)) {
+					withAnimation(.easeOut(duration: 0.001)) {
 						isPressed = false
 					}
 					didCancel = true
