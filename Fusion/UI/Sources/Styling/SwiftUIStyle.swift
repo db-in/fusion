@@ -16,6 +16,7 @@ public extension EdgeInsets {
 	var finite: EdgeInsets { .init(top: top.finite, leading: leading.finite, bottom: bottom.finite, trailing: trailing.finite) }
 	init(all: CGFloat) { self.init(top: all, leading: all, bottom: all, trailing: all) }
 	init(horizontal: CGFloat = 0, vertical: CGFloat = 0) { self.init(top:vertical, leading: horizontal, bottom: vertical, trailing: horizontal) }
+	static var zero: Self { .init(all: 0) }
 	static func + (lhs: Self, rhs: Self) -> Self {
 		.init(top: lhs.top + rhs.top, leading: lhs.leading + rhs.leading, bottom: lhs.bottom + rhs.bottom, trailing: lhs.trailing + rhs.trailing)
 	}
