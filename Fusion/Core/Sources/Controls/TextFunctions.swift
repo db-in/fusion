@@ -43,8 +43,9 @@ public protocol TextConvertible {
 	/// - Parameters:
 	///   - attributes: The ``TextAttributes`` to be applied.
 	///   - onText: The text string to be applied the new attributes on.
+	///   - options: The string comparison options. Default is case sensitive.
 	/// - Returns: The new attributed string.
-	func styled(_ attributes: TextAttributes, onText: String) -> NSAttributedString
+	func styled(_ attributes: TextAttributes, onText: String, options: NSString.CompareOptions) -> NSAttributedString
 	
 	/// Applies HTML tag-based styling to specific tagged portions of text
 	/// - Parameter tagStyles: Dictionary mapping HTML tags to their corresponding TextAttributes
@@ -136,9 +137,9 @@ public extension TextConvertible {
 	
 	func styled(_ attributes: TextAttributes) -> NSAttributedString { styled(attributes, overriding: true) }
 	
-	func styled(_ attributes: TextAttributes, onText: String) -> NSAttributedString {
+	func styled(_ attributes: TextAttributes, onText: String, options: NSString.CompareOptions = []) -> NSAttributedString {
 		let attributedString = NSMutableAttributedString(attributedString: styled(self.attributes))
-		let range = (content as NSString).range(of: onText)
+		let range = (content as NSString).range(of: onText, options: options)
 		
 		if range.location != NSNotFound {
 			attributedString.addAttributes(attributes, range: range)
