@@ -6,6 +6,11 @@ import Foundation
 
 // MARK: - Definitions -
 
+private struct ThrottleWrapper {
+	@ThreadSafe
+	static var timers: [String : DispatchSourceTimer] = [:]
+}
+
 @propertyWrapper
 public struct Stored<Parent : DataManageable, Value : Codable> {
 
@@ -31,6 +36,18 @@ public struct StoredReadOnly<Parent : DataManageable, Value : Codable> {
 
 // MARK: - Type - DataManageable
 
+/// A protocol that provides comprehensive data management capabilities with optimized caching and optional throttled persistence.
+///
+/// Key Features:
+/// - **Optimized InMemoryCache**: All reads and writes go through a fast in-memory cache layer for immediate access
+/// - **Per-Key Throttling**: Define individual throttle intervals for specific keys to delay storage operations
+/// - **Immediate Updates**: Values are immediately available in memory and trigger all DataBindable notifications
+/// - **Deferred Persistence**: Storage I/O operations can be throttled while maintaining real-time data access
+/// - **Thread-Safe**: All operations are thread-safe with proper concurrency handling
+/// - **Automatic Cleanup**: Timers and cache entries are automatically managed
+///
+/// Conforming types can override `throttleInterval(forKey:)` to provide per-key throttle behavior,
+/// allowing fine-grained control over which data should have delayed persistence.
 public protocol DataManageable : DataBindable {
 	associatedtype Storage : DataStorageable
 }
@@ -40,6 +57,15 @@ public protocol DataManageable : DataBindable {
 public extension DataManageable {
 	
 // MARK: - Exposed Methods
+	
+	/// Returns the throttle interval for a specific key. Override this method to provide per-key throttle behavior.
+	/// When set to a value greater than 0, write operations to Storage will be delayed for this key.
+	/// For reading purpose the new value reflects immediately and all DataBindable process remains unaffected.
+	/// The throttle only affects the I/O operation on the actual Storage.
+	///
+	/// - Parameter key: The key to check for a specific throttle interval.
+	/// - Returns: The throttle interval in seconds for the given key. Default is `0` (no throttling).
+	static func throttleInterval(forKey key: Key) -> TimeInterval { 0 }
 	
 	/// Retrieves the value associated with a given key.
 	///
@@ -58,8 +84,23 @@ public extension DataManageable {
 	///   - key: The unique key that represents the value.
 	static func set<T : Encodable>(_ value: T?, forKey key: Key) {
 		let namespace = namespace(key)
-		Storage.shared.set(value, forKey: namespace)
-		InMemoryCache.flush(key: namespace)
+		InMemoryCache.set(key: namespace, newValue: value)
+		let interval = throttleInterval(forKey: key)
+		if interval > 0 {
+			if ThrottleWrapper.timers[namespace] == nil {
+				let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .utility))
+				timer.schedule(deadline: .now() + interval)
+				timer.setEventHandler {
+					let cached: T? = InMemoryCache.get(key: namespace)
+					Storage.shared.set(cached, forKey: namespace)
+					ThrottleWrapper.timers[namespace] = nil
+				}
+				ThrottleWrapper.timers[namespace] = timer
+				timer.resume()
+			}
+		} else {
+			Storage.shared.set(value, forKey: namespace)
+		}
 		send(forKey: key, value: value)
 	}
 	
@@ -72,6 +113,10 @@ public extension DataManageable {
 	static func remove<T>(keys: [Key], bindType: T.Type? = Any.self) {
 		keys.forEach {
 			let namespace = namespace($0)
+			if let timer = ThrottleWrapper.timers[namespace] {
+				timer.cancel()
+				ThrottleWrapper.timers[namespace] = nil
+			}
 			Storage.shared.removeObject(forKey: namespace)
 			InMemoryCache.flush(key: namespace)
 			send(forKey: $0, value: nil as T?)

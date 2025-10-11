@@ -67,6 +67,19 @@ public typealias Input<T> = (T?) -> Void
 
 // MARK: - Type - DataBindable
 
+/// A protocol that provides reactive data binding capabilities with automatic lifecycle management.
+///
+/// Key Features:
+/// - **Reactive Bindings**: Bind closures to key updates with automatic execution on value changes
+/// - **Automatic Cleanup**: Bindings are automatically removed when the cancellable object is deallocated
+/// - **Thread-Safe**: All binding operations are thread-safe with proper concurrency handling
+/// - **Multiple Binding Types**: Support for value-based bindings and void notification bindings
+/// - **One-Time Bindings**: `bindOnce` methods for single-use bindings that auto-remove after execution
+/// - **Combine Integration**: Publisher-based bindings for SwiftUI and Combine workflows
+/// - **Async/Await Support**: Modern async binding methods for concurrent programming
+/// - **Namespace Management**: Automatic namespace generation to prevent key collisions
+///
+/// Conforming types must define a `Key` type that conforms to `RawRepresentable` for type-safe key management.
 public protocol DataBindable {
 	associatedtype Key : RawRepresentable
 }
