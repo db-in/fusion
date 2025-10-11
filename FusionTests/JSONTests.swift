@@ -77,7 +77,7 @@ class CodableExtensionsTests: XCTestCase {
 	func testDecodable_WithInvalidData_ShouldReturnNil() {
 		let url = FileManager.default.temporaryDirectory.appendingPathComponent("invalid")
 		XCTAssertNil(PersonMock.load(data: .init()))
-		XCTAssertNil(PersonMock.load(jsonObject: .init()))
+		XCTAssertNil(PersonMock.load(jsonObject: [:]))
 		XCTAssertNil(PersonMock.loadFile(at: url))
 	}
 	

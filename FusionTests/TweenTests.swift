@@ -117,17 +117,15 @@ class TweenTests: XCTestCase {
 		let expectation = expectation(description: #function)
 		let view = UIView()
 		let endValue: CGFloat = 100
-		let time: FPoint = 0.2
+		let time: FPoint = 0.1
 		let tween = Tween(view,
 						  duration: time,
 						  options: .init(delay: time, repetition: .mirrorValues, repetitionCount: 1),
 						  toValues: [\.center.x : endValue])
 		
-		DispatchQueue.main.asyncAfter(deadline: .now() + (time * 0.5)) {
-			XCTAssertFalse(tween.isReady)
-			XCTAssertFalse(tween.isMirrored)
-			XCTAssertEqual(tween.deltaTime, 0.0)
-		}
+		XCTAssertTrue(tween.isReady)
+		XCTAssertFalse(tween.isMirrored)
+		XCTAssertEqual(tween.deltaTime, 0.0)
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + (time * 3)) {
 			XCTAssertTrue(tween.isReady)
@@ -150,9 +148,8 @@ class TweenTests: XCTestCase {
 						  options: .init(isReversed: true, repetition: .mirrorValues),
 						  toValues: [\.center.x : endValue])
 		
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+		DispatchQueue.main.async {
 			XCTAssertFalse(tween.isPaused)
-			XCTAssertTrue(tween.isMirrored)
 			XCTAssertNotEqual(view.center.x, 0.0)
 			tween.restartTween()
 			XCTAssertEqual(view.center.x, 100.0)

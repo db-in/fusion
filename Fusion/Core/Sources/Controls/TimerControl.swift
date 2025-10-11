@@ -35,7 +35,7 @@ final public class TimerControl {
 		didSet {
 			if isPaused && !oldValue {
 				timer?.suspend()
-			} else if !isPaused && oldValue  {
+			} else if !isPaused && oldValue {
 				timer?.resume()
 			}
 		}
@@ -64,6 +64,11 @@ final public class TimerControl {
 		source.schedule(deadline: .now(), repeating: Double(1.0 / fps))
 		source.setEventHandler(handler: handleTimerTick)
 		source.activate()
+		
+		if isPaused {
+			source.suspend()
+		}
+		
 		return source
 	}
 	
