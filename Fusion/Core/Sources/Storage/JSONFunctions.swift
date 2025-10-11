@@ -213,7 +213,11 @@ public extension Decodable {
 		let validKey = key ?? "\(self)"
 		let url = FileManager.default.appGroup.appendingPathComponent(validKey.hash.description)
 		guard let data = try? Data(contentsOf: url) else { return nil }
-		return load(data: Data(base64Encoded: data) ?? data)
+		guard let result =  load(data: Data(base64Encoded: data) ?? data) else {
+			Logger.global.log(basic: "❌ Key load failed: \(validKey) - File: \(url)")
+			return nil
+		}
+		return result
 	}
 	
 	/// Retrieves the content from a file with a given name.
@@ -223,7 +227,11 @@ public extension Decodable {
 	/// - Returns: The decoded data in the file.
 	static func loadFile(at url: URL) -> Self? {
 		guard let data = try? Data(contentsOf: url) else { return nil }
-		return load(data: Data(base64Encoded: data) ?? data)
+		guard let result = load(data: Data(base64Encoded: data) ?? data) else {
+			Logger.global.log(basic: "❌ File load failed: \(url)")
+			return nil
+		}
+		return result
 	}
 	
 	/// Removes a given file from disk.
