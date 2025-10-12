@@ -24,6 +24,11 @@ public extension Int {
 		formatter.zeroFormattingBehavior = zero
 		return formatter.string(from: TimeInterval(self)) ?? ""
 	}
+	
+	/// Converts a Unix timestamp (seconds since 1970) to a Date object.
+	///
+	/// - Returns: A Date object representing the timestamp
+	func toDate() -> Date { .init(timeIntervalSince1970: TimeInterval(self)) }
 }
 
 // MARK: - Extension - DateFormatter
