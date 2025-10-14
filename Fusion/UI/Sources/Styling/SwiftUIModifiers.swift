@@ -202,6 +202,9 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 	/// The easing curve used for the animation.
 	public let ease: Ease
 	
+	/// The frames per second rate for the animation.
+	public let fps: FPoint
+	
 // MARK: - Protected Methods
 	
 	private func attributedFrom(_ source: TextConvertible) -> NSAttributedString {
@@ -221,7 +224,7 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 		let newTarget = currentNumberValue(in: template)
 		guard newTarget != currentValue else { return }
 		Tween(duration: duration,
-			  options: .init(ease: ease, delegate: self),
+			  options: .init(ease: ease, delegate: self, fps: fps),
 			  fromValues: ["value": CGFloat(currentValue)],
 			  toValues: ["value": CGFloat(newTarget)])
 	}
@@ -350,9 +353,10 @@ public extension View {
 	///   - text: The text content to display and animate.
 	///   - duration: The duration of the animation when transitioning between values. Default is `Constant.duration`.
 	///   - animationCurve: The easing curve used for the animation. Default is `.smoothOut`.
+	///   - fps: The frames per second rate for the animation. Default is `60.0`.
 	/// - Returns: A modified view with animated text transitions.
-	func textTransition(_ text: TextConvertible, duration: Double = Constant.duration, animationCurve: Ease = .smoothOut) -> some View {
-		modifier(TextUpdateModifier(sourceText: text, duration: duration, ease: animationCurve))
+	func textTransition(_ text: TextConvertible, duration: Double = Constant.duration, animationCurve: Ease = .smoothOut, fps: FPoint = 60.0) -> some View {
+		modifier(TextUpdateModifier(sourceText: text, duration: duration, ease: animationCurve, fps: fps))
 	}
 }
 
@@ -367,9 +371,10 @@ public extension TextConvertible {
 	/// - Parameters:
 	///   - duration: The duration of the animation when transitioning between values. Default is `Constant.duration`.
 	///   - animationCurve: The easing curve used for the animation. Default is `.smoothOut`.
+	///   - fps: The frames per second rate for the animation. Default is `60.0`.
 	/// - Returns: A view with animated text transitions applied.
-	func textAnimated(duration: Double = Constant.duration, animationCurve: Ease = .smoothOut) -> some View {
-		text.textTransition(self, duration: duration, animationCurve: animationCurve)
+	func textAnimated(duration: Double = Constant.duration, animationCurve: Ease = .smoothOut, fps: FPoint = 60.0) -> some View {
+		text.textTransition(self, duration: duration, animationCurve: animationCurve, fps: fps)
 	}
 }
 #endif

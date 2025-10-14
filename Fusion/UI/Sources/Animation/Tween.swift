@@ -92,6 +92,7 @@ public class Tween {
 		public var repetitionDelay: FPoint
 		public var endState: Tween.Behavior
 		public var delegate: TweenDelegate?
+		public var fps: FPoint
 		
 		public init(name: String? = nil,
 					ease: Ease = .linear,
@@ -103,7 +104,8 @@ public class Tween {
 					repetitionCount: UInt32 = 0,
 					repetitionDelay: FPoint = 0,
 					endState: Tween.Behavior = .current,
-					delegate: TweenDelegate? = nil) {
+					delegate: TweenDelegate? = nil,
+					fps: FPoint = 60.0) {
 			self.name = name
 			self.ease = ease
 			self.delay = delay
@@ -115,6 +117,7 @@ public class Tween {
 			self.repetitionDelay = repetitionDelay
 			self.endState = endState
 			self.delegate = delegate
+			self.fps = fps
 		}
 	}
 	
@@ -123,6 +126,7 @@ public class Tween {
 	private var target: Target?
 	private var callback: TweenCallback?
 	private var allValues: [String : [CGFloat]] = [:]
+	private var lastFrameTime: FPoint = 0
 	private static var tweens: Set<Tween> = []
 	
 	@ThreadSafe
@@ -227,6 +231,7 @@ public class Tween {
 	private func resetTime() {
 		beginTime = 0.0
 		currentTime = 0.0
+		lastFrameTime = 0.0
 		idleTime = CFAbsoluteTimeGetCurrent()
 	}
 	
@@ -326,6 +331,10 @@ public class Tween {
 		
 		let delay = currentCycle == 0 ? options.delay : options.repetitionDelay
 		guard delay <= currentTime else { return }
+		
+		let frameInterval = 1.0 / options.fps
+		guard currentTime - lastFrameTime >= frameInterval else { return }
+		lastFrameTime = currentTime
 		
 		beginTime = (beginTime == 0.0) ? currentTime : beginTime
 		deltaTime = min(currentTime - beginTime, duration)
@@ -483,6 +492,7 @@ extension Tween : CustomStringConvertible {
 			"state = \(currentState)",
 			"duration = \(String(format: "%.2f", duration))s ⏱️",
 			"\(isPaused ? "paused ⏸️" : "running ▶️") = \(String(format: "%.2f", deltaTime))s (\(progress)%)",
+			"fps = \(String(format: "%.0f", options.fps)) ⚡️",
 			"cycle = \(currentCycle)/\(options.repetitionCount == .max ? "∞" : "\(options.repetitionCount)") 🔄",
 			"endState = \(options.endState)",
 			options.delay > 0 ? "delay = \(String(format: "%.2f", options.delay))s ⏲️" : nil,
