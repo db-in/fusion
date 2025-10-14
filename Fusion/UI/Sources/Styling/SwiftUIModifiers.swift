@@ -169,9 +169,12 @@ struct TapToResignResponderModifier: ViewModifier {
 	
 	func body(content: Content) -> some View {
 		content
+#if !os(tvOS)
+			.contentShape(Rectangle())
 			.onTapGesture {
 				UIApplication.main?.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
 			}
+#endif
 	}
 }
 
