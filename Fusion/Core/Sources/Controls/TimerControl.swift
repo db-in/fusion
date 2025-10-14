@@ -28,19 +28,6 @@ final public class TimerControl {
 	
 	private lazy var timerQueue: DispatchQueue = { .init(label: "timer.\(UUID().uuidString)", attributes: .concurrent) }()
 	
-	/// Pauses or resumes the cycle.
-	/// Set this property to true if you want to pause the animation temporary. Set it to false again to resume the timer.
-	/// The default value is false.
-	public var isPaused: Bool = false {
-		didSet {
-			if isPaused && !oldValue {
-				timer?.suspend()
-			} else if !isPaused && oldValue {
-				timer?.resume()
-			}
-		}
-	}
-	
 	/// Returns the count for the current number of items.
 	public var itemsCount: Int { items.count }
 	
@@ -64,11 +51,6 @@ final public class TimerControl {
 		source.schedule(deadline: .now(), repeating: Double(1.0 / fps))
 		source.setEventHandler(handler: handleTimerTick)
 		source.activate()
-		
-		if isPaused {
-			source.suspend()
-		}
-		
 		return source
 	}
 	
@@ -83,11 +65,10 @@ final public class TimerControl {
 	}
 	
 	private func handleTimerTick() {
-		items.forEach { [weak self] item in
+		items.forEach { item in
 			let callback = item.value.callback
 			let queue = item.value.queue
 			queue.async {
-				guard self?.isPaused == false else { return }
 				callback()
 			}
 		}
@@ -111,12 +92,10 @@ final public class TimerControl {
 	}
 	
 	@objc private func pauseForBackground() {
-		isPaused = true
 		backgroundTime = CFAbsoluteTimeGetCurrent()
 	}
 	
 	@objc private func resumeFromBackground() {
-		isPaused = false
 		guard backgroundTime > 0.0 else { return }
 		backgroundTime = CFAbsoluteTimeGetCurrent() - backgroundTime
 	}
