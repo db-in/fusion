@@ -162,6 +162,144 @@ public struct SwipeToDismiss: ViewModifier {
 	}
 }
 
+/// A view modifier that enables tap-to-dismiss functionality for the first responder.
+/// When the user taps anywhere on the view, it will automatically resign the current first responder,
+/// which is commonly used to dismiss the keyboard when tapping outside of text fields.
+struct TapToResignResponderModifier: ViewModifier {
+	
+	func body(content: Content) -> some View {
+		content
+			.onTapGesture {
+				UIApplication.main?.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+			}
+	}
+}
+
+/// A view modifier that provides smooth animated transitions for text content.
+/// This modifier automatically detects numeric values within text and animates them
+/// when the source text changes, creating smooth counting or value transition effects.
+/// It preserves text formatting and attributes while animating only the numeric portions.
+public struct TextUpdateModifier: ViewModifier, TweenDelegate {
+	
+// MARK: - Properties
+	
+	@State private var displayText: NSAttributedString = .init(string: "")
+	@State private var template: NSMutableAttributedString = .init()
+	@State private var numberRange: NSRange = .init(location: NSNotFound, length: 0)
+	@State private var numberAttributes: [NSAttributedString.Key: Any] = [:]
+	@State private var decimals: Int = 0
+	@State private var currentValue: Double = 0
+	
+	/// The source text content that will be displayed and animated.
+	public let sourceText: TextConvertible
+	
+	/// The duration of the animation when transitioning between values.
+	public let duration: Double
+	
+	/// The easing curve used for the animation.
+	public let ease: Ease
+	
+// MARK: - Protected Methods
+	
+	private func attributedFrom(_ source: TextConvertible) -> NSAttributedString {
+		if let attributed = source as? NSAttributedString { return attributed }
+		return NSAttributedString(string: source.content)
+	}
+	
+	private func prepare(from attributed: NSAttributedString) {
+		template = .init(attributedString: attributed)
+		updateNumberRangeIfNeeded(in: template)
+		currentValue = currentNumberValue(in: template)
+		displayText = attributed
+	}
+	
+	private func animate(to attributed: NSAttributedString) {
+		updateTemplate(with: attributed)
+		let newTarget = currentNumberValue(in: template)
+		guard newTarget != currentValue else { return }
+		Tween(duration: duration,
+			  options: .init(ease: ease, delegate: self),
+			  fromValues: ["value": CGFloat(currentValue)],
+			  toValues: ["value": CGFloat(newTarget)])
+	}
+	
+	private func updateTemplate(with attributed: NSAttributedString) {
+		template = .init(attributedString: attributed)
+		updateNumberRangeIfNeeded(in: template)
+	}
+	
+	private func updateNumberRangeIfNeeded(in attributed: NSAttributedString) {
+		let string = attributed.string
+		if let range = firstNumberRange(in: string) {
+			numberRange = range
+			numberAttributes = attributed.attributes(at: range.location, effectiveRange: nil)
+			decimals = fractionDigits(in: (string as NSString).substring(with: range))
+		} else {
+			numberRange = .init(location: NSNotFound, length: 0)
+			numberAttributes = [:]
+			decimals = 0
+		}
+	}
+	
+	private func updateDisplay(value: Double) {
+		guard numberRange.location != NSNotFound else { displayText = template; return }
+		let formatted = value.toString(decimals: decimals, locale: .preferredLocale)
+		let replacement = NSAttributedString(string: formatted, attributes: numberAttributes)
+		let mutable = NSMutableAttributedString(attributedString: template)
+		mutable.replaceCharacters(in: numberRange, with: replacement)
+		displayText = mutable
+		currentValue = value
+	}
+	
+	private func currentNumberValue(in attributed: NSAttributedString) -> Double {
+		guard numberRange.location != NSNotFound else { return 0 }
+		let substring = (attributed.string as NSString).substring(with: numberRange)
+		return parseNumber(from: substring)
+	}
+	
+	private func parseNumber(from string: String) -> Double {
+		let locale = Locale.preferredLocale
+		let parts = string.decimalComponents(locale: locale)
+		if parts.fraction.isEmpty { return Double(parts.integer) ?? 0 }
+		return Double("\(parts.integer).\(parts.fraction)") ?? 0
+	}
+	
+	private func fractionDigits(in string: String) -> Int {
+		let locale = Locale.preferredLocale
+		let decimal = locale.decimalSeparator ?? "."
+		if let range = string.range(of: decimal) { return string[range.upperBound...].count }
+		return 0
+	}
+	
+	private func firstNumberRange(in string: String) -> NSRange? {
+		let pattern = "[0-9][0-9.,]*"
+		guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return nil }
+		let range = NSRange(location: 0, length: (string as NSString).length)
+		return regex.firstMatch(in: string, options: [], range: range)?.range
+	}
+	
+// MARK: - Exposed Methods
+	
+	public func body(content: Content) -> some View {
+		displayText.text
+			.task(id: sourceText.content) {
+				let attributed = attributedFrom(sourceText)
+				if displayText.string.isEmpty {
+					prepare(from: attributed)
+				} else {
+					animate(to: attributed)
+				}
+			}
+	}
+	
+	public func tween(_ tween: Tween, values: [String : CGFloat]) {
+		guard let value = values["value"] else { return }
+		DispatchQueue.asyncMainIfNeeded {
+			updateDisplay(value: Double(value))
+		}
+	}
+}
+
 public extension View {
 	
 	/// Applies a press effect to the view with customizable scale, opacity, and callbacks.
@@ -186,6 +324,49 @@ public extension View {
 	/// - Returns: A modified view with swipe-to-dismiss functionality.
 	func swipeToDismiss(direction: UIRectEdge = .bottom, threshold: CGFloat = 100, onDismiss: Callback? = nil) -> some View {
 		modifier(SwipeToDismiss(direction: direction, threshold: threshold, onDismiss: onDismiss))
+	}
+	
+	/// Enables tap-to-dismiss functionality for the first responder.
+	///
+	/// When the user taps anywhere on the view, it will automatically resign the current
+	/// first responder, which is commonly used to dismiss the keyboard when tapping
+	/// outside of text fields or other input elements.
+	///
+	/// - Returns: A modified view with tap-to-dismiss functionality.
+	func TapToResignResponder() -> some View {
+		modifier(TapToResignResponderModifier())
+	}
+	
+	/// Applies smooth animated transitions to text content.
+	///
+	/// This modifier automatically detects numeric values within the text and animates them
+	/// when the source text changes. It preserves text formatting and attributes while
+	/// creating smooth counting or value transition effects.
+	///
+	/// - Parameters:
+	///   - text: The text content to display and animate.
+	///   - duration: The duration of the animation when transitioning between values. Default is `Constant.duration`.
+	///   - animationCurve: The easing curve used for the animation. Default is `.smoothOut`.
+	/// - Returns: A modified view with animated text transitions.
+	func textTransition(_ text: TextConvertible, duration: Double = Constant.duration, animationCurve: Ease = .smoothOut) -> some View {
+		modifier(TextUpdateModifier(sourceText: text, duration: duration, ease: animationCurve))
+	}
+}
+
+public extension TextConvertible {
+	
+	/// Creates an animated text view with smooth transitions.
+	///
+	/// This convenience method applies animated text transitions to the current text content.
+	/// It automatically detects numeric values within the text and animates them when
+	/// the content changes, creating smooth counting or value transition effects.
+	///
+	/// - Parameters:
+	///   - duration: The duration of the animation when transitioning between values. Default is `Constant.duration`.
+	///   - animationCurve: The easing curve used for the animation. Default is `.smoothOut`.
+	/// - Returns: A view with animated text transitions applied.
+	func textAnimated(duration: Double = Constant.duration, animationCurve: Ease = .smoothOut) -> some View {
+		text.textTransition(self, duration: duration, animationCurve: animationCurve)
 	}
 }
 #endif

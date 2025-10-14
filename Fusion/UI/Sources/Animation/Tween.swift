@@ -219,7 +219,7 @@ public class Tween {
 		resetTime()
 		Self.tweens.insert(self)
 		updateTargetValues()
-		TimerControl.shared.addItem(key: identifier, queue: .global(qos: .background)) {
+		TimerControl.shared.addItem(key: identifier, queue: .global(qos: .userInteractive)) {
 			self.timerCallBack()
 		}
 	}
