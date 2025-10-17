@@ -471,8 +471,13 @@ public extension UIViewController {
 	
 	/// Presents this instance over the key window's top view.
 	///
-	/// - Parameter style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `none`.
-	func presentOverWindow(style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom) {
+	/// - Parameter style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `.none`.
+	/// - Parameter side: The screen edge from which the presentation should originate.
+	/// - Parameter preferredHeight: If provided, sets the preferred content height for the presented view controller.
+	func presentOverWindow(style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom, preferredHeight: CGFloat? = nil) {
+		if let height = preferredHeight {
+			preferredContentSize.height = height
+		}
 		UIWindow.topViewController?.presentOver(self, style: style, from: side)
 	}
 }
