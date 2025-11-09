@@ -104,6 +104,8 @@ public extension URLResponse {
 
 private extension URLRequest {
 	
+	var id: String { "\(httpMethod ?? "") \(urlString)" }
+	
 	var hasLog: Bool { allHTTPHeaderFields?.keys.contains("sr") != true }
 		
 	var fullRequest: String {
@@ -114,25 +116,26 @@ private extension URLRequest {
 	
 	func debugLogRequest() {
 		guard hasLog else { return }
-		Logger.global.log(basic: "=== 🚀 REQUEST === \(httpMethod ?? "") \(urlString)", full: fullRequest)
+		Logger.global.log(basic: "=== 🚀 REQUEST === \(id)", full: fullRequest)
 	}
 	
-	func debugLog(response: URLResponse?, seconds: TimeInterval) {
+	func debugLog(response: URLResponse?, data: Data, seconds: TimeInterval) {
 		guard hasLog else { return }
 		let code = response?.httpStatusCode ?? 0
-		let icon = code >= 200 && code < 400 ? "📦" : "📦‼️"
+		let icon = code >= 200 && code < 400 ? "📥" : "📥‼️"
 		let time = Int(seconds * 1000)
-		Logger.global.log(basic: "=== \(icon) RESPONSE === \(urlString) (\(code)) - \(time)ms", full: "\(response ?? URLResponse())")
-	}
-	
-	func debugLog(data: Data) {
-		guard hasLog else { return }
-		Logger.global.log(basic: "=== 📥 RECEIVED === \(urlString) (\(data.byteCount))", full: "\(String(data: data, encoding: .utf8) ?? "")")
+		
+		if Logger.global == .full {
+			let header = code >= 200 && code < 400 ? "📦" : "📦‼️"
+			Logger.global.log(basic: "=== \(header) HEADERS === \(id)", full: response?.description)
+		}
+		
+		Logger.global.log(basic: "=== \(icon) RESPONSE === \(id) (\(code)) - \(data.byteCount) - \(time)ms", full: String(data: data, encoding: .utf8))
 	}
 	
 	func debugLog(error: Error) {
 		guard hasLog else { return }
-		Logger.global.log(basic: "=== ❌ ERROR === \(urlString) \(error)")
+		Logger.global.log(basic: "=== ❌ ERROR === \(id) \(error)")
 	}
 }
 
@@ -174,13 +177,12 @@ public extension URLRequest {
 			let time = currentTime
 			
 			RESTAuthenticator.session.dataTask(with: self) { (data, response, error) in
-				self.debugLog(response: response, seconds: currentTime - time)
-				
 				let result: Result<Data, Error>
+				let elapsed = currentTime - time
 				let statusCode = response?.httpStatusCode ?? 0
 				
 				if let validData = data {
-					self.debugLog(data: validData)
+					self.debugLog(response: response, data: validData, seconds: elapsed)
 					result = responseResult(statusCode, validData)
 				} else {
 					let fail = error ?? RESTError.unkown(nil)
@@ -225,15 +227,13 @@ public extension URLRequest {
 		let time = currentTime
 		
 		URLSession.shared.uploadTask(with: self, from: data) { (data, response, error) in
-			if let httpResponse = response as? HTTPURLResponse {
-				self.debugLog(response: httpResponse, seconds: currentTime - time)
-			}
+			let elapsed = currentTime - time
 			
 			if let validError = error {
 				self.debugLog(error: validError)
 				completion?(.failure(validError), response)
 			} else {
-				self.debugLog(data: data ?? Data())
+				self.debugLog(response: response, data: data ?? Data(), seconds: elapsed)
 				completion?(.success(data), response)
 			}
 		}.resume()

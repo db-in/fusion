@@ -96,7 +96,9 @@ public struct LogEntry: Codable, Equatable, CustomStringConvertible {
 	@discardableResult public func printing(_ logLevel: Logger) -> Self {
 		switch logLevel {
 		case .basic:
-			debugPrint(basic ?? "")
+			if let basic = basic {
+				debugPrint(basic)
+			}
 		case.full:
 			debugPrint(self)
 		default:

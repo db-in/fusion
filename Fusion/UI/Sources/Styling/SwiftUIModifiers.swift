@@ -339,7 +339,7 @@ public extension View {
 	/// outside of text fields or other input elements.
 	///
 	/// - Returns: A modified view with tap-to-dismiss functionality.
-	func TapToResignResponder() -> some View {
+	func tapToResignResponder() -> some View {
 		modifier(TapToResignResponderModifier())
 	}
 	
