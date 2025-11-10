@@ -123,7 +123,7 @@ public struct UserFlowUniversalLink {
 	public let pattern: String
 	public let handler: Handler
 	
-	public init(_ pattern: String, handler: @escaping Handler) {
+	public init(_ pattern: String, handler: @escaping Handler = { _, flow in flow.startAsPush() }) {
 		self.pattern = pattern
 		self.handler = handler
 	}
@@ -141,10 +141,11 @@ public typealias UserFlowMapping = (UserFlow) -> UIViewController?
 
 // MARK: - Type -
 
-public struct UserFlow {
+public struct UserFlow: Hashable {
 	
 // MARK: - Properties
 	
+	private let identifier: String
 	public let name: String?
 	public let bundle: Bundle?
 	public let map: UserFlowMapping?
@@ -168,6 +169,7 @@ public struct UserFlow {
 				hooks: [UserFlowHook] = [],
 				links: [UserFlowUniversalLink] = [],
 				map: UserFlowMapping? = nil) {
+		self.identifier = "\(name)-\(bundle.bundleIdentifier ?? "")"
 		self.name = name
 		self.bundle = bundle
 		self.map = map
@@ -178,6 +180,7 @@ public struct UserFlow {
 	public init(_ map: UserFlowMapping?,
 				hooks: [UserFlowHook] = [],
 				links: [UserFlowUniversalLink] = []) {
+		self.identifier = UUID().uuidString
 		self.name = nil
 		self.bundle = nil
 		self.map = map
@@ -263,17 +266,10 @@ public struct UserFlow {
 		handle(activity)
 	}
 	
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(identifier)
+	}
 // MARK: - Overridden Methods
 
-}
-
-// MARK: - Extension - UserFlow
-
-extension UserFlow : Hashable {
-	
-	public func hash(into hasher: inout Hasher) {
-		hasher.combine(name)
-		hasher.combine(bundle)
-	}
 }
 #endif
