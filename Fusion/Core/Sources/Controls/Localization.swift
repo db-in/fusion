@@ -27,11 +27,14 @@ public extension Bundle {
 	
 	private static var cachedLanguages: [String : [Bundle]] = [:]
 	
-	/// Returns a combined collection of ``hints`` + `Bundle.allBundles` + `Bundle.allFrameworks`, in this given order.
-	static var allAvailable: [Bundle] { hints + allBundles + allFrameworks }
-	
 	/// Hints are the first bundles to be scanned for loading contents. Including (but not limited to) languages, images, url, etc.
 	static var hints: [Bundle] = []
+	
+	/// Returns a combined collection of `Bundle.allBundles` + `Bundle.allFrameworks`, in this given order.
+	static var allOthers: [Bundle] { allBundles + allFrameworks }
+	
+	/// Returns a combined collection of ``hints`` + `Bundle.allBundles` + `Bundle.allFrameworks`, in this given order.
+	static var allAvailable: [Bundle] { hints + allOthers }
 	
 	static var languageSet: Set<String> = { Set(main.localizations) }()
 	

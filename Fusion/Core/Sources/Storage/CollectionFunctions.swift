@@ -136,7 +136,7 @@ public extension Array {
 
 // MARK: - Extension - Array Hashable
 
-extension Array where Element : Hashable {
+public extension Array where Element : Equatable {
 	
 	/// Appends an item to the collection only if it's unique.
 	/// - Parameter element: A new item to be added.
