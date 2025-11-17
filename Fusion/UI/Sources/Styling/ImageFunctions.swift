@@ -25,12 +25,8 @@ public extension UIImage {
 
 // MARK: - Protected Methods
 	
-	private static func valid(_ named: String) -> (Bundle) -> UIImage? {
-		{ .init(named: named, in: $0, with: nil) }
-	}
-	
 	private static func inAnyBundle(_ named: String) -> UIImage? {
-		Bundle.hints.firstMap(valid(named)) ?? .init(systemName: named)?.template ?? Bundle.allOthers.firstMap(valid(named))
+		Bundle.hints.firstMap { .init(named: named, in: $0, with: nil) } ?? .init(systemName: named)?.template ?? Bundle.allOthers.firstMap { .init(named: named, in: $0, with: nil) }
 	}
 	
 	private static func image(named: String, bundle: Bundle) -> UIImage? {
@@ -59,18 +55,14 @@ public extension UIImage {
 	
  // MARK: - Protected Methods
 	
-	private static func valid(_ named: String, _ trait: UITraitCollection?) -> (Bundle) -> UIImage? {
-		{ .init(named: named, in: $0, compatibleWith: trait) }
+	private static func inAnyBundle(_ named: String, trait: UITraitCollection?) -> UIImage? {
+		Bundle.hints.firstMap { .init(named: named, in: $0, compatibleWith: trait) } ?? .init(systemName: named)?.template ?? Bundle.allOthers.firstMap { .init(named: named, in: $0, compatibleWith: trait) }
 	}
-	 
-	 private static func inAnyBundle(_ named: String, trait: UITraitCollection?) -> UIImage? {
-		 Bundle.hints.firstMap(valid(named, trait)) ?? .init(systemName: named)?.template ?? Bundle.allOthers.firstMap(valid(named, trait))
-	 }
-	 
-	 private static func image(named: String, bundle: Bundle, trait: UITraitCollection?) -> UIImage? {
-		 .init(named: named, in: bundle, compatibleWith: trait) ?? inAnyBundle(named, trait: trait)
-	 }
-	 
+	
+	private static func image(named: String, bundle: Bundle, trait: UITraitCollection?) -> UIImage? {
+		.init(named: named, in: bundle, compatibleWith: trait) ?? inAnyBundle(named, trait: trait)
+	}
+	
  // MARK: - Exposed Methods
 	 
 	 /// Returns an image object with the specified name and style from any available bundle. If there are multiple bundles with the same
