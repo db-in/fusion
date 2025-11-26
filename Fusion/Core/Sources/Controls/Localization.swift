@@ -116,20 +116,27 @@ public extension String {
 	
 // MARK: - Exposed Methods
 	
-	/// Alias for ``localized(for:table:)`` function.
+	/// Alias for ``localized(for:table:count:)`` function.
 	///
-	/// - Parameter language: A given language to be used. By default it's `currentLanguage`
-	/// - Returns: The localized version of the string key or the key itself
-	func callAsFunction(language: String = Locale.preferredLanguageCodeISO2) -> String { localized(for: language) }
+	/// - Parameters:
+	///   - language: A given language to be used. By default it's `currentLanguage`
+	///   - count: Optional count value used for pluralization via `.stringsdict` files. If `nil`, returns regular localized string.
+	/// - Returns: The localized version of the string key (pluralized if count is provided) or the key itself
+	func callAsFunction(language: String = Locale.preferredLanguageCodeISO2, count: Int? = nil) -> String { localized(for: language, count: count) }
 	
 	/// Localized string version, using the a high `speed dynamic loading algorithm` - ``localizedString(language:key:table:)`` -
 	/// for the `current preferred language` - ``preferredLanguageCodeISO2``.
+	/// Supports pluralization via `.stringsdict` files when `count` is provided.
 	///
-	/// - Parameter locale: The iso code for the given locale, matching a valid language folder (lproj).
-	/// - Returns: The localized string
+	/// - Parameters:
+	///   - locale: The iso code for the given locale, matching a valid language folder (lproj).
+	///   - table: The string table file. Defaults to `Localizable.nocache`.
+	///   - count: Optional count value used for pluralization. If `nil`, returns regular localized string.
+	/// - Returns: The localized string (pluralized if count is provided)
 	/// - SeeAlso: ``localizedString(language:key:table:)`` and ``preferredLanguageCodeISO2``.
-	func localized(for locale: String = Locale.preferredLanguageCodeISO2, table: String? = .localizableTable) -> String {
+	func localized(for locale: String = Locale.preferredLanguageCodeISO2, table: String? = .localizableTable, count: Int? = nil) -> String {
 		guard var string = Bundle.localizedString(language: locale, key: self, table: table) else { return self }
+		if let count = count { string = String.localizedStringWithFormat(string, count) }
 		string.originalKey = originalKey ?? self
 		return string.replacingOccurrences(of: "amp;", with: "").replacingOccurrences(of: "\\", with: "")
 	}
