@@ -12,6 +12,33 @@ private struct PressActiveCountKey: PreferenceKey {
 	static func reduce(value: inout Int, nextValue: () -> Int) { value += nextValue() }
 }
 
+/// A shape that applies rounded corners to specific corners of a rectangle.
+/// This shape allows you to round only selected corners rather than all corners uniformly,
+/// providing more flexible corner radius customization for views.
+public struct RoundedCorner: Shape {
+	
+	/// The radius of the rounded corners.
+	public let radius: CGFloat
+	
+	/// The corners that should be rounded.
+	public let corners: UIRectCorner
+	
+	/// Creates a rounded corner shape with the specified radius and corners.
+	///
+	/// - Parameters:
+	///   - radius: The radius of the rounded corners. Default is `.infinity` (fully rounded).
+	///   - corners: The corners that should be rounded. Default is `.allCorners`.
+	public init(radius: CGFloat = .infinity, corners: UIRectCorner = .allCorners) {
+		self.radius = radius
+		self.corners = corners
+	}
+	
+	public func path(in rect: CGRect) -> Path {
+		let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+		return Path(path.cgPath)
+	}
+}
+
 /// A view modifier that provides visual feedback when the user presses on a view.
 /// This modifier applies scale and opacity changes to simulate a press effect,
 /// commonly used for buttons and interactive elements.
@@ -357,6 +384,20 @@ public extension View {
 	/// - Returns: A modified view with animated text transitions.
 	func textTransition(_ text: TextConvertible, duration: Double = Constant.duration, animationCurve: Ease = .smoothOut, fps: FPoint = 60.0) -> some View {
 		modifier(TextUpdateModifier(sourceText: text, duration: duration, ease: animationCurve, fps: fps))
+	}
+	
+	/// Applies rounded corners to specific corners of the view.
+	///
+	/// This modifier allows you to round only selected corners of a view rather than all corners,
+	/// providing more flexible corner radius customization. The shape is clipped to the rounded
+	/// rectangle, ensuring content respects the corner radius boundaries.
+	///
+	/// - Parameters:
+	///   - radius: The radius of the rounded corners. Use `.infinity` for fully rounded corners.
+	///   - corners: The corners that should be rounded. Default is `.allCorners`.
+	/// - Returns: A modified view with rounded corners applied to the specified corners.
+	func roundedCorner(radius: CGFloat, corners: UIRectCorner = .allCorners) -> some View {
+		clipShape(RoundedCorner(radius: radius, corners: corners))
 	}
 }
 
