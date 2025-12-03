@@ -60,6 +60,13 @@ public enum PresentationStyle {
 			let firstController = controller.firstInNavigation
 			let navigation = UIWindow.topNavigation
 			
+			if navigation == nil && UIWindow.topViewController?.isPresentingAsModal == true {
+				UIWindow.topViewController?.dismiss(animated: false) {
+					self.present(userFlow)
+					return
+				}
+			}
+			
 			if let existingController = navigation?.first(like: firstController) {
 				if existingController === navigation?.children.last {
 					navigation?.popViewController(animated: false)
