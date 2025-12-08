@@ -81,3 +81,11 @@ extension ControlAction: Hashable, Identifiable {
 	public static func == (lhs: ControlAction, rhs: ControlAction) -> Bool { lhs.hashValue == rhs.hashValue }
 }
 #endif
+
+public extension Constant {
+#if canImport(UIKit)
+	static let deviceName: String = UIDevice.current.name
+#else
+	static let deviceName: String = ""
+#endif
+}
