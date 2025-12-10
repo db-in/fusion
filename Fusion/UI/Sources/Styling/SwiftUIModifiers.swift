@@ -67,6 +67,7 @@ public struct PressEffect: ViewModifier {
 	
 	public func body(content: Content) -> some View {
 		content
+			.contentShape(Rectangle())
 #if os(tvOS)
 			.scaleEffect(isFocused ? scale : 1.0)
 			.opacity(isFocused ? opacity : 1.0)
