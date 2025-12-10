@@ -95,6 +95,8 @@ public extension Constant {
 	static let deviceName = Host.current().localizedName ?? ""
 }
 #elseif os(watchOS)
+import WatchKit
+
 public extension Constant {
 	static let deviceName = WKInterfaceDevice.current().name
 }
