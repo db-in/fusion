@@ -82,10 +82,24 @@ extension ControlAction: Hashable, Identifiable {
 }
 #endif
 
+#if canImport(UIKit) && !os(watchOS)
+import UIKit
+
 public extension Constant {
-#if canImport(UIKit)
-	static let deviceName: String = UIDevice.current.name
-#else
-	static let deviceName: String = ""
-#endif
+	static let deviceName = UIDevice.current.name
 }
+#elseif os(macOS)
+import AppKit
+
+public extension Constant {
+	static let deviceName = Host.current().localizedName ?? ""
+}
+#elseif os(watchOS)
+public extension Constant {
+	static let deviceName = WKInterfaceDevice.current().name
+}
+#else
+public extension Constant {
+	static let deviceName = ""
+}
+#endif
