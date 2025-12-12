@@ -84,8 +84,8 @@ public extension View {
 	}
 	
 	/// Presents the view over the window.
-	func presentOverWindow() {
-		uiHost(cached: false).presentOverWindow()
+	func presentOverWindow(preferredHeight: CGFloat = UIScreen.main.bounds.height) {
+		uiHost(cached: false).presentOverWindow(preferredHeight: preferredHeight)
 	}
 }
 
