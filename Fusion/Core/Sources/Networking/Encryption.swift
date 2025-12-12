@@ -20,6 +20,7 @@ public extension String {
 		public static let email = "\\b[\\w\\.-]+@[\\w\\.-]+\\.\\w{1,10}\\b"
 		public static let phone8 = "[0-9]{8,}"
 		public static let password8 = ".{8,}"
+		public static let subdomain = ".*?\\.(.*)"
 	}
 	
 	var encryptBase64: String { Data(self.utf8).base64EncodedString() }
