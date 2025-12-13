@@ -195,7 +195,7 @@ public extension String {
 // MARK: - Protected Methods
 	
 	internal func decimalComponents(locale: Locale = .preferredLocale) -> (integer: String, fraction: String) {
-		let decimalSeparator = locale.decimalSeparator ?? ""
+		let decimalSeparator = locale.decimalSeparator ?? "."
 		let components = components(separatedBy: decimalSeparator)
 		let integer = components.first?.replacingOccurrences(of: "\\D", with: "", options: .regularExpression) ?? ""
 		let fraction = components.last?.replacingOccurrences(of: "\\D", with: "", options: .regularExpression) ?? ""
@@ -209,16 +209,15 @@ public extension String {
 	
 	func styled(_ attributes: TextAttributes, overriding: Bool) -> NSAttributedString { .init(string: self, attributes: attributes) }
 	
-	/// Cleans up precisely what is a thousand formatted and a decimal formatted string in a given locale.
-	///
+	/// Converts a localized numeric string into `Double`.
 	/// - Parameters:
-	///   - decimals: The number of decimal places for the returning double.
-	///   - locale: The given locale.
-	/// - Returns: The resulting `Double`
-	func toDouble(decimals: Int, with locale: Locale) -> Double {
+	///   - decimals: Max decimal digits to keep. `nil` = keep all.
+	///   - locale: Locale used for parsing. Defaults to `.preferredLocale`.
+	func toDouble(decimals: Int? = nil, locale: Locale = .preferredLocale) -> Double {
 		let components = decimalComponents(locale: locale)
 		guard !components.fraction.isEmpty else { return Double(components.integer) ?? 0 }
-		return Double("\(components.integer).\(components.fraction.prefix(decimals))") ?? 0
+		let fraction = decimals.map { String(components.fraction.prefix($0)) } ?? components.fraction
+		return Double("\(components.integer).\(fraction)") ?? 0
 	}
 	
 	/// Converts any numeral in the string to a given locale, preserving all non-numeral character as is.
