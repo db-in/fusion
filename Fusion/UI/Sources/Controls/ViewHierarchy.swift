@@ -101,8 +101,6 @@ public extension UIApplication {
 
 public extension CGFloat {
 	
-	static var safeArea: UIEdgeInsets { UIWindow.keySafeAreaInsets }
-	
 	static var windowWidth: CGFloat { UIWindow.keyFrame.width }
 	
 	static var windowHeight: CGFloat { UIWindow.keyFrame.height }
