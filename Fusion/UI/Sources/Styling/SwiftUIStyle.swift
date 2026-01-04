@@ -87,6 +87,18 @@ public extension View {
 	func presentOverWindow(preferredHeight: CGFloat = UIScreen.main.bounds.height) {
 		uiHost(cached: false).presentOverWindow(preferredHeight: preferredHeight)
 	}
+	
+	/// Manages the hide state of the native navigation bar.
+	///
+	/// - Parameter value: Hides the bar if `true` and unhides if value is `false`. The default value is `true`.
+	/// - Returns: The same view, with a modified navigation bar property
+	@ViewBuilder func hideNavigationBar(_ value: Bool = true) -> some View {
+		if #available(iOS 16.0, *) {
+			toolbar(value ? .hidden : .visible, for: .navigationBar)
+		} else {
+			navigationBarHidden(value)
+		}
+	}
 }
 
 // MARK: - Type - UIKitView
