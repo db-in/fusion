@@ -265,12 +265,13 @@ public struct UserFlow: Hashable {
 	/// Simulates a Universal Link navigation inside the application itself.
 	///
 	/// - Parameter link: An universal link either relative or absolute.
-	public static func universalLink(into link: String) {
+	/// - Returns: Returns true if the universal link can be handled.
+	@discardableResult public static func universalLink(into link: String) -> Bool {
 		let finalLink = link.contains("https") ? link : "https://www.com/\(link)"
-		guard let url = URL(string: finalLink) else { return }
+		guard let url = URL(string: finalLink) else { return false }
 		let activity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
 		activity.webpageURL = url
-		handle(activity)
+		return handle(activity)
 	}
 	
 	public func hash(into hasher: inout Hasher) {
