@@ -44,7 +44,6 @@ class TimerControlTests: XCTestCase {
 		var counter = 0
 		let timer = TimerControl()
 		
-		timer.isPaused = true
 		timer.addItem(key: #function) { counter += 1 }
 		timer.removeItem(key: #function)
 
@@ -93,12 +92,10 @@ class TimerControlTests: XCTestCase {
 		var counter = 0
 		let timer = TimerControl()
 		
-		timer.isPaused = true
 		timer.addItem(key: #function) { counter += 1 }
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-			XCTAssertEqual(counter, 0)
-			timer.isPaused = false
+			XCTAssertGreaterThan(counter, 0)
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
 				XCTAssertGreaterThan(counter, 0)
 				timer.removeItem(key: #function)
@@ -119,12 +116,10 @@ class TimerControlTests: XCTestCase {
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 			XCTAssertGreaterThan(timer.itemsCount, 0)
-			XCTAssertTrue(timer.isPaused)
 			
 			NotificationCenter.post(UIApplication.didBecomeActiveNotification)
 			
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-				XCTAssertFalse(timer.isPaused)
 				timer.removeItem(key: #function)
 				expectation.fulfill()
 			}
