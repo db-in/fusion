@@ -111,7 +111,7 @@ public class Keychain {
 			guard let data = result as? Data else { return nil }
 			return data
 		default:
-			Logger.global.log(full: "🔑 Keychain: \(status)")
+			Logger.global.log(basic: "🔑 Keychain: \(status)")
 			return nil
 		}
 	}
@@ -160,7 +160,7 @@ public class Keychain {
 		
 		let status = SecItemDelete(query as CFDictionary)
 		if status != errSecSuccess && status != errSecItemNotFound {
-			Logger.global.log(full: "🔑 Keychain: \(status)")
+			Logger.global.log(basic: "🔑 Keychain: \(status)")
 		}
 	}
 }

@@ -86,22 +86,22 @@ extension ControlAction: Hashable, Identifiable {
 import UIKit
 
 public extension Constant {
-	static let deviceName = UIDevice.current.name
+	static let deviceName: String = UIDevice.current.name
 }
 #elseif os(macOS)
 import AppKit
 
 public extension Constant {
-	static let deviceName = Host.current().localizedName ?? ""
+	static let deviceName: String = Host.current().localizedName ?? ""
 }
 #elseif os(watchOS)
 import WatchKit
 
 public extension Constant {
-	static let deviceName = WKInterfaceDevice.current().name
+	static let deviceName: String = WKInterfaceDevice.current().name
 }
 #else
 public extension Constant {
-	static let deviceName = ""
+	static let deviceName: String = ""
 }
 #endif
