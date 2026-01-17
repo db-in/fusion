@@ -4,6 +4,12 @@
 
 import Foundation
 
+#if canImport(UIKit) && (os(iOS) || os(visionOS) || os(tvOS))
+import UIKit
+#elseif canImport(AppKit) && os(macOS)
+import AppKit
+#endif
+
 // MARK: - Extension - NotificationCenter
 
 public extension NotificationCenter {
@@ -122,10 +128,10 @@ public extension String {
 	///   - language: A given language to be used. By default it's `currentLanguage`
 	///   - count: Optional count value used for pluralization via `.stringsdict` files. If `nil`, returns regular localized string.
 	/// - Returns: The localized version of the string key (pluralized if count is provided) or the key itself
-	func callAsFunction(language: String = Locale.preferredLanguageCodeISO2, count: Int? = nil) -> String { localized(for: language, count: count) }
+	func callAsFunction(language: String = Locale.preferredLanguage, count: Int? = nil) -> String { localized(for: language, count: count) }
 	
 	/// Localized string version, using the a high `speed dynamic loading algorithm` - ``localizedString(language:key:table:)`` -
-	/// for the `current preferred language` - ``preferredLanguageCodeISO2``.
+	/// for the `current preferred language` - ``preferredLanguage``.
 	/// Supports pluralization via `.stringsdict` files when `count` is provided.
 	///
 	/// - Parameters:
@@ -133,8 +139,8 @@ public extension String {
 	///   - table: The string table file. Defaults to `Localizable.nocache`.
 	///   - count: Optional count value used for pluralization. If `nil`, returns regular localized string.
 	/// - Returns: The localized string (pluralized if count is provided)
-	/// - SeeAlso: ``localizedString(language:key:table:)`` and ``preferredLanguageCodeISO2``.
-	func localized(for locale: String = Locale.preferredLanguageCodeISO2, table: String? = .localizableTable, count: Int? = nil) -> String {
+	/// - SeeAlso: ``localizedString(language:key:table:)`` and ``preferredLanguage``.
+	func localized(for locale: String = Locale.preferredLanguage, table: String? = .localizableTable, count: Int? = nil) -> String {
 		guard var string = Bundle.localizedString(language: locale, key: self, table: table) else { return self }
 		if let count = count { string = String.localizedStringWithFormat(string, count) }
 		string.originalKey = originalKey ?? self
@@ -148,34 +154,51 @@ public extension Locale {
 
 // MARK: - Properties
 	
-	private static var preferredLanguage: String { Locale.preferredLanguages.first(where: { Bundle.languageSet.contains($0.prefix(2).lowercased()) }) ?? "en" }
-	
 	/// Standard UTC/GMT locale.
 	static var utc: Locale { Locale(identifier: "UTC") }
 	
-	/// Returns the current language code ISO 3166-2 format (2 alpha codes) in lower case. For example `"en"`.
+	/// Returns the preferred language code in ISO 639-1 format (2 alpha codes) in lower case. For example `"en"`.
+	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
+	static var preferredLanguage: String { Locale.preferredLanguages.first(where: { Bundle.languageSet.contains($0) }) ?? "en" }
+
+	/// Returns the preferred language code in ISO 639-1 format (2 alpha codes) in lower case. For example `"en"`.
+	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
 	static var preferredLanguageCodeISO2: String { "\(preferredLanguage.prefix(2))".lowercased() }
 	
 	/// Returns the current preferred locale.
-	static var preferredLocale: Locale { Locale(identifier: preferredLanguageCodeISO2) }
+	static var preferredLocale: Locale { Locale(identifier: preferredLanguage) }
+	
+	/// Returns the language identifier in BCP 47 format (language-region).
+	/// Example: "ar-AE", "en-US", "de-DE". Returns only language code if region is not available.
+	/// Suitable for use with AppleLanguages UserDefaults key.
+	/// - SeeAlso: [BCP 47](https://en.wikipedia.org/wiki/BCP_47)
+	var languageIdentifier: String {
+		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
+			return language.languageCode?.identifier ?? ""
+		} else {
+			return languageCode ?? ""
+		}
+	}
 	
 	/// Returns the language code in ISO 639-1 format (2 alpha codes).
-	var languageCodeISO2: String {
-		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
-			return language.languageCode?.identifier.prefix(2).lowercased() ?? ""
-		} else {
-			return languageCode?.prefix(2).lowercased() ?? ""
-		}
-	}
+	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
+	var languageCodeISO2: String { languageIdentifier.prefix(2).lowercased() }
 	
-	/// Returns the region code in ISO 3166-2 format (2 alpha codes).
-	var regionCodeISO2: String {
+	/// Returns the region identifier in BCP 47 format (region subtag).
+	/// Example: "US", "DE", "AE". Returns an empty string if region is not available.
+	/// Suitable for use with AppleLanguages UserDefaults key and locale construction.
+	/// - SeeAlso: [BCP 47](https://en.wikipedia.org/wiki/BCP_47)
+	var regionIdentifier: String {
 		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
-			return region?.identifier.prefix(2).lowercased() ?? ""
+			return region?.identifier ?? ""
 		} else {
-			return regionCode?.prefix(2).lowercased() ?? ""
+			return regionCode ?? ""
 		}
 	}
+
+	/// Returns the region code in ISO 3166-1 alpha-2 format (2 alpha codes).
+	/// - SeeAlso: [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1)
+	var regionCodeISO2: String { regionIdentifier.prefix(2).lowercased() }
 	
 	/// Returns true if the given locale has a language code that belong to right to left direction.
 	var isRTL: Bool {
@@ -201,9 +224,9 @@ public extension Locale {
 	/// - Parameter currencyCode: The currency code to use for initializing the Locale.
 	/// - Parameter languageCode: A given language to be used as hint in the search. Serves only as hint and not guarantee.
 	/// - Returns: A Locale instance that matches the provided currency code, or nil if no match is found.
-	init?(currencyCode: String, languageCode: String = Locale.preferredLanguageCodeISO2) {
+	init?(currencyCode: String, languageCode: String = Locale.preferredLanguage) {
 		let locales = Locale.currencyGroups[currencyCode.uppercased()]
-		guard let locale = locales?.first(where: { $0.languageCodeISO2 == languageCode }) ?? locales?.first else { return nil }
+		guard let locale = locales?.first(where: { languageCode.contains($0.languageCodeISO2) }) ?? locales?.first else { return nil }
 		self = locale
 	}
 	
@@ -212,4 +235,26 @@ public extension Locale {
 	/// - Parameter language: A new language code. The default is ``preferredLanguageCodeISO2``
 	/// - Returns: A new Locale.
 	func adjusted(language: String = Locale.preferredLanguageCodeISO2) -> Self { .init(identifier: "\(language.lowercased())_\(regionCodeISO2)") }
+}
+
+// MARK: - Extension - String
+
+public extension String {
+	
+	func setAsPreferredLanguage() {
+		let locale = countryInfoAsLanguage.locale
+		let isRTL = locale.isRTL
+		
+#if canImport(UIKit) && (os(iOS) || os(visionOS))
+		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
+		UIView.appearance().semanticContentAttribute = direction
+		UIWindow.key?.semanticContentAttribute = direction
+#elseif canImport(UIKit) && os(tvOS)
+		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
+		UIView.appearance().semanticContentAttribute = direction
+#endif
+		
+		UserDefaults.standard.set([self], forKey: "AppleLanguages")
+		UserDefaults.standard.synchronize()
+	}
 }

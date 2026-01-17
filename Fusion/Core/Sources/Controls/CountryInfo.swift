@@ -210,12 +210,10 @@ public struct CountryInfo {
 		}
 	}
 	
-	/// A `Locale` instance constructed from the country's ISO code and the preferred language.
+	/// A `Locale` instance constructed from the country's information: languageCode and isoCode2.
 	///
-	/// The locale identifier format is: `{language}_{COUNTRY_CODE}`
-	///
-	/// Example: For US with preferred language "en", returns a locale with identifier "en_US".
-	public var locale: Locale { Locale(identifier: "\(Locale.preferredLanguageCodeISO2.lowercased())_\(isoCode2.uppercased())") }
+	/// Example: For US, returns a locale with identifier "en_US".
+	public var locale: Locale { Locale(identifier: "\(languageCode.lowercased())_\(isoCode2.uppercased())") }
 
 // MARK: - Constructors
 	
