@@ -399,8 +399,8 @@ public extension Numeric {
 	///   - multiplier: A given multiplier to apply before the final string. Default is 1.
 	///   - minimumDecimal: When defined, if sets the minimum fraction digits differently than the decimals.
 	///   - currencySymbol: The currency symbol to use. Default is `nil`.
+	///   - roundingMode: The rounding mode to use. Default is `.down` (truncating).
 	///   - trimTrailingZeros: When `true`, the trailing zeros are removed. Default is `false`.
-	///   When `nil`, the `decimals` is used. Default is `nil`
 	/// - Returns: The formatted value string.
 	func toString(decimals: Int,
 				  locale: Locale,
@@ -408,6 +408,7 @@ public extension Numeric {
 				  multiplier: NSNumber? = 1,
 				  minimumDecimal: Int? = nil,
 				  currencySymbol: String? = nil,
+				  roundingMode: NumberFormatter.RoundingMode = .down,
 				  trimTrailingZeros: Bool = false) -> String {
 		let formatter = NumberFormatter()
 		formatter.locale = locale
@@ -415,6 +416,7 @@ public extension Numeric {
 		formatter.multiplier = multiplier
 		formatter.allowsFloats = true
 		formatter.currencySymbol = currencySymbol
+		formatter.roundingMode = roundingMode
 		if trimTrailingZeros {
 			formatter.minimumFractionDigits = 0
 			formatter.maximumFractionDigits = decimals
