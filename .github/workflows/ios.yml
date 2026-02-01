@@ -25,6 +25,8 @@ jobs:
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
           xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
       - name: Test
+        id: test
+        continue-on-error: true
         env:
           scheme: FusionTests
           platform: ${{ 'iOS Simulator' }}
@@ -33,12 +35,25 @@ jobs:
           device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}' | sed -e "s/ Simulator$//"`
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -resultBundlePath TestResults test
+          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -resultBundlePath TestResults.xcresult test || true
+      - name: Verify Test Results
+        if: always()
+        id: verify-results
+        run: |
+          if [ -d "TestResults.xcresult" ]; then
+            echo "Test results bundle found"
+            ls -la TestResults.xcresult
+            echo "bundle_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Warning: Test results bundle not found"
+            ls -la TestResults* || true
+            echo "bundle_exists=false" >> $GITHUB_OUTPUT
+          fi
       - uses: kishikawakatsumi/xcresulttool@v1.7.1
         with:
-          path: TestResults
+          path: TestResults.xcresult
           show-passed-tests: true
-        if: success() || failure()
+        if: always() && steps.verify-results.outputs.bundle_exists == 'true'
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:

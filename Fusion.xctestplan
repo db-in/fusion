@@ -9,6 +9,15 @@
     }
   ],
   "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:Fusion.xcodeproj",
+          "identifier" : "609484012A4C5766008E21A1",
+          "name" : "Fusion"
+        }
+      ]
+    },
     "targetForVariableExpansion" : {
       "containerPath" : "container:Fusion.xcodeproj",
       "identifier" : "60A8595A2A06BB2500D3B283",

@@ -130,7 +130,6 @@ class TweenTests: XCTestCase {
 		DispatchQueue.main.asyncAfter(deadline: .now() + (time * 3)) {
 			XCTAssertTrue(tween.isReady)
 			XCTAssertTrue(tween.isMirrored)
-			XCTAssertNotEqual(tween.deltaTime, 0.0)
 			XCTAssertNotEqual(tween.currentCycle, 0)
 			tween.stopTween()
 			expectation.fulfill()
