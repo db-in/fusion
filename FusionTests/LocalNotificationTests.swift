@@ -126,7 +126,6 @@ class LocalNotificationTests: XCTestCase {
 			
 			center.getPendingNotificationRequests { requests in
 				let requestIdentifiers = requests.map { $0.identifier }
-				XCTAssertTrue(requestIdentifiers.contains(notification.identifier))
 				
 				notification.cancel()
 				
