@@ -18,6 +18,17 @@
 			name = Publishing;
 			productName = Publishing;
 		};
+		60DOCS292A37384F00C96629 /* Documentation */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 60DOCS2C2A37384F00C96629 /* Build configuration list for PBXAggregateTarget "Documentation" */;
+			buildPhases = (
+				60DOCS2D2A37387500C96629 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Documentation;
+			productName = Documentation;
+		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
@@ -262,6 +273,7 @@
 		60A859B02A06BBD300D3B283 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		60A859B12A06BBD400D3B283 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		60A859B72A06BBD400D3B283 /* publishing.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = publishing.sh; sourceTree = "<group>"; };
+		60DOCS2E2A37387500C96629 /* generate-docs.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = generate-docs.sh; sourceTree = "<group>"; };
 		60A859B82A06BC7600D3B283 /* Fusion.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		60A859C72A06DB9500D3B283 /* Sample-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Sample-iOS-Info.plist"; sourceTree = SOURCE_ROOT; };
 		60A859CC2A08229700D3B283 /* JSONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTests.swift; sourceTree = "<group>"; };
@@ -651,6 +663,7 @@
 			isa = PBXGroup;
 			children = (
 				60A859B72A06BBD400D3B283 /* publishing.sh */,
+				60DOCS2E2A37387500C96629 /* generate-docs.sh */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";
@@ -911,6 +924,9 @@
 					60CFD2892A37384F00C96629 = {
 						CreatedOnToolsVersion = 14.3.1;
 					};
+					60DOCS292A37384F00C96629 = {
+						CreatedOnToolsVersion = 15.0;
+					};
 				};
 			};
 			buildConfigurationList = 600A7C702A0038C1003B0093 /* Build configuration list for PBXProject "Fusion" */;
@@ -934,6 +950,7 @@
 				60CC2E972A50C5CB00E43713 /* Sample watchOS */,
 				60CC2EB02A50C61A00E43713 /* Sample visionOS */,
 				60CFD2892A37384F00C96629 /* Publishing */,
+				60DOCS292A37384F00C96629 /* Documentation */,
 			);
 		};
 /* End PBXProject section */
@@ -1042,6 +1059,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PROJECT_DIR}/Scripts/publishing.sh\"\n";
+		};
+		60DOCS2D2A37387500C96629 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}/Scripts/generate-docs.sh\"\n";
 		};
 		73A2CC09AC6E22877BF5B3A6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1951,6 +1985,26 @@
 			};
 			name = Release;
 		};
+		60DOCS2A2A37384F00C96629 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = H5QKC5ZBYV;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		60DOCS2B2A37384F00C96629 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = H5QKC5ZBYV;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2031,6 +2085,15 @@
 			buildConfigurations = (
 				60CFD28A2A37384F00C96629 /* Debug */,
 				60CFD28B2A37384F00C96629 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		60DOCS2C2A37384F00C96629 /* Build configuration list for PBXAggregateTarget "Documentation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				60DOCS2A2A37384F00C96629 /* Debug */,
+				60DOCS2B2A37384F00C96629 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
