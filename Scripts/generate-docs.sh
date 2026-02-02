@@ -24,6 +24,7 @@ echo "- Found workspace: ${WORKSPACE_NAME} -"
 
 echo "- Generating documentation for Fusion framework -"
 
+HOSTING_BASE_PATH="/fusion"
 SCHEME="Fusion"
 DESTINATION="generic/platform=iOS"
 
@@ -34,14 +35,22 @@ xcodebuild docbuild \
     -destination "${DESTINATION}" \
     -derivedDataPath "${BUILD_DIR}/DerivedData" \
     -allowProvisioningUpdates \
-    2>&1 | grep -E "(error|warning|Building|Generating|Archive)" || true
+    DOCC_HOSTING_BASE_PATH="${HOSTING_BASE_PATH}"
 
 echo "- Searching for generated documentation archives -"
 ARCHIVE_PATH=$(find "${BUILD_DIR}/DerivedData" -name "*.doccarchive" -type d 2>/dev/null | head -n 1)
 
 if [ -z "$ARCHIVE_PATH" ]; then
+    ARCHIVE_PATH=$(find "${BUILD_DIR}/DerivedData" -path "*/Build/Product/*/*.doccarchive" -type d 2>/dev/null | head -n 1)
+fi
+
+if [ -z "$ARCHIVE_PATH" ]; then
     DERIVED_DATA_BASE="${HOME}/Library/Developer/Xcode/DerivedData"
     ARCHIVE_PATH=$(find "${DERIVED_DATA_BASE}" -name "*.doccarchive" -type d -path "*${WORKSPACE_NAME}*" 2>/dev/null | head -n 1)
+fi
+
+if [ -z "$ARCHIVE_PATH" ]; then
+    ARCHIVE_PATH=$(find "${DERIVED_DATA_BASE}" -path "*/Build/Product/*/*.doccarchive" -type d -path "*${WORKSPACE_NAME}*" 2>/dev/null | head -n 1)
 fi
 
 if [ -z "$ARCHIVE_PATH" ] || [ ! -d "$ARCHIVE_PATH" ]; then
@@ -72,19 +81,40 @@ if [ -n "$ARCHIVE_PATH" ] && [ -d "$ARCHIVE_PATH" ]; then
     
     if [ -n "$DOCC" ] && [ -f "$DOCC" ]; then
         echo "- Processing ${ARCHIVE_NAME} -"
-        "${DOCC}" process-archive \
+        if ! "${DOCC}" process-archive \
             transform-for-static-hosting "${DOCS_DIR}/${ARCHIVE_NAME}" \
             --output-path "${DOCS_DIR}/html" \
-            --hosting-base-path "/fusion" 2>&1 | grep -E "(error|warning|Processing)" || true
+            --hosting-base-path "${HOSTING_BASE_PATH}"; then
+            echo "Error: DocC transform failed. Check output above."
+            exit 1
+        fi
         
         if [ -d "${DOCS_DIR}/html" ]; then
             echo "- HTML documentation available in: ${DOCS_DIR}/html"
-            echo "- Verifying HTML output..."
+            DOC_MODULE="Fusion"
+            if [ -d "${DOCS_DIR}/html/data/documentation" ]; then
+                FIRST_JSON=$(find "${DOCS_DIR}/html/data/documentation" -maxdepth 1 -name "*.json" 2>/dev/null | head -n 1)
+                if [ -n "$FIRST_JSON" ]; then
+                    DOC_MODULE=$(basename "$FIRST_JSON" .json)
+                fi
+            fi
+            REDIRECT_URL="${HOSTING_BASE_PATH}/documentation/${DOC_MODULE}"
+            echo "- Adding root redirect to ${REDIRECT_URL}"
+            cat > "${DOCS_DIR}/html/index.html" << INDEXEOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="0;url=${REDIRECT_URL}">
+<title>Redirecting to Documentation</title>
+<script>window.location.href = "${REDIRECT_URL}" + window.location.hash;</script>
+</head>
+<body><p>Redirecting to <a href="${REDIRECT_URL}">documentation</a>...</p></body>
+</html>
+INDEXEOF
             if [ -f "${DOCS_DIR}/html/index.html" ]; then
-                echo "✓ index.html found"
-            else
-                echo "⚠ Warning: index.html not found, checking for data directory..."
-                ls -la "${DOCS_DIR}/html/" | head -10
+                echo "✓ index.html redirect created"
             fi
         fi
     else
