@@ -142,9 +142,6 @@ private extension URLRequest {
 // MARK: - Extension - URLRequest REST Tasks
 
 public extension URLRequest {
-
-	@ThreadSafe
-	private static var restQueue = AsyncOperationQueue(maxConcurrentTasks: 16)
 	
 	/// Returns the current absolute time in seconds since system boot.
 	var currentTime: TimeInterval { CFAbsoluteTimeGetCurrent() }
@@ -155,8 +152,8 @@ public extension URLRequest {
 	/// Maximum number of concurrent network requests allowed.
 	/// The default value is 8, but this can be modified by setting a new value.
 	static var maxConcurrentRequests: Int {
-		get { restQueue.maxConcurrentTasks }
-		set { restQueue.maxConcurrentTasks = newValue }
+		get { 0 }
+		set { }
 	}
 	
 	private func responseResult(_ code: Int, _ data: Data) -> Result<Data, Error> {
@@ -172,30 +169,26 @@ public extension URLRequest {
 	/// - Parameters:
 	///   - completion: A closure that receives the result of the data mapping.
 	func mapDataResponse(to completion: Response<Data>?) {
-		URLRequest.restQueue.addTask { operation in
-			debugLogRequest()
-			let time = currentTime
+		debugLogRequest()
+		let time = currentTime
+		
+		RESTAuthenticator.session.dataTask(with: self) { (data, response, error) in
+			let result: Result<Data, Error>
+			let elapsed = currentTime - time
+			let statusCode = response?.httpStatusCode ?? 0
 			
-			RESTAuthenticator.session.dataTask(with: self) { (data, response, error) in
-				let result: Result<Data, Error>
-				let elapsed = currentTime - time
-				let statusCode = response?.httpStatusCode ?? 0
-				
-				if let validData = data {
-					self.debugLog(response: response, data: validData, seconds: elapsed)
-					result = responseResult(statusCode, validData)
-				} else {
-					let fail = error ?? RESTError.unkown(nil)
-					self.debugLog(error: fail)
-					result = .failure(fail)
-				}
-				
-				HTTPCookieStorage.appGroup.sync()
-				completion?(result, response)
-				
-				operation.complete()
-			}.resume()
-		}
+			if let validData = data {
+				self.debugLog(response: response, data: validData, seconds: elapsed)
+				result = responseResult(statusCode, validData)
+			} else {
+				let fail = error ?? RESTError.unkown(nil)
+				self.debugLog(error: fail)
+				result = .failure(fail)
+			}
+			
+			HTTPCookieStorage.appGroup.sync()
+			completion?(result, response)
+		}.resume()
 	}
 
 	/// Maps the response data to a `Result<T, Error>`, where `T` is a `Codable` type.
