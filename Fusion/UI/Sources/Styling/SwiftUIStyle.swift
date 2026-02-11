@@ -84,8 +84,12 @@ public extension View {
 	}
 	
 	/// Presents the view over the window.
-	func presentOverWindow(preferredHeight: CGFloat = UIScreen.main.bounds.height) {
-		uiHost(cached: false).presentOverWindow(preferredHeight: preferredHeight)
+	func presentOverWindow(preferredHeight: CGFloat? = nil) {
+		var height = CGFloat(600)
+#if !os(visionOS)
+		height = UIScreen.main.bounds.height
+#endif
+		uiHost(cached: false).presentOverWindow(preferredHeight: height)
 	}
 	
 	/// Manages the hide state of the native navigation bar.

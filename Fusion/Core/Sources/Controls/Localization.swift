@@ -244,11 +244,12 @@ public extension String {
 	func setAsPreferredLanguage() {
 		let locale = countryInfoAsLanguage.locale
 		let isRTL = locale.isRTL
-		
 #if canImport(UIKit) && (os(iOS) || os(visionOS))
 		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
 		UIView.appearance().semanticContentAttribute = direction
+	#if !os(visionOS)
 		UIWindow.key?.semanticContentAttribute = direction
+	#endif
 #elseif canImport(UIKit) && os(tvOS)
 		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
 		UIView.appearance().semanticContentAttribute = direction
