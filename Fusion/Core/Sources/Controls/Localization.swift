@@ -4,12 +4,6 @@
 
 import Foundation
 
-#if canImport(UIKit) && (os(iOS) || os(visionOS) || os(tvOS))
-import UIKit
-#elseif canImport(AppKit) && os(macOS)
-import AppKit
-#endif
-
 // MARK: - Extension - NotificationCenter
 
 public extension NotificationCenter {
@@ -235,27 +229,4 @@ public extension Locale {
 	/// - Parameter language: A new language code. The default is ``preferredLanguageCodeISO2``
 	/// - Returns: A new Locale.
 	func adjusted(language: String = Locale.preferredLanguageCodeISO2) -> Self { .init(identifier: "\(language.lowercased())_\(regionCodeISO2)") }
-}
-
-// MARK: - Extension - String
-
-public extension String {
-	
-	func setAsPreferredLanguage() {
-		let locale = countryInfoAsLanguage.locale
-		let isRTL = locale.isRTL
-#if canImport(UIKit) && (os(iOS) || os(visionOS))
-		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
-		UIView.appearance().semanticContentAttribute = direction
-	#if !os(visionOS)
-		UIWindow.key?.semanticContentAttribute = direction
-	#endif
-#elseif canImport(UIKit) && os(tvOS)
-		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
-		UIView.appearance().semanticContentAttribute = direction
-#endif
-		
-		UserDefaults.standard.set([self], forKey: "AppleLanguages")
-		UserDefaults.standard.synchronize()
-	}
 }
