@@ -17,10 +17,6 @@ let package = Package(
 		.library(
 			name: "FusionCore",
 			targets: ["FusionCore"]
-		),
-		.library(
-			name: "FusionUI",
-			targets: ["FusionUI"]
 		)
 	],
 	dependencies: [
@@ -30,8 +26,10 @@ let package = Package(
 			name: "Fusion",
 			dependencies: ["FusionCore", "FusionUI"],
 			path: "Fusion",
+			exclude: ["Core", "UI"],
+			sources: ["Fusion.swift"],
 			resources: [
-				.process("**/*.xcprivacy")
+				.process("PrivacyInfo.xcprivacy")
 			],
 			swiftSettings: [
 				.define("GENERATE_INFOPLIST_FILE")
@@ -41,6 +39,10 @@ let package = Package(
 			name: "FusionCore",
 			dependencies: [],
 			path: "Fusion/Core",
+			sources: ["Sources"],
+			resources: [
+				.process("../PrivacyInfo.xcprivacy")
+			],
 			publicHeadersPath: ".",
 			cSettings: [
 				.headerSearchPath(".")
@@ -51,7 +53,7 @@ let package = Package(
 			linkerSettings: [
 				.linkedFramework("Foundation"),
 				.linkedFramework("Security"),
-				.linkedFramework("CommonCrypto"),
+				.linkedLibrary("CommonCrypto", .when(platforms: [.macOS, .iOS, .tvOS, .watchOS])),
 				.linkedFramework("UserNotifications")
 			]
 		),
@@ -59,6 +61,7 @@ let package = Package(
 			name: "FusionUI",
 			dependencies: ["FusionCore"],
 			path: "Fusion/UI",
+			sources: ["Sources"],
 			publicHeadersPath: ".",
 			cSettings: [
 				.headerSearchPath(".")
@@ -67,7 +70,7 @@ let package = Package(
 				.define("GENERATE_INFOPLIST_FILE")
 			],
 			linkerSettings: [
-				.linkedFramework("UIKit")
+				.linkedFramework("UIKit", .when(platforms: [.iOS, .tvOS, .watchOS]))
 			]
 		)
 	]
