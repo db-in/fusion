@@ -2,11 +2,36 @@
 //  Created by Diney Bomfim on 5/3/23.
 //
 
-#if canImport(UIKit) && !os(watchOS)
+import Foundation
+#if canImport(UIKit) && (os(iOS) || os(visionOS) || os(tvOS))
 import UIKit
+#elseif canImport(AppKit) && os(macOS)
+import AppKit
+#endif
 
 // MARK: - Definitions -
 
+public extension String {
+	
+	func setAsPreferredLanguage() {
+		let locale = countryInfoAsLanguage.locale
+		let isRTL = locale.isRTL
+		
+#if canImport(UIKit) && (os(iOS) || os(visionOS))
+		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
+		UIView.appearance().semanticContentAttribute = direction
+		UIWindow.key?.semanticContentAttribute = direction
+#elseif canImport(UIKit) && os(tvOS)
+		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
+		UIView.appearance().semanticContentAttribute = direction
+#endif
+		
+		UserDefaults.standard.set([self], forKey: "AppleLanguages")
+		UserDefaults.standard.synchronize()
+	}
+}
+
+#if canImport(UIKit) && !os(watchOS)
 public extension CALayer {
 	
 	var maskPath: CGPath? { (mask as? CAShapeLayer)?.path?.copy() }
@@ -589,31 +614,3 @@ public extension UIVisualEffectView {
 	}
 }
 #endif
-
-#if canImport(UIKit) && (os(iOS) || os(visionOS) || os(tvOS))
-import UIKit
-#elseif canImport(AppKit) && os(macOS)
-import AppKit
-#endif
-
-// MARK: - Extension - String
-
-public extension String {
-	
-	func setAsPreferredLanguage() {
-		let locale = countryInfoAsLanguage.locale
-		let isRTL = locale.isRTL
-		
-#if canImport(UIKit) && (os(iOS) || os(visionOS))
-		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
-		UIView.appearance().semanticContentAttribute = direction
-		UIWindow.key?.semanticContentAttribute = direction
-#elseif canImport(UIKit) && os(tvOS)
-		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
-		UIView.appearance().semanticContentAttribute = direction
-#endif
-		
-		UserDefaults.standard.set([self], forKey: "AppleLanguages")
-		UserDefaults.standard.synchronize()
-	}
-}

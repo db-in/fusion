@@ -127,7 +127,7 @@ public class Tween {
 	private var callback: TweenCallback?
 	private var allValues: [String : [CGFloat]] = [:]
 	private var lastFrameTime: FPoint = 0
-	private static var tweens: Set<Tween> = []
+	private static var tweens: [String: Tween] = [:]
 	
 	@ThreadSafe
 	private static var tweensQueue: DispatchQueue = .init(label: "tween.\(UUID().uuidString)", attributes: .concurrent)
@@ -221,7 +221,7 @@ public class Tween {
 		isReady = false
 		currentCycle = 0
 		resetTime()
-		Self.tweens.insert(self)
+		Self.tweens[identifier] = self
 		updateTargetValues()
 		TimerControl.shared.addItem(key: identifier, queue: .global(qos: .userInteractive)) {
 			self.timerCallBack()
@@ -386,7 +386,7 @@ public class Tween {
 		}
 		
 		_ = Self.tweensQueue.sync(flags: .barrier) {
-			Self.tweens.remove(self)
+			Self.tweens.removeValue(forKey: identifier)
 		}
 		
 		TimerControl.shared.removeItem(key: identifier)
@@ -412,17 +412,17 @@ public extension Tween {
 	/// - Returns: The related Tween instance or nil if not found.
 	static func tweens(withTarget target: UIView) -> [Tween] {
 		return tweensQueue.sync(flags: .barrier) {
-			tweens.filter { $0.targetView == target }
+			tweens.values.filter { $0.targetView == target }
 		}
 	}
-	
+
 	/// Returns a Tween instance with the informed name.
 	///
 	/// - Parameter name: The name of the tween you are looking for.
 	/// - Returns: The related Tween instance or nil if not found.
 	static func tweens(withName name: String) -> [Tween] {
 		return tweensQueue.sync(flags: .barrier) {
-			tweens.filter { $0.options.name == name }
+			tweens.values.filter { $0.options.name == name }
 		}
 	}
 	

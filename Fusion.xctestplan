@@ -12,8 +12,8 @@
     "codeCoverage" : {
       "targets" : [
         {
-          "containerPath" : "container:Fusion.xcodeproj",
-          "identifier" : "609484012A4C5766008E21A1",
+          "containerPath" : "container:Pods\/Pods.xcodeproj",
+          "identifier" : "B6F7A42DA679F4353DDC3730B24E4CA1",
           "name" : "Fusion"
         }
       ]
@@ -26,6 +26,7 @@
   },
   "testTargets" : [
     {
+      "parallelizable" : false,
       "target" : {
         "containerPath" : "container:Fusion.xcodeproj",
         "identifier" : "600A7C7F2A0038C1003B0093",
