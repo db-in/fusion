@@ -4,20 +4,14 @@
       "id" : "EFACE910-78B3-41FC-9791-48A73C85B9DF",
       "name" : "Configuration 1",
       "options" : {
-
+         "codeCoverageInfo" : {
+            "enabled" : true,
+            "limitToSelectedTargets" : false
+         }
       }
     }
   ],
   "defaultOptions" : {
-    "codeCoverage" : {
-      "targets" : [
-        {
-          "containerPath" : "container:Pods\/Pods.xcodeproj",
-          "identifier" : "B6F7A42DA679F4353DDC3730B24E4CA1",
-          "name" : "Fusion"
-        }
-      ]
-    },
     "targetForVariableExpansion" : {
       "containerPath" : "container:Fusion.xcodeproj",
       "identifier" : "60A8595A2A06BB2500D3B283",

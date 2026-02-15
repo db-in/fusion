@@ -1,0 +1,15 @@
+{
+  "originHash" : "e2d9489fbb1a9616dc2eafaf6aaf3a617d3c45329c54ab1930f070a2241ddefc",
+  "pins" : [
+    {
+      "identity" : "localserver",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/db-in/LocalServer",
+      "state" : {
+        "revision" : "95b1d5bedc51b9c8a3e5484d53fcd195544a56fb",
+        "version" : "2.1.7"
+      }
+    }
+  ],
+  "version" : 3
+}
