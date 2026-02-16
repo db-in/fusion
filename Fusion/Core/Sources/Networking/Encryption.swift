@@ -30,6 +30,11 @@ public extension String {
 		return String(data: data, encoding: .utf8) ?? ""
 	}
 	
+	var sha256: String {
+		guard let bytes = data(using: .utf8)?.sha256(header: nil) else { return self }
+		return Data(bytes).map { String(format: "%02hhx", $0) }.joined()
+	}
+	
 	func encryptBase64(by: Int) -> String { (1...by).reduce(self) { result, _ in result.encryptBase64 } }
 	
 	func decryptBase64(by: Int) -> String { (1...by).reduce(self) { result, _ in result.decryptBase64 } }
