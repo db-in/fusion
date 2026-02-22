@@ -236,7 +236,7 @@ public extension Color {
 	}
 	
 	init(hex: String?) {
-		var hexSanitized = hex?
+		let hexSanitized = hex?
 			.trimmingCharacters(in: .whitespacesAndNewlines)
 			.replacingOccurrences(of: "0x", with: "")
 			.replacingOccurrences(of: "#", with: "") ?? ""

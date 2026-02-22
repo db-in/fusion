@@ -165,7 +165,7 @@ public struct UserFlow: Hashable {
 	
 	/// Mapped controller, after the UserFlow mapping function is executed.
 	public var mapped: UIViewController {
-		guard let storyboardName = name else { return map?(self) ?? .init() }
+		guard name != nil else { return map?(self) ?? .init() }
 		return map?(self) ?? initial
 	}
 	
