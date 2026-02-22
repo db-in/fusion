@@ -85,14 +85,14 @@
 		6007A4E62F4ADC4F0081D528 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Sample.app; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug-appletvos/Sample.app"; sourceTree = "<absolute>"; };
 		6007A4E72F4ADC4F0081D528 /* Sample watchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Sample watchOS.app"; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug-watchos/Sample watchOS.app"; sourceTree = "<absolute>"; };
 		6007A4E82F4ADC4F0081D528 /* Sample visionOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Sample visionOS.app"; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug-xros/Sample visionOS.app"; sourceTree = "<absolute>"; };
-		6007A6382F4AE2500081D528 /* Fusion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Fusion.framework; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug/Fusion.framework"; sourceTree = "<absolute>"; };
+		6007A6392F4AE34F0081D528 /* Fusion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fusion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		600E5E832A24CD72001810AE /* Fusion.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.xctestplan; sourceTree = "<group>"; };
 		608E0F122AEA49B000CE531D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Info.plist; sourceTree = "<group>"; };
 		60A859A72A06BBD300D3B283 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		60A859A82A06BBD300D3B283 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		60A859AC2A06BBD300D3B283 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		60A859B02A06BBD300D3B283 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		60A859B82A06BC7600D3B283 /* Fusion.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		60A859B82A06BC7600D3B283 /* Fusion.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.podspec; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -223,6 +223,7 @@
 				607EB2672F40AD7800BD967F /* Sample visionOS */,
 				607EB2732F40AD8500BD967F /* Sample watchOS */,
 				606D0AAE2F41D49E00589A89 /* Scripts */,
+				6007A6392F4AE34F0081D528 /* Fusion.framework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -266,7 +267,7 @@
 			packageProductDependencies = (
 			);
 			productName = Fusion;
-			productReference = 6007A6382F4AE2500081D528 /* Fusion.framework */;
+			productReference = 6007A6392F4AE34F0081D528 /* Fusion.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		600A7C7F2A0038C1003B0093 /* FusionTests */ = {
@@ -640,7 +641,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
@@ -650,7 +651,7 @@
 					"@loader_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
@@ -669,8 +670,8 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,7";
-				TVOS_DEPLOYMENT_TARGET = 15;
-				XROS_DEPLOYMENT_TARGET = 2;
+				TVOS_DEPLOYMENT_TARGET = 15.0;
+				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
 		};
@@ -690,7 +691,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
@@ -700,7 +701,7 @@
 					"@loader_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
@@ -718,8 +719,8 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,7";
-				TVOS_DEPLOYMENT_TARGET = 15;
-				XROS_DEPLOYMENT_TARGET = 2;
+				TVOS_DEPLOYMENT_TARGET = 15.0;
+				XROS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
 		};
