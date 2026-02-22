@@ -79,13 +79,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		6007A4E32F4ADC4F0081D528 /* FusionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = FusionTests.xctest; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug/Sample.app/Contents/PlugIns/FusionTests.xctest"; sourceTree = "<absolute>"; };
-		6007A4E42F4ADC4F0081D528 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Sample.app; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug-iphoneos/Sample.app"; sourceTree = "<absolute>"; };
-		6007A4E52F4ADC4F0081D528 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Sample.app; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug/Sample.app"; sourceTree = "<absolute>"; };
-		6007A4E62F4ADC4F0081D528 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Sample.app; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug-appletvos/Sample.app"; sourceTree = "<absolute>"; };
-		6007A4E72F4ADC4F0081D528 /* Sample watchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Sample watchOS.app"; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug-watchos/Sample watchOS.app"; sourceTree = "<absolute>"; };
-		6007A4E82F4ADC4F0081D528 /* Sample visionOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Sample visionOS.app"; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug-xros/Sample visionOS.app"; sourceTree = "<absolute>"; };
-		6007A6392F4AE34F0081D528 /* Fusion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Fusion.framework; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug/Fusion.framework"; sourceTree = "<absolute>"; };
 		600E5E832A24CD72001810AE /* Fusion.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.xctestplan; sourceTree = "<group>"; };
 		608E0F122AEA49B000CE531D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Info.plist; sourceTree = "<group>"; };
 		60A859A72A06BBD300D3B283 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -93,6 +86,13 @@
 		60A859AC2A06BBD300D3B283 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		60A859B02A06BBD300D3B283 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		60A859B82A06BC7600D3B283 /* Fusion.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.podspec; sourceTree = "<group>"; };
+		60A89D842F4AF16B00D761D6 /* Fusion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fusion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		60A89D852F4AF16B00D761D6 /* FusionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FusionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		60A89D862F4AF16B00D761D6 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		60A89D872F4AF16B00D761D6 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		60A89D882F4AF16B00D761D6 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		60A89D892F4AF16B00D761D6 /* Sample watchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sample watchOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		60A89D8A2F4AF16B00D761D6 /* Sample visionOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sample visionOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -223,6 +223,13 @@
 				607EB2672F40AD7800BD967F /* Sample visionOS */,
 				607EB2732F40AD8500BD967F /* Sample watchOS */,
 				606D0AAE2F41D49E00589A89 /* Scripts */,
+				60A89D842F4AF16B00D761D6 /* Fusion.framework */,
+				60A89D852F4AF16B00D761D6 /* FusionTests.xctest */,
+				60A89D862F4AF16B00D761D6 /* Sample.app */,
+				60A89D872F4AF16B00D761D6 /* Sample.app */,
+				60A89D882F4AF16B00D761D6 /* Sample.app */,
+				60A89D892F4AF16B00D761D6 /* Sample watchOS.app */,
+				60A89D8A2F4AF16B00D761D6 /* Sample visionOS.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -266,7 +273,7 @@
 			packageProductDependencies = (
 			);
 			productName = Fusion;
-			productReference = 6007A6392F4AE34F0081D528 /* Fusion.framework */;
+			productReference = 60A89D842F4AF16B00D761D6 /* Fusion.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		600A7C7F2A0038C1003B0093 /* FusionTests */ = {
@@ -289,7 +296,7 @@
 			);
 			name = FusionTests;
 			productName = FusionTests;
-			productReference = 6007A4E32F4ADC4F0081D528 /* FusionTests.xctest */;
+			productReference = 60A89D852F4AF16B00D761D6 /* FusionTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		60A8595A2A06BB2500D3B283 /* Sample iOS */ = {
@@ -309,7 +316,7 @@
 			);
 			name = "Sample iOS";
 			productName = "Sample iOS";
-			productReference = 6007A4E42F4ADC4F0081D528 /* Sample.app */;
+			productReference = 60A89D862F4AF16B00D761D6 /* Sample.app */;
 			productType = "com.apple.product-type.application";
 		};
 		60A8596A2A06BB2500D3B283 /* Sample tvOS */ = {
@@ -329,7 +336,7 @@
 			);
 			name = "Sample tvOS";
 			productName = "Sample tvOS";
-			productReference = 6007A4E62F4ADC4F0081D528 /* Sample.app */;
+			productReference = 60A89D882F4AF16B00D761D6 /* Sample.app */;
 			productType = "com.apple.product-type.application";
 		};
 		60A8597A2A06BB2500D3B283 /* Sample macOS */ = {
@@ -350,7 +357,7 @@
 			);
 			name = "Sample macOS";
 			productName = "Sample macOS";
-			productReference = 6007A4E52F4ADC4F0081D528 /* Sample.app */;
+			productReference = 60A89D872F4AF16B00D761D6 /* Sample.app */;
 			productType = "com.apple.product-type.application";
 		};
 		60CC2E972A50C5CB00E43713 /* Sample watchOS */ = {
@@ -370,7 +377,7 @@
 			);
 			name = "Sample watchOS";
 			productName = "Sample watchOS Watch App";
-			productReference = 6007A4E72F4ADC4F0081D528 /* Sample watchOS.app */;
+			productReference = 60A89D892F4AF16B00D761D6 /* Sample watchOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 		60CC2EB02A50C61A00E43713 /* Sample visionOS */ = {
@@ -390,7 +397,7 @@
 			);
 			name = "Sample visionOS";
 			productName = "Sample visionOS";
-			productReference = 6007A4E82F4ADC4F0081D528 /* Sample visionOS.app */;
+			productReference = 60A89D8A2F4AF16B00D761D6 /* Sample visionOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

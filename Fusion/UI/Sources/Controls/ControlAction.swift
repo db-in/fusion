@@ -87,21 +87,28 @@ import UIKit
 
 public extension Constant {
 	static let deviceName: String = UIDevice.current.name
-}
-#elseif os(macOS)
-import AppKit
-
-public extension Constant {
-	static let deviceName: String = Host.current().localizedName ?? ""
+	static let deviceOSVersion: String = UIDevice.current.systemVersion
 }
 #elseif os(watchOS)
 import WatchKit
 
 public extension Constant {
 	static let deviceName: String = WKInterfaceDevice.current().name
+	static let deviceOSVersion: String = WKInterfaceDevice.current().systemVersion
+}
+#elseif os(macOS)
+import AppKit
+
+public extension Constant {
+	static let deviceName: String = Host.current().localizedName ?? ""
+	static let deviceOSVersion: String = {
+		let v = ProcessInfo.processInfo.operatingSystemVersion
+		return "\(v.majorVersion).\(v.minorVersion).\(v.patchVersion)"
+	}()
 }
 #else
 public extension Constant {
 	static let deviceName: String = ""
+	static let deviceOSVersion: String = ""
 }
 #endif
