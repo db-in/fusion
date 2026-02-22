@@ -164,7 +164,7 @@ class LocalizationTests: XCTestCase {
 		let locale = Locale(currencyCode: currencyCode, languageCode: languageCode)
 		
 		XCTAssertNotNil(locale)
-		XCTAssertEqual(locale?.currencyCode, currencyCode)
+		XCTAssertEqual(locale?.currencyIdentifier, currencyCode)
 		XCTAssertEqual(locale?.languageCodeISO2, languageCode)
 	}
 	
@@ -174,7 +174,7 @@ class LocalizationTests: XCTestCase {
 		let locale = Locale(currencyCode: currencyCode, languageCode: languageCode)
 		
 		XCTAssertNotNil(locale)
-		XCTAssertEqual(locale?.currencyCode, currencyCode)
+		XCTAssertEqual(locale?.currencyIdentifier, currencyCode)
 		XCTAssertNotEqual(locale?.languageCodeISO2, "fr")
 	}
 	

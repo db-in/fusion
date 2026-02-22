@@ -74,19 +74,34 @@ public extension String {
 
 public extension Locale {
 	
+	/// Returns the currency code for the current locale.
+	var currencyIdentifier: String {
+		if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
+			return currency?.identifier ?? ""
+		} else {
+			return currencyCode ?? ""
+		}
+	}
+	
 	/// Returns the language's name localized for the current locale.
 	var languageName: String { localizedString(forLanguageCode: languageCodeISO2)?.capitalized ?? "" }
 	
 	/// Returns the currency's name localized for the current locale.
-	var currencyName: String { localizedString(forCurrencyCode: currencyCode ?? "") ?? "" }
+	var currencyName: String { localizedString(forCurrencyCode: currencyIdentifier) ?? "" }
 	
 	/// Returns the currency's name and its code in the format "Currency Name (CODE)".
 	/// Example: "US Dollar (USD)"
-	var currencyNameAndCode: String { "\(currencyName) (\(currencyCode?.uppercased() ?? ""))" }
+	var currencyNameAndCode: String { "\(currencyName) (\(currencyIdentifier.uppercased()))" }
 	
 	/// Returns a list of all available countries for the given locale on the device.
 	/// The countries are filtered to only include those with valid names and are sorted alphabetically.
-	static let availableCountries: [CountryInfo] = { Locale.isoRegionCodes.map(\.countryInfoAsCode).filter(\.name.isEmpty == false).sorted() }()
+	static let availableCountries: [CountryInfo] = {
+		if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
+			return Locale.Region.isoRegions.filter(\.subRegions.isEmpty).map(\.identifier).map(\.countryInfoAsCode).filter(\.name.isEmpty == false).sorted()
+		} else {
+			return Locale.isoRegionCodes.map(\.countryInfoAsCode).filter(\.name.isEmpty == false).sorted()
+		}
+	}()
 }
 
 // MARK: - Type -

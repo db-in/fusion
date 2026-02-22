@@ -206,11 +206,7 @@ public extension Locale {
 	/// A dictionary that groups locales by their currency code.
 	static let currencyGroups: [String : [Locale]] = {
 		let allLocales = Locale.availableIdentifiers.map(Locale.init)
-		if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
-			return .init(grouping: allLocales) { ($0.currency?.identifier ?? "").uppercased() }
-		} else {
-			return .init(grouping: allLocales) { ($0.currencyCode ?? "").uppercased() }
-		}
+		return .init(grouping: allLocales) { $0.currencyIdentifier.uppercased() }
 	}()
 	
 	/// Initializes a Locale instance based on the provided currency code.

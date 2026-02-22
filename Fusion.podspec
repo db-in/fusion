@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.description = <<-DESC
 				  Fusion is resposible for ...
 				  DESC
-  s.homepage = "https://fusion.com"
+  s.homepage = "https://github.com/db-in/fusion"
   s.documentation_url = "https://db-in.github.io/fusion/"
   s.license = { :type => "MIT", :file => "LICENSE" }
   s.author = 'Diney Bomfim'

@@ -249,7 +249,7 @@ class LocaleCountryInfoExtensionsTests: XCTestCase {
 	func testLocale_CurrencyName_ShouldReturnLocalizedCurrencyName() {
 		let locale = Locale(identifier: "en_US")
 		let name = locale.currencyName
-		if locale.currencyCode != nil {
+		if !locale.currencyIdentifier.isEmpty {
 			XCTAssertFalse(name.isEmpty)
 		}
 	}
@@ -259,8 +259,9 @@ class LocaleCountryInfoExtensionsTests: XCTestCase {
 		let result = locale.currencyNameAndCode
 		XCTAssertTrue(result.contains("("))
 		XCTAssertTrue(result.contains(")"))
-		if let currencyCode = locale.currencyCode {
-			XCTAssertTrue(result.contains(currencyCode.uppercased()))
+		let code = locale.currencyIdentifier
+		if !code.isEmpty {
+			XCTAssertTrue(result.contains(code.uppercased()))
 		}
 	}
 	
