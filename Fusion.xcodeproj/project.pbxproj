@@ -85,7 +85,7 @@
 		6007A4E62F4ADC4F0081D528 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Sample.app; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug-appletvos/Sample.app"; sourceTree = "<absolute>"; };
 		6007A4E72F4ADC4F0081D528 /* Sample watchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Sample watchOS.app"; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug-watchos/Sample watchOS.app"; sourceTree = "<absolute>"; };
 		6007A4E82F4ADC4F0081D528 /* Sample visionOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Sample visionOS.app"; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug-xros/Sample visionOS.app"; sourceTree = "<absolute>"; };
-		6007A6392F4AE34F0081D528 /* Fusion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fusion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6007A6392F4AE34F0081D528 /* Fusion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Fusion.framework; path = "/Users/dineybomfim/Works/Companies/db-in/Open/Fusion/build/Debug/Fusion.framework"; sourceTree = "<absolute>"; };
 		600E5E832A24CD72001810AE /* Fusion.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fusion.xctestplan; sourceTree = "<group>"; };
 		608E0F122AEA49B000CE531D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Info.plist; sourceTree = "<group>"; };
 		60A859A72A06BBD300D3B283 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -223,7 +223,6 @@
 				607EB2672F40AD7800BD967F /* Sample visionOS */,
 				607EB2732F40AD8500BD967F /* Sample watchOS */,
 				606D0AAE2F41D49E00589A89 /* Scripts */,
-				6007A6392F4AE34F0081D528 /* Fusion.framework */,
 			);
 			sourceTree = "<group>";
 		};
