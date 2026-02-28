@@ -364,6 +364,23 @@ public extension View {
 		modifier(PressEffect(isEnabled: isEnabled, scale: scale, opacity: opacity, duration: duration, onPress: onPress, onRelease: onRelease))
 	}
 	
+	/// Applies a press effect to the view with customizable scale, opacity, and callbacks.
+	///
+	/// - Parameters:
+	///   - isEnabled: Whether the press effect is enabled. Default is true.
+	///   - scale: The scale factor to apply when pressed. Default is 0.95.
+	///   - opacity: The opacity to apply when pressed. Default is 0.85.
+	///   - duration: The duration of the animation. Default is 0.1.
+	///   - onRelease: Optional callback executed when the press ends.
+	/// - Returns: A modified view with press effect applied.
+	func pressEffect(isEnabled: Bool = true,
+					 scale: CGFloat = 0.95,
+					 opacity: Double = 0.85,
+					 duration: Double = 0.1,
+					 onRelease: Callback?) -> some View {
+		modifier(PressEffect(isEnabled: isEnabled, scale: scale, opacity: opacity, duration: duration, onPress: nil, onRelease: onRelease))
+	}
+	
 	/// Enables swipe-to-dismiss functionality for the view.
 	///
 	/// - Parameters:
