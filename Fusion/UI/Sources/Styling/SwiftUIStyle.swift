@@ -84,12 +84,15 @@ public extension View {
 	}
 	
 	/// Presents the view over the window.
-	func presentOverWindow(preferredHeight: CGFloat? = nil) {
+	/// - Parameter style: The modal presentation style to use.
+	/// - Parameter from: The side of the screen to present the view from.
+	/// - Parameter preferredHeight: The preferred height of the view.
+	func presentOverWindow(style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom, preferredHeight: CGFloat? = nil) {
 		var height = CGFloat(600)
 #if !os(visionOS)
 		height = UIScreen.main.bounds.height
 #endif
-		uiHost(cached: false).presentOverWindow(preferredHeight: preferredHeight ?? height)
+		uiHost(cached: false).presentOverWindow(style: style, from: from, preferredHeight: preferredHeight ?? height)
 	}
 	
 	/// Manages the hide state of the native navigation bar.
