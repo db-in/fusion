@@ -92,7 +92,7 @@ public extension View {
 #if !os(visionOS)
 		height = UIScreen.main.bounds.height
 #endif
-		uiHost(cached: false).presentOverWindow(style: style, from: from, preferredHeight: preferredHeight ?? height)
+		uiHost(cached: false).presentOverWindow(style: style, from: side, preferredHeight: preferredHeight ?? height)
 	}
 	
 	/// Manages the hide state of the native navigation bar.
