@@ -36,9 +36,15 @@ public extension Bundle {
 	/// Returns a combined collection of ``hints`` + `Bundle.allBundles` + `Bundle.allFrameworks`, in this given order.
 	static var allAvailable: [Bundle] { hints + allOthers }
 	
+	/// Returns a set of language codes available in the main bundle.
 	static var languageSet: Set<String> = { Set(main.localizations) }()
 	
-// MARK: - Protected Methods
+// MARK: - Exposed Methods
+	
+	/// Flushes the cached languages.
+	static func flushCachedLanguages() {
+		cachedLanguages = [:]
+	}
 	
 	/// Returns the language bundle inside this given bundle for a given language code, otherwise it returns `nil`.
 	///
@@ -72,7 +78,7 @@ public extension Bundle {
 			let languageBundle = languages(for: language),
 			let value = languageBundle.localizedString(forKey: key, table: table)
 		else { return nil }
-		Self.cachedLanguages[language, default: []].appendOnce(languageBundle)
+		Self.cachedLanguages[language, default: Self.hints].appendOnce(languageBundle)
 		return value
 	}
 	

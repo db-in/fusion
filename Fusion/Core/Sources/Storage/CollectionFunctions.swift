@@ -144,6 +144,15 @@ public extension Array where Element : Equatable {
 		guard !contains(element) else { return }
 		append(element)
 	}
+	
+	/// Removes every occurrence of the item, then inserts it once using ``insertSafely(_:at:)``.
+	/// - Parameters:
+	///   - element: The item to be inserted.
+	///   - index: The index at which to insert the item.
+	mutating func insertOnce(_ element: Element, at index: Int) {
+		removeAll { $0 == element }
+		insertSafely(element, at: index)
+	}
 }
 
 // MARK: - Extension - Dictionary
