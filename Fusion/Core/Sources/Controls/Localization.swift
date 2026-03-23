@@ -125,22 +125,22 @@ public extension String {
 	/// Alias for ``localized(for:table:count:)`` function.
 	///
 	/// - Parameters:
-	///   - language: A given language to be used. By default it's `currentLanguage`
+	///   - locale: The iso code for the given locale, matching a valid language folder (lproj). By default it's `preferredLanguage`.
 	///   - count: Optional count value used for pluralization via `.stringsdict` files. If `nil`, returns regular localized string.
 	/// - Returns: The localized version of the string key (pluralized if count is provided) or the key itself
-	func callAsFunction(language: String = Locale.preferredLanguage, count: Int? = nil) -> String { localized(for: language, count: count) }
+	func callAsFunction(for locale: String = Locale.preferredLanguage, count: Int? = nil) -> String { localized(for: locale, count: count) }
 	
 	/// Localized string version, using the a high `speed dynamic loading algorithm` - ``localizedString(language:key:table:)`` -
 	/// for the `current preferred language` - ``preferredLanguage``.
 	/// Supports pluralization via `.stringsdict` files when `count` is provided.
 	///
 	/// - Parameters:
-	///   - locale: The iso code for the given locale, matching a valid language folder (lproj).
-	///   - table: The string table file. Defaults to `Localizable.nocache`.
+	///   - locale: The iso code for the given locale, matching a valid language folder (lproj). By default it's `preferredLanguage`.
 	///   - count: Optional count value used for pluralization. If `nil`, returns regular localized string.
+	///   - table: The string table file. Defaults to `Localizable.nocache`.
 	/// - Returns: The localized string (pluralized if count is provided)
 	/// - SeeAlso: ``localizedString(language:key:table:)`` and ``preferredLanguage``.
-	func localized(for locale: String = Locale.preferredLanguage, table: String? = .localizableTable, count: Int? = nil) -> String {
+	func localized(for locale: String = Locale.preferredLanguage, count: Int? = nil, table: String? = .localizableTable) -> String {
 		guard var string = Bundle.localizedString(language: locale, key: self, table: table) else { return self }
 		if let count = count { string = String.localizedStringWithFormat(string, count) }
 		string.originalKey = originalKey ?? self
