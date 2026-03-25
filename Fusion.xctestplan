@@ -4,10 +4,10 @@
       "id" : "EFACE910-78B3-41FC-9791-48A73C85B9DF",
       "name" : "Configuration 1",
       "options" : {
-         "codeCoverageInfo" : {
-            "enabled" : true,
-            "limitToSelectedTargets" : false
-         }
+        "codeCoverageInfo" : {
+          "enabled" : true,
+          "limitToSelectedTargets" : false
+        }
       }
     }
   ],

@@ -16,6 +16,7 @@ let package = Package(
 		)
 	],
 	dependencies: [
+		.package(url: "https://github.com/db-in/LocalServer.git", from: "2.1.7")
 	],
 	targets: [
 		.target(
@@ -35,6 +36,17 @@ let package = Package(
 				.linkedFramework("UserNotifications"),
 				.linkedFramework("UIKit", .when(platforms: [.iOS, .tvOS, .watchOS])),
 				.linkedFramework("AppKit", .when(platforms: [.macOS]))
+			]
+		),
+		.testTarget(
+			name: "FusionTests",
+			dependencies: [
+				"Fusion",
+				.product(name: "LocalServer", package: "LocalServer")
+			],
+			path: "FusionTests",
+			resources: [
+				.process("Data Models")
 			]
 		)
 	]

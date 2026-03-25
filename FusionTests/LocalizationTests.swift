@@ -4,6 +4,13 @@
 
 import XCTest
 @testable import Fusion
+#if canImport(UIKit)
+import UIKit
+private typealias TestColor = UIColor
+#elseif canImport(AppKit)
+import AppKit
+private typealias TestColor = NSColor
+#endif
 
 // MARK: - Definitions -
 
@@ -85,8 +92,8 @@ class LocalizationTests: XCTestCase {
 	}
 	
 	func testReplacing_WithTemplateAttributedText_ShouldReturnReplacedText() {
-		let originalString = "{KG}kg is equal {gr}g".styled(color: .black)
-		let replacedString = originalString.replacing("5".styled(color: .blue), "5000".styled(color: .red))
+		let originalString = "{KG}kg is equal {gr}g".styled([.foregroundColor: TestColor.black])
+		let replacedString = originalString.replacing("5".styled([.foregroundColor: TestColor.blue]), "5000".styled([.foregroundColor: TestColor.red]))
 		XCTAssertEqual(replacedString.content, "5kg is equal 5000g")
 	}
 	

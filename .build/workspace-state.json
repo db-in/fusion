@@ -4,7 +4,23 @@
 
     ],
     "dependencies" : [
-
+      {
+        "basedOn" : null,
+        "packageRef" : {
+          "identity" : "localserver",
+          "kind" : "remoteSourceControl",
+          "location" : "https://github.com/db-in/LocalServer.git",
+          "name" : "LocalServer"
+        },
+        "state" : {
+          "checkoutState" : {
+            "revision" : "95b1d5bedc51b9c8a3e5484d53fcd195544a56fb",
+            "version" : "2.1.7"
+          },
+          "name" : "sourceControlCheckout"
+        },
+        "subpath" : "LocalServer"
+      }
     ],
     "prebuilts" : [
 

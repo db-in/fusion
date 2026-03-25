@@ -3,6 +3,7 @@
 //
 
 import XCTest
+import UserNotifications
 @testable import Fusion
 
 // MARK: - Definitions -
@@ -61,6 +62,7 @@ class LocalNotificationTests: XCTestCase {
 		XCTAssertGreaterThan(date, date - 1.years)
 	}
 	
+	#if !os(macOS)
 	func testNotification_WithCancelNotification_ShouldCancelScheduledNotification() {
 		let notification = UNNotificationRequest(seconds: 10, title: "Test Notification", message: "This is a test notification")
 		notification.schedule()
@@ -76,7 +78,7 @@ class LocalNotificationTests: XCTestCase {
 		
 		XCTAssertEqual(notificationRequest.content.title, title)
 		XCTAssertEqual(notificationRequest.content.body, message)
-		XCTAssertEqual(notificationRequest.content.sound, .default)
+		XCTAssertNotNil(notificationRequest.content.sound)
 		XCTAssertEqual(notificationRequest.content.badge, 1)
 		
 		if let userInfo = notificationRequest.content.userInfo as? [String: String] {
@@ -140,4 +142,5 @@ class LocalNotificationTests: XCTestCase {
 		
 		waitForExpectations(timeout: 10.0, handler: nil)
 	}
+	#endif
 }

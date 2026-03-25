@@ -4,6 +4,9 @@
 
 import XCTest
 @testable import Fusion
+#if canImport(UIKit)
+import UIKit
+#endif
 
 class TimerControlTests: XCTestCase {
 	
@@ -106,6 +109,7 @@ class TimerControlTests: XCTestCase {
 		wait(for: [expectation], timeout: timeout)
 	}
 	
+	#if canImport(UIKit)
 	func testTimer_WithResignAndReactivateState_ShouldProperlyPauseAndResume() {
 		let expectation = expectation(description: #function)
 		let timer = TimerControl()
@@ -127,4 +131,5 @@ class TimerControlTests: XCTestCase {
 		
 		wait(for: [expectation], timeout: timeout)
 	}
+	#endif
 }
