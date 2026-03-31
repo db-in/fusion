@@ -82,7 +82,7 @@ class NetworkingTests: XCTestCase {
 //		MockService.mockSuccess { result, _ in
 //			let value = try! result.get()
 //			XCTAssertEqual(value.url, "https://httpbin.org/get")
-//			XCTAssertEqual(MockModelStorage.localMode?.url, value.url)
+//			XCTAssertEqual(MockModelStorage.localModel?.url, value.url)
 //			expectation.fulfill()
 //		}
 //		
@@ -110,7 +110,7 @@ class NetworkingTests: XCTestCase {
 //		MockService.mockBody(body: "foo") { result, _ in
 //			let value = try! result.get()
 //			XCTAssertEqual(value.url, "https://httpbin.org/get")
-//			XCTAssertEqual(MockModelStorage.localMode?.url, value.url)
+//			XCTAssertEqual(MockModelStorage.localModel?.url, value.url)
 //			expectation.fulfill()
 //		}
 //		
