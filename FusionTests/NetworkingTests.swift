@@ -21,7 +21,7 @@ public struct MockModelStorage : DataManageable {
 		case model
 	}
 	
-	public static var localMode: MockModel? {
+	public static var localModel: MockModel? {
 		get { value(forKey: .model) }
 		set { set(newValue, forKey: .model) }
 	}
@@ -97,7 +97,7 @@ class NetworkingTests: XCTestCase {
 			case .failure(_):
 				expectation.fulfill()
 			default:
-				XCTFail("It should not be successfully")
+				XCTFail("It should not be successful")
 			}
 		}
 		
