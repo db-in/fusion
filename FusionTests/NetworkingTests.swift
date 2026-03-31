@@ -80,9 +80,13 @@ class NetworkingTests: XCTestCase {
 		let expectation = expectation(description: #function)
 		
 		MockService.mockSuccess { result, _ in
-			let value = try! result.get()
-			XCTAssertEqual(value.url, "https://httpbin.org/get")
-			XCTAssertEqual(MockModelStorage.localMode?.url, value.url)
+			switch result {
+			case .success(let value):
+				XCTAssertEqual(value.url, "https://httpbin.org/get")
+				XCTAssertEqual(MockModelStorage.localMode?.url, value.url)
+			case .failure(let error):
+				XCTFail("Unexpected error: \(error)")
+			}
 			expectation.fulfill()
 		}
 		
@@ -108,9 +112,13 @@ class NetworkingTests: XCTestCase {
 		let expectation = expectation(description: #function)
 		
 		MockService.mockBody(body: "foo") { result, _ in
-			let value = try! result.get()
-			XCTAssertEqual(value.url, "https://httpbin.org/get")
-			XCTAssertEqual(MockModelStorage.localMode?.url, value.url)
+			switch result {
+			case .success(let value):
+				XCTAssertEqual(value.url, "https://httpbin.org/get")
+				XCTAssertEqual(MockModelStorage.localMode?.url, value.url)
+			case .failure(let error):
+				XCTFail("Unexpected error: \(error)")
+			}
 			expectation.fulfill()
 		}
 		
@@ -121,8 +129,12 @@ class NetworkingTests: XCTestCase {
 		let expectation = expectation(description: #function)
 		
 		MockService.mockUpload { result, _ in
-			let value = try! result.get()
-			XCTAssertNotEqual(value?.count, 0)
+			switch result {
+			case .success(let value):
+				XCTAssertNotEqual(value?.count, 0)
+			case .failure(let error):
+				XCTFail("Unexpected error: \(error)")
+			}
 			expectation.fulfill()
 		}
 		
