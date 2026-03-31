@@ -45,6 +45,24 @@ public extension Sequence where Element : Hashable {
 		var seen = Set<Element>()
 		return filter { seen.insert($0).inserted }
 	}
+	
+	/// Returns the sum of the values produced by applying the given transform to each element of the sequence.
+	///
+	/// - Parameter transform: A closure that maps each element to a value conforming to `AdditiveArithmetic`.
+	/// - Returns: The sum of all transformed values. Returns `.zero` if the sequence is empty.
+	/// - Complexity: O(n), where `n` is the length of the sequence.
+	func sum<T: AdditiveArithmetic>(_ transform: (Element) -> T) -> T {
+		reduce(.zero) { $0 + transform($1) }
+	}
+	
+	/// Returns the sum of the values at the given key path for each element of the sequence, ignoring `nil` values.
+	///
+	/// - Parameter keyPath: A key path from an element to an optional value conforming to `AdditiveArithmetic`.
+	/// - Returns: The sum of all non-`nil` values at the specified key path. Returns `.zero` if all values are `nil` or the sequence is empty.
+	/// - Complexity: O(n), where `n` is the length of the sequence.
+	func sum<T: AdditiveArithmetic>(_ keyPath: KeyPath<Element, T?>) -> T {
+		reduce(.zero) { $0 + ($1[keyPath: keyPath] ?? .zero) }
+	}
 }
 
 // MARK: - Extension - Array
