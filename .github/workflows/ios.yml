@@ -16,6 +16,6 @@ jobs:
         run: |
           xcodebuild test \
             -workspace Fusion.xcworkspace \
-            -scheme FusionTests \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -scheme "Sample iOS" \
+            -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
             -resultBundlePath TestResults.xcresult
