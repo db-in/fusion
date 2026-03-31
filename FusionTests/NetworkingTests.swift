@@ -21,7 +21,7 @@ public struct MockModelStorage : DataManageable {
 		case model
 	}
 	
-	public static var localMode: MockModel? {
+	public static var localModel: MockModel? {
 		get { value(forKey: .model) }
 		set { set(newValue, forKey: .model) }
 	}
