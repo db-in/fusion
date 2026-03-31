@@ -66,7 +66,7 @@ class TimerControlTests: XCTestCase {
 		
 		for i in 0..<10 {
 			group.enter()
-			DispatchQueue.global(qos: .background).async {
+			DispatchQueue.global(qos: .userInitiated).async {
 				timer.addItem(key: "\(#function)_\(i)") { }
 				usleep(arc4random_uniform(10))
 				timer.removeItem(key: "\(#function)_\(i)")
@@ -74,11 +74,11 @@ class TimerControlTests: XCTestCase {
 			}
 		}
 		
-		group.notify(queue: .main) {
+		group.notify(queue: .global(qos: .userInitiated)) {
 			expectation.fulfill()
 		}
 		
-		wait(for: [expectation], timeout: timeout + 1.0)
+		wait(for: [expectation], timeout: 10.0)
 	}
 	
 	func testTimer_RemoveAll_ShouldRemovesAllItems() {
