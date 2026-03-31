@@ -37,19 +37,19 @@ extension StubServer {
 	}
 	
 	func setupRootSuccessRoutes() {
-		route([HTTPMethod.GET, HTTPMethod.POST], url: ".") { _, _ in
+		route([HTTPMethod.GET, HTTPMethod.POST], url: "http.*") { _, _ in
 			StubResponse(filename: "Response", ofType: "json", bundle: .testing)
 		}
 	}
 	
 	func setupRootUnauthorizedRoutes() {
-		route([HTTPMethod.DELETE], url: ".") { _, _ in
+		route([HTTPMethod.DELETE], url: "http.*") { _, _ in
 			.init().withStatusCode(401)
 		}
 	}
 	
 	func setupRootUploadRoutes() {
-		route([HTTPMethod.PUT], url: ".") { _, _ in
+		route([HTTPMethod.PUT], url: "http.*") { _, _ in
 			StubResponse(data: "Success".data(using: .utf8)!)
 		}
 	}

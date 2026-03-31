@@ -19,3 +19,6 @@ jobs:
             -scheme "Sample iOS" \
             -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
             -resultBundlePath TestResults.xcresult
+      - name: Clean .build
+        if: always()
+        run: rm -rf .build
