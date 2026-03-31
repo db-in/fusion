@@ -101,7 +101,7 @@ class NetworkingTests: XCTestCase {
 			case .failure(_):
 				expectation.fulfill()
 			default:
-				XCTFail("It should not be successfully")
+				XCTFail("It should not be successful")
 			}
 		}
 		
