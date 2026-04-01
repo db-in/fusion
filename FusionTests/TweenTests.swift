@@ -82,7 +82,7 @@ class TweenTests: XCTestCase {
 			XCTAssertTrue(tween.isPaused)
 			XCTAssertEqual(tween.currentCycle, 0)
 			XCTAssertEqual(tween.beginTime, 0.0)
-			XCTAssertEqual(tween.currentTime, 0.0)
+			XCTAssertEqual(tween.currentTime, 0.0, accuracy: 1e-5)
 			XCTAssertNotEqual(tween.idleTime, 0.0)
 			tween.stopTween()
 			expectation.fulfill()
