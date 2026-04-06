@@ -373,17 +373,6 @@ public extension UIViewController {
 		let size = target.preferredContentSize
 		guard size == .zero else { return size }
 		
-//		target.view.setNeedsLayout()
-//		target.view.layoutIfNeeded()
-//		
-//		let screenWidth = UIWindow.keyBounds.width
-//		let screenHeight = UIWindow.keyBounds.height
-//		
-//		let fittingSize = target.view.sizeThatFits(CGSize(width: screenWidth, height: screenHeight))
-//		if fittingSize.height > 0 && fittingSize.height < screenHeight {
-//			return fittingSize
-//		}
-
 		let verticalInsets = target.view.safeAreaInsets.top + target.view.safeAreaInsets.bottom
 		let horizontalInsets = target.view.safeAreaInsets.left + target.view.safeAreaInsets.right
 		var height = max(0, target.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height - verticalInsets)
