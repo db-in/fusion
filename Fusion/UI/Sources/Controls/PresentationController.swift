@@ -104,7 +104,8 @@ public final class PresentationController : UIPresentationController {
 //			frame.size.width = min(controller.preferredSize.width, containerBounds.width - extraSafeArea)
 			frame.origin.x = containerBounds.width - frame.width
 		case .top, .bottom:
-			frame.size.height = min(controller.preferredSize.height + extraPadding, containerBounds.height - topOffset - extraSafeArea)
+			frame.size.height = min(controller.preferredSize.height + extraPadding + extraSafeArea,
+									containerBounds.height - topOffset - extraSafeArea)
 			frame.origin.y = containerBounds.height - frame.size.height
 		default:
 			break
@@ -371,6 +372,17 @@ public extension UIViewController {
 		let target = (self as? UINavigationController)?.topViewController ?? self
 		let size = target.preferredContentSize
 		guard size == .zero else { return size }
+		
+//		target.view.setNeedsLayout()
+//		target.view.layoutIfNeeded()
+//		
+//		let screenWidth = UIWindow.keyBounds.width
+//		let screenHeight = UIWindow.keyBounds.height
+//		
+//		let fittingSize = target.view.sizeThatFits(CGSize(width: screenWidth, height: screenHeight))
+//		if fittingSize.height > 0 && fittingSize.height < screenHeight {
+//			return fittingSize
+//		}
 
 		let verticalInsets = target.view.safeAreaInsets.top + target.view.safeAreaInsets.bottom
 		let horizontalInsets = target.view.safeAreaInsets.left + target.view.safeAreaInsets.right
