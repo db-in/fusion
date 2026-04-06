@@ -79,8 +79,28 @@ public extension View {
 	/// - Parameter cached: Defines if cache will be generated for this host.
 	/// - Returns: An UIHostingController for this view.
 	func uiHost(cached: Bool = true) -> UIHostingController<Self> {
-		guard cached else { return .init(rootView: self).background(.clear) }
-		return InMemoryCache.getOrSet(key: "Host-\(Self.self)", newValue: .init(rootView: self).transparent) ?? .init(rootView: self).transparent
+		let host: UIHostingController<Self>
+		if cached {
+			host = InMemoryCache.getOrSet(key: "Host-\(Self.self)", newValue: .init(rootView: self).transparent) ?? .init(rootView: self).transparent
+		} else {
+			host = .init(rootView: self).background(.clear)
+		}
+		
+		if #available(iOS 16.0, *) {
+			host.sizingOptions = .preferredContentSize
+		} else {
+			host.view.setNeedsLayout()
+			host.view.layoutIfNeeded()
+			let screenWidth = UIScreen.main.bounds.width
+			let fittingSize = host.view.sizeThatFits(CGSize(width: screenWidth, height: .greatestFiniteMagnitude))
+			if fittingSize.height > 0 && fittingSize.height != UIView.noIntrinsicMetric {
+				var adjustedSize = fittingSize
+				adjustedSize.height += PresentationController.Config.extraSafeArea
+				host.preferredContentSize = adjustedSize
+			}
+		}
+		
+		return host
 	}
 	
 	/// Presents the view over the window.
