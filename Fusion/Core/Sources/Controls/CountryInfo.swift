@@ -308,6 +308,11 @@ extension CountryInfo : Hashable, Equatable, Comparable, Identifiable {
 	}
 }
 
+extension CountryInfo: Searcheable {
+
+	public var searchableText: String { [isoCode2, isoCode3, name, flag, phoneCode].joined(separator: " ") }
+}
+
 // MARK: - Extension - Array<CountryInfo>
 
 public extension Array where Element == CountryInfo {
