@@ -40,22 +40,30 @@ class MainViewController: UIViewController {
 extension MainViewController : UITableViewDataSource, UITableViewDelegate {
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return viewControllers.count
+		SampleRow.allCases.count
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-		let viewControllerType = viewControllers[indexPath.row]
-		cell.textLabel?.text = "\(viewControllerType)"
-		
+		switch SampleRow.allCases[indexPath.row] {
+		case .tween:
+			cell.textLabel?.text = "\(TweenViewController.self)"
+		case .navigation:
+			cell.textLabel?.text = "Navigation"
+		}
 		return cell
 	}
 	
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		tableView.deselectRow(at: indexPath, animated: true)
-		
-		let viewControllerType = viewControllers[indexPath.row]
-		let viewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(withIdentifier: "\(viewControllerType)") //viewControllerType.init()
-		navigationController?.pushViewController(viewController, animated: true)
+		switch SampleRow.allCases[indexPath.row] {
+		case .tween:
+			let viewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(withIdentifier: "\(TweenViewController.self)")
+			navigationController?.pushViewController(viewController, animated: true)
+		case .navigation:
+			let host = UIHostingController(rootView: NavigationSampleView())
+			host.title = "Navigation"
+			navigationController?.pushViewController(host, animated: true)
+		}
 	}
 }
