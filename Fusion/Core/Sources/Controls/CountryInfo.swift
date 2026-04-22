@@ -188,8 +188,8 @@ public struct CountryInfo {
 	
 	/// A string combining the flag emoji, formatted phone code, and country name.
 	/// Format: "🇺🇸 (+1) United States"
-	/// Returns `nil` if the phone code is empty, otherwise returns the formatted string.
-	public var flagPhoneAndName: String? {
+	/// Returns `flagAndName` if the phone code is empty, otherwise returns the formatted string.
+	public var flagPhoneAndName: String {
 		guard !phoneCode.isEmpty else { return flagAndName }
 		return flag + " \(phoneCodeFormatted) " + name
 	}
