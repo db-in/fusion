@@ -104,8 +104,7 @@ public final class PresentationController : UIPresentationController {
 //			frame.size.width = min(controller.preferredSize.width, containerBounds.width - extraSafeArea)
 			frame.origin.x = containerBounds.width - frame.width
 		case .top, .bottom:
-			frame.size.height = min(controller.preferredSize.height + extraPadding + extraSafeArea,
-									containerBounds.height - topOffset - extraSafeArea)
+			frame.size.height = min(controller.preferredSize.height + extraPadding + extraSafeArea, containerBounds.height - topOffset - extraSafeArea)
 			frame.origin.y = containerBounds.height - frame.size.height
 		default:
 			break

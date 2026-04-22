@@ -54,6 +54,21 @@ public extension UIViewController {
 	/// Returns a view controller with a clear background.
 	var transparent: Self { background(.clear) }
 	
+	/// Measures the root view with ``UIView/sizeThatFits(_:)`` using the key window width and unconstrained height,
+	/// then assigns the result to ``preferredContentSize`` when the height is positive and not ``UIView/noIntrinsicMetric``.
+	///
+	/// - Returns: The same view controller for chaining.
+	var autoSized: Self {
+//		let screenWidth = UIWindow.keyFrame.width
+//		let fittingSize = view.sizeThatFits(CGSize(width: screenWidth, height: .greatestFiniteMagnitude))
+//		
+//		if fittingSize.height > 0 && fittingSize.height != UIView.noIntrinsicMetric {
+//			preferredContentSize = fittingSize
+//		}
+		
+		return self
+	}
+	
 	/// Sets the background color of the view controller.
 	///
 	/// - Parameter color: The color to set.
@@ -79,28 +94,8 @@ public extension View {
 	/// - Parameter cached: Defines if cache will be generated for this host.
 	/// - Returns: An UIHostingController for this view.
 	func uiHost(cached: Bool = true) -> UIHostingController<Self> {
-		let host: UIHostingController<Self>
-		if cached {
-			host = InMemoryCache.getOrSet(key: "Host-\(Self.self)", newValue: .init(rootView: self).transparent) ?? .init(rootView: self).transparent
-		} else {
-			host = .init(rootView: self).background(.clear)
-		}
-		
-		if #available(iOS 16.0, *) {
-			host.sizingOptions = .preferredContentSize
-		} else {
-			host.view.setNeedsLayout()
-			host.view.layoutIfNeeded()
-			let screenWidth = UIScreen.main.bounds.width
-			let fittingSize = host.view.sizeThatFits(CGSize(width: screenWidth, height: .greatestFiniteMagnitude))
-			if fittingSize.height > 0 && fittingSize.height != UIView.noIntrinsicMetric {
-				var adjustedSize = fittingSize
-				adjustedSize.height += PresentationController.Config.extraSafeArea
-				host.preferredContentSize = adjustedSize
-			}
-		}
-		
-		return host
+		guard cached else { return .init(rootView: self).autoSized.background(.clear) }
+		return InMemoryCache.getOrSet(key: "Host-\(Self.self)", newValue: .init(rootView: self).autoSized.transparent) ?? .init(rootView: self).autoSized.transparent
 	}
 	
 	/// Presents the view over the window.
