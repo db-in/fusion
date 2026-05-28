@@ -4,14 +4,20 @@
       "id" : "EFACE910-78B3-41FC-9791-48A73C85B9DF",
       "name" : "Configuration 1",
       "options" : {
-        "codeCoverageInfo" : {
-          "enabled" : true,
-          "limitToSelectedTargets" : false
+        "codeCoverage" : {
+          "targets" : [
+            {
+              "containerPath" : "container:Fusion",
+              "identifier" : "Fusion",
+              "name" : "Fusion"
+            }
+          ]
         }
       }
     }
   ],
   "defaultOptions" : {
+    "codeCoverage" : true,
     "targetForVariableExpansion" : {
       "containerPath" : "container:Fusion.xcodeproj",
       "identifier" : "60A8595A2A06BB2500D3B283",

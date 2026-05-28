@@ -401,6 +401,7 @@ public extension Numeric {
 	///   - currencySymbol: The currency symbol to use. Default is `nil`.
 	///   - roundingMode: The rounding mode to use. Default is `.down` (truncating).
 	///   - trimTrailingZeros: When `true`, the trailing zeros are removed. Default is `false`.
+	///   - groupingSize: Digits per group. `nil` keeps the locale default.
 	/// - Returns: The formatted value string.
 	func toString(decimals: Int,
 				  locale: Locale,
@@ -409,7 +410,8 @@ public extension Numeric {
 				  minimumDecimal: Int? = nil,
 				  currencySymbol: String? = nil,
 				  roundingMode: NumberFormatter.RoundingMode = .down,
-				  trimTrailingZeros: Bool = false) -> String {
+				  trimTrailingZeros: Bool = false,
+				  groupingSize: Int? = nil) -> String {
 		let formatter = NumberFormatter()
 		formatter.locale = locale
 		formatter.numberStyle = style
@@ -417,6 +419,17 @@ public extension Numeric {
 		formatter.allowsFloats = true
 		formatter.currencySymbol = currencySymbol
 		formatter.roundingMode = roundingMode
+		
+		if let groupingSize {
+			if #available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *) {
+				formatter.minimumGroupingDigits = 1
+			} else {
+				formatter.groupingSize = groupingSize
+				formatter.secondaryGroupingSize = groupingSize
+				formatter.usesGroupingSeparator = true
+			}
+		}
+
 		if trimTrailingZeros {
 			formatter.minimumFractionDigits = 0
 			formatter.maximumFractionDigits = decimals

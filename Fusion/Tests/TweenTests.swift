@@ -2,9 +2,10 @@
 //  Created by Diney Bomfim on 5/26/23.
 //
 
-import UIKit
 import XCTest
 @testable import Fusion
+#if canImport(UIKit) && !os(watchOS)
+import UIKit
 
 // MARK: - Definitions -
 
@@ -301,3 +302,4 @@ class TweenTests: XCTestCase {
 		}
 	}
 }
+#endif

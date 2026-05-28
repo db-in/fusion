@@ -84,9 +84,9 @@ class CountryInfoTests: XCTestCase {
 		country.phoneCode = "1"
 		let result = country.flagPhoneAndName
 		XCTAssertNotNil(result)
-		XCTAssertTrue(result!.contains(country.flag))
-		XCTAssertTrue(result!.contains(country.phoneCodeFormatted))
-		XCTAssertTrue(result!.contains(country.name))
+		XCTAssertTrue(result.contains(country.flag))
+		XCTAssertTrue(result.contains(country.phoneCodeFormatted))
+		XCTAssertTrue(result.contains(country.name))
 	}
 	
 	func testCountryInfo_FlagPhoneAndName_WithoutPhoneCode_ShouldReturnFlagAndName() {

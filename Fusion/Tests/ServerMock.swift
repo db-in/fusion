@@ -18,6 +18,7 @@ class ServerMock {
 // MARK: - Exposed Methods
 
 	static func startLocalServer() {
+		FusionTestCase.configureBundles()
 		let server = StubServer()
 		server.setupDefaultRoutes()
 		StubServer.instance = server

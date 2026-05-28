@@ -44,9 +44,12 @@ let package = Package(
 				"Fusion",
 				.product(name: "LocalServer", package: "LocalServer")
 			],
-			path: "FusionTests",
+			path: "Fusion/Tests",
 			resources: [
-				.process("Data Models")
+				.process("JSON")
+			],
+			swiftSettings: [
+				.define("GENERATE_INFOPLIST_FILE")
 			]
 		)
 	]

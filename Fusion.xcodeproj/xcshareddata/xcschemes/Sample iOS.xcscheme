@@ -20,6 +20,20 @@
                ReferencedContainer = "container:Fusion.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "600A7C7F2A0038C1003B0093"
+               BuildableName = "FusionTests.xctest"
+               BlueprintName = "FusionTests"
+               ReferencedContainer = "container:Fusion.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -34,18 +48,6 @@
             default = "YES">
          </TestPlanReference>
       </TestPlans>
-      <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "600A7C7F2A0038C1003B0093"
-               BuildableName = "FusionTests.xctest"
-               BlueprintName = "FusionTests"
-               ReferencedContainer = "container:Fusion.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
