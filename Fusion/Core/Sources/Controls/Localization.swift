@@ -78,7 +78,7 @@ public extension Bundle {
 			let languageBundle = languages(for: language),
 			let value = languageBundle.localizedString(forKey: key, table: table)
 		else { return nil }
-		Self.cachedLanguages[language, default: Self.hints].appendOnce(languageBundle)
+		Self.cachedLanguages[language, default: []].appendOnce(languageBundle)
 		return value
 	}
 	
@@ -159,7 +159,12 @@ public extension Locale {
 	
 	/// Returns the preferred language code in ISO 639-1 format (2 alpha codes) in lower case. For example `"en"`.
 	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
-	static var preferredLanguage: String { Locale.preferredLanguages.first(where: { Bundle.languageSet.contains($0) }) ?? "en" }
+	static var preferredLanguage: String {
+		let stored = UserDefaults.standard.array(forKey: "AppleLanguages")?.first as? String
+		return stored.flatMap { Bundle.languageSet.contains($0) ? $0 : nil }
+			?? Locale.preferredLanguages.first(where: { Bundle.languageSet.contains($0) })
+			?? "en"
+	}
 
 	/// Returns the preferred language code in ISO 639-1 format (2 alpha codes) in lower case. For example `"en"`.
 	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
