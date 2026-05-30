@@ -6,6 +6,38 @@ import Foundation
 
 // MARK: - Definitions -
 
+/// A protocol for ``RawRepresentable`` enums that resolve unknown raw values to a fallback case.
+///
+/// Conforming types decode their ``RawRepresentable/rawValue`` from a single JSON value. When the raw value
+/// does not match any known case, ``defaultCase`` is used instead of failing decoding.
+public protocol CaseDefaultable: RawRepresentable, Decodable where RawValue: Decodable {
+
+	/// The case used when a raw value cannot be mapped to a known case.
+	static var defaultCase: Self { get }
+}
+
+public extension CaseDefaultable {
+
+	/// Creates an instance by decoding a single raw value.
+	///
+	/// - Parameter decoder: The decoder to read data from.
+	init(from decoder: Decoder) throws {
+		let container = try decoder.singleValueContainer()
+		let rawValue = try container.decode(RawValue.self)
+		self = Self(rawValue: rawValue) ?? Self.defaultCase
+	}
+}
+
+public extension CaseDefaultable where Self: ExpressibleByStringLiteral, RawValue == String {
+
+	/// Creates an instance from a string literal raw value.
+	///
+	/// - Parameter value: The string literal to map to a case.
+	init(stringLiteral value: String) {
+		self = Self(rawValue: value) ?? Self.defaultCase
+	}
+}
+
 public func == <T, V: Equatable>(lhs: KeyPath<T, V>, rhs: V) -> (T) -> Bool { { $0[keyPath: lhs] == rhs } }
 
 public func != <T, V: Equatable>(lhs: KeyPath<T, V>, rhs: V) -> (T) -> Bool { { $0[keyPath: lhs] != rhs } }

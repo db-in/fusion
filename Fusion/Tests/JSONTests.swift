@@ -184,3 +184,35 @@ class URLCacheExtensionsTests: XCTestCase {
 		XCTAssertEqual(URLCache.appGroup.memoryCapacity, .max)
 	}
 }
+
+class CaseDefaultableTests: XCTestCase {
+
+	private enum SampleStatus: String, Codable, CaseDefaultable {
+		case pending
+		case completed
+
+		static var defaultCase: Self { .pending }
+	}
+
+	private enum SampleCode: Int, Codable, CaseDefaultable {
+		case one = 1
+		case two = 2
+
+		static var defaultCase: Self { .one }
+	}
+
+	func testCaseDefaultable_UnknownRawValueFromJSON_ShouldUseDefaultCase() throws {
+		let decoded = try JSONDecoder().decode(SampleStatus.self, from: Data(#""unknown""#.utf8))
+		XCTAssertEqual(decoded, .pending)
+	}
+
+	func testCaseDefaultable_ResolvedRawValue_WithUnknownString_ShouldUseDefaultCase() {
+		XCTAssertEqual(SampleStatus(rawValue: "unknown"), nil)
+		XCTAssertEqual(SampleStatus.defaultCase, .pending)
+	}
+
+	func testCaseDefaultable_ResolvedRawValue_WithUnknownInt_ShouldUseDefaultCase() {
+		XCTAssertEqual(SampleCode(rawValue: 99), nil)
+		XCTAssertEqual(SampleCode.defaultCase, .one)
+	}
+}
