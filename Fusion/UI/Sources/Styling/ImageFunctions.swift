@@ -30,7 +30,9 @@ public extension UIImage {
 	}
 	
 	private static func image(named: String, bundle: Bundle) -> UIImage? {
-		.init(named: named, in: bundle, with: nil) ?? inAnyBundle(named)
+		let image = UIImage(named: named, in: bundle, with: nil) ?? inAnyBundle(named)
+		image?.accessibilityIdentifier = named
+		return image
 	}
 	
 // MARK: - Exposed Methods
@@ -60,7 +62,9 @@ public extension UIImage {
 	}
 	
 	private static func image(named: String, bundle: Bundle, trait: UITraitCollection?) -> UIImage? {
-		.init(named: named, in: bundle, compatibleWith: trait) ?? inAnyBundle(named, trait: trait)
+		let image = UIImage(named: named, in: bundle, compatibleWith: trait) ?? inAnyBundle(named, trait: trait)
+		image?.accessibilityIdentifier = named
+		return image
 	}
 	
  // MARK: - Exposed Methods

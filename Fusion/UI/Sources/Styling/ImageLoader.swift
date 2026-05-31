@@ -128,6 +128,7 @@ public extension UIImage {
 			let image = url.contains(".gif") ? UIImage.images(gifData: data) : UIImage(data: data)
 		else { return nil }
 		
+		image.accessibilityIdentifier = url
 		inMemory[url] = image
 		storage?.writeImage(data: data, withKey: url)
 		
@@ -161,6 +162,7 @@ public extension UIImage {
 			let cachedData = CachedURLResponse(response: validResponse, data: data)
 			URLCache.appGroup.storeCachedResponse(cachedData, for: request)
 			let rawImage = url.contains(".gif") ? UIImage.images(gifData: data) : UIImage(data: data)
+			rawImage?.accessibilityIdentifier = url
 			let image = rawImage?.resolve(badge: allowsBadge, key: url)
 			asyncMain { completion?(image) }
 		}

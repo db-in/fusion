@@ -172,7 +172,9 @@ public extension Image {
 
 public extension UIImage {
 	
-	var suiImage: SwiftUI.Image { .init(uiImage: self) }
+	var suiImageWithoutAccessibility: Image { .init(uiImage: self) }
+	
+	var suiImage: some View { suiImageWithoutAccessibility.accessibilityIdentifier(accessibilityIdentifier ?? "") }
 }
 
 // MARK: - Extension - UIColor
@@ -237,6 +239,7 @@ public struct AsyncImageCached<Content: View, Placeholder: View>: View {
 		Group {
 			if let image = image {
 				content?(Image(uiImage: image))
+					.accessibilityIdentifier(image.accessibilityIdentifier ?? "")
 			} else {
 				placeholder?()
 			}
