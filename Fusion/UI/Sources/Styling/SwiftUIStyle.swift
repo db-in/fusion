@@ -172,9 +172,7 @@ public extension Image {
 
 public extension UIImage {
 	
-	var suiImageWithoutAccessibility: Image { .init(uiImage: self) }
-	
-	var suiImage: some View { suiImageWithoutAccessibility.accessibilityIdentifier(accessibilityIdentifier ?? "") }
+	var suiImage: SwiftUI.Image { .init(uiImage: self) }
 }
 
 // MARK: - Extension - UIColor
