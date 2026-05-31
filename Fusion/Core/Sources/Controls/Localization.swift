@@ -97,6 +97,22 @@ public extension Bundle {
 		let value = cachedLanguages[language]?.firstMap({ $0.localizedString(forKey: key, table: table) })
 		return value ?? allAvailable.firstMap({ $0.localizedString(language: language, key: key, table: table) })
 	}
+	
+	/// Registers a bundle in ``hints`` so it is scanned first when resolving localized resources.
+	///
+	/// - Parameters:
+	///   - bundle: The bundle to register.
+	///   - index: Optional position in ``hints``. When `nil`, the bundle is appended once at the end.
+	/// - Returns: The same `bundle`, for call chaining.
+	@discardableResult
+	static func registering(_ bundle: Bundle, at index: Int? = nil) -> Bundle {
+		if let index {
+			hints.insertOnce(bundle, at: index)
+		} else {
+			hints.appendOnce(bundle)
+		}
+		return bundle
+	}
 }
 
 // MARK: - Extension - Bundle
