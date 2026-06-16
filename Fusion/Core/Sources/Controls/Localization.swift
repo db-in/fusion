@@ -78,7 +78,7 @@ public extension Bundle {
 			let languageBundle = languages(for: language),
 			let value = languageBundle.localizedString(forKey: key, table: table)
 		else { return nil }
-		Self.cachedLanguages[language, default: Self.hints].appendOnce(languageBundle)
+		Self.cachedLanguages[language, default: []].appendOnce(languageBundle)
 		return value
 	}
 	

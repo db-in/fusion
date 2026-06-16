@@ -17,13 +17,15 @@ public extension String {
 		let locale = countryInfoAsLanguage.locale
 		let isRTL = locale.isRTL
 		
-#if canImport(UIKit) && (os(iOS) || os(visionOS))
-		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
-		UIView.appearance().semanticContentAttribute = direction
-		UIWindow.key?.semanticContentAttribute = direction
-#elseif canImport(UIKit) && os(tvOS)
-		let direction: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
-		UIView.appearance().semanticContentAttribute = direction
+#if canImport(UIKit) && (os(iOS) || os(visionOS) || os(tvOS))
+		let semantic: UISemanticContentAttribute = isRTL ? .forceRightToLeft : .forceLeftToRight
+		UIView.appearance().semanticContentAttribute = semantic
+		UIWindow.all.forEach { $0.semanticContentAttribute = semantic }
+		
+		if #available(iOS 17.0, tvOS 17.0, *) {
+			let direction: UITraitEnvironmentLayoutDirection = isRTL ? .rightToLeft : .leftToRight
+			UIWindow.all.forEach { $0.traitOverrides.layoutDirection = direction }
+		}
 #endif
 		
 		UserDefaults.standard.set([self], forKey: "AppleLanguages")
