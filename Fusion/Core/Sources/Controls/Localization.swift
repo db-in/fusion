@@ -126,6 +126,12 @@ public extension String {
 	/// Localizable Table strings.
 	static let localizableTable = "Localizable.nocache"
 	
+	/// Returns the language code in ISO 639-1 format (2 alpha codes).
+	var codeISO2: String { prefix(2).lowercased() }
+	
+	/// Returns this identifier when present in `set`, otherwise its ISO 639-1 code when that matches.
+	func matchingLanguage(in set: Set<String>) -> String? { [self, codeISO2].first(where: set.contains) }
+	
 	/// Returns the original key. This property can be called at any given time in any given string.
 	/// This property remains the same even after multiple localization processes.
 	/// A `nil` is returned if the original key is the current value
@@ -175,11 +181,11 @@ public extension Locale {
 	
 	/// Returns the preferred language code in ISO 639-1 format (2 alpha codes) in lower case. For example `"en"`.
 	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
-	static var preferredLanguage: String { Locale.preferredLanguages.first(where: { Bundle.languageSet.contains($0) }) ?? "en" }
+	static var preferredLanguage: String { Locale.preferredLanguages.firstMap({ $0.matchingLanguage(in: Bundle.languageSet) }) ?? "en" }
 
-	/// Returns the preferred language code in ISO 639-1 format (2 alpha codes) in lower case. For example `"en"`.
+	/// Returns the preferred language code in ISO 639-1 format (2 alpha codes) in lower case. For example `"en"`, `"zh"`.
 	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
-	static var preferredLanguageCodeISO2: String { "\(preferredLanguage.prefix(2))".lowercased() }
+	static var preferredLanguageCodeISO2: String { preferredLanguage.codeISO2 }
 	
 	/// Returns the current preferred locale.
 	static var preferredLocale: Locale { Locale(identifier: preferredLanguage) }
@@ -198,7 +204,7 @@ public extension Locale {
 	
 	/// Returns the language code in ISO 639-1 format (2 alpha codes).
 	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
-	var languageCodeISO2: String { languageIdentifier.prefix(2).lowercased() }
+	var languageCodeISO2: String { languageIdentifier.codeISO2 }
 	
 	/// Returns the region identifier in BCP 47 format (region subtag).
 	/// Example: "US", "DE", "AE". Returns an empty string if region is not available.

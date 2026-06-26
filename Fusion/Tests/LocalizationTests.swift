@@ -66,6 +66,78 @@ class LocalizationTests: XCTestCase {
 		XCTAssertNotNil(languageCode)
 	}
 	
+	// MARK: - Language Matching
+	
+	private let sampleLanguageSet: Set<String> = ["zh-CN", "de", "en", "zh-TW", "tr", "ru", "pt", "ar", "fr", "it", "es"]
+	
+	func testCodeISO2_WhenBCP47Identifier_ShouldReturnISO2Code() {
+		XCTAssertEqual("es-US".codeISO2, "es")
+		XCTAssertEqual("en-US".codeISO2, "en")
+		XCTAssertEqual("ar-US".codeISO2, "ar")
+		XCTAssertEqual("tr-US".codeISO2, "tr")
+		XCTAssertEqual("zh-TW".codeISO2, "zh")
+		XCTAssertEqual("zh-CN".codeISO2, "zh")
+	}
+	
+	func testMatchingLanguage_WhenBCP47IdentifierMatchesISO2_ShouldReturnISO2Code() {
+		XCTAssertEqual("es-US".matchingLanguage(in: sampleLanguageSet), "es")
+		XCTAssertEqual("en-US".matchingLanguage(in: sampleLanguageSet), "en")
+		XCTAssertEqual("ar-US".matchingLanguage(in: sampleLanguageSet), "ar")
+		XCTAssertEqual("tr-US".matchingLanguage(in: sampleLanguageSet), "tr")
+	}
+	
+	func testMatchingLanguage_WhenChineseRegionalIdentifier_ShouldReturnExactMatch() {
+		XCTAssertEqual("zh-TW".matchingLanguage(in: sampleLanguageSet), "zh-TW")
+		XCTAssertEqual("zh-CN".matchingLanguage(in: sampleLanguageSet), "zh-CN")
+	}
+	
+	func testMatchingLanguage_WhenZhTWPreferred_ShouldNotFallbackToZh() {
+		let result = "zh-TW".matchingLanguage(in: sampleLanguageSet)
+		XCTAssertEqual(result, "zh-TW")
+		XCTAssertNotEqual(result, "zh")
+	}
+	
+	func testMatchingLanguage_WhenNoMatch_ShouldReturnNil() {
+		XCTAssertNil("ja-US".matchingLanguage(in: sampleLanguageSet))
+		XCTAssertNil("ko-KR".matchingLanguage(in: sampleLanguageSet))
+	}
+	
+	func testMatchingLanguage_WhenExactISO2Code_ShouldReturnSameCode() {
+		XCTAssertEqual("de".matchingLanguage(in: sampleLanguageSet), "de")
+		XCTAssertEqual("fr".matchingLanguage(in: sampleLanguageSet), "fr")
+	}
+	
+	func testPreferredLanguageResolution_WhenBCP47List_ShouldReturnFirstMatch() {
+		let preferred = ["es-US", "en-US", "ar-US", "tr-US"]
+		let result = preferred.firstMap { $0.matchingLanguage(in: sampleLanguageSet) }
+		XCTAssertEqual(result, "es")
+	}
+	
+	func testPreferredLanguageResolution_WhenZhTWIsFirst_ShouldReturnZhTW() {
+		let preferred = ["zh-TW", "en-US", "es-US"]
+		let result = preferred.firstMap { $0.matchingLanguage(in: sampleLanguageSet) }
+		XCTAssertEqual(result, "zh-TW")
+	}
+	
+	func testPreferredLanguageResolution_WhenZhCNIsFirst_ShouldReturnZhCN() {
+		let preferred = ["zh-CN", "zh-TW", "en-US"]
+		let result = preferred.firstMap { $0.matchingLanguage(in: sampleLanguageSet) }
+		XCTAssertEqual(result, "zh-CN")
+	}
+	
+	func testPreferredLanguageResolution_WhenZhCNAndZhTWBothPresent_ShouldRespectOrder() {
+		let twFirst = ["zh-TW", "zh-CN"].firstMap { $0.matchingLanguage(in: sampleLanguageSet) }
+		let cnFirst = ["zh-CN", "zh-TW"].firstMap { $0.matchingLanguage(in: sampleLanguageSet) }
+		XCTAssertEqual(twFirst, "zh-TW")
+		XCTAssertEqual(cnFirst, "zh-CN")
+	}
+	
+	func testPreferredLanguageResolution_WhenNoMatch_ShouldReturnNil() {
+		let preferred = ["ja-US", "ko-KR"]
+		let result = preferred.firstMap { $0.matchingLanguage(in: sampleLanguageSet) }
+		XCTAssertNil(result)
+	}
+	
 	// MARK: - String Extension
 	
 	func testOriginalKey_WhenSet_ShouldReturnOriginalKey() {
