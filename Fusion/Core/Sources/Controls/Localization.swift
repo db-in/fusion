@@ -26,15 +26,7 @@ public extension Bundle {
 // MARK: - Properties
 	
 	private static var cachedLanguages: [String : [Bundle]] = [:]
-
-	/// Memoized resolved strings, keyed by "language\ttable\tkey".
-	///
-	/// The `.nocache` string table is deliberately named so CoreFoundation never caches the parsed
-	/// `.strings` data (allowing runtime/OTA swaps), which means every lookup otherwise re-parses the
-	/// plist from disk. This memoizes the resolved value so repeated identical lookups (e.g. from a
-	/// frequently re-evaluated SwiftUI `body`) don't re-parse. Cleared by ``flushCachedLanguages()``.
-	private static var cachedStrings: [String : String] = [:]
-
+	
 	/// Hints are the first bundles to be scanned for loading contents. Including (but not limited to) languages, images, url, etc.
 	static var hints: [Bundle] = []
 	
@@ -49,10 +41,9 @@ public extension Bundle {
 	
 // MARK: - Exposed Methods
 	
-	/// Flushes the cached languages and memoized strings.
+	/// Flushes the cached languages.
 	static func flushCachedLanguages() {
 		cachedLanguages = [:]
-		cachedStrings = [:]
 	}
 	
 	/// Returns the language bundle inside this given bundle for a given language code, otherwise it returns `nil`.
@@ -103,12 +94,8 @@ public extension Bundle {
 	/// convention, utilizing `nocache` to avoid strong caching.
 	/// - SeeAlso: [Apple Loading String Resources Documentation](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/LoadingResources/Strings/Strings.html#//apple_ref/doc/uid/10000051i-CH6-97055-CJBFDJGF)
 	static func localizedString(language: String, key: String, table: String?) -> String? {
-		let cacheKey = "\(language)\t\(table ?? "")\t\(key)"
-		if let cached = cachedStrings[cacheKey] { return cached }
 		let value = cachedLanguages[language]?.firstMap({ $0.localizedString(forKey: key, table: table) })
-			?? allAvailable.firstMap({ $0.localizedString(language: language, key: key, table: table) })
-		if let value { cachedStrings[cacheKey] = value }
-		return value
+		return value ?? allAvailable.firstMap({ $0.localizedString(language: language, key: key, table: table) })
 	}
 	
 	/// Registers a bundle in ``hints`` so it is scanned first when resolving localized resources.
