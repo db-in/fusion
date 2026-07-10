@@ -124,7 +124,7 @@ public extension String {
 	private static var tableKey: UInt8 = 1
 	
 	/// Localizable Table strings.
-	static var localizableTable = "Localizable.nocache"
+	static var localizableTable: String? = nil
 	
 	/// Returns the language code in ISO 639-1 format (2 alpha codes).
 	var codeISO2: String { prefix(2).lowercased() }
