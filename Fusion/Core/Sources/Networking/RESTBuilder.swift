@@ -24,7 +24,8 @@ public extension URL {
 		var components = URLComponents(url: self, resolvingAgainstBaseURL: false)
 		let query = data?.dictionaryObject.compactMap { URLQueryItem(name: $0, value: "\($1)") } ?? []
 		guard !query.isEmpty else { return self }
-		components?.queryItems = (components?.queryItems ?? []) + query
+		let existing = components?.queryItems ?? []
+		components?.queryItems = existing + query
 		
 		return components?.url ?? self
 	}
