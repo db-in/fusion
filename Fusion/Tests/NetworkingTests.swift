@@ -156,8 +156,15 @@ class URLTests: XCTestCase {
 		XCTAssertEqual(result.queryItemsDictionary, expectedURL.queryItemsDictionary)
 	}
 	
+	func testURL_WithAppendedQueryOnExistingQuery_ShouldCombineQueryItems() {
+		let url = URL(string: "https://example.com?existing=keep")!
+		let data: Data? = ["param1": "value1"].data
+		let result = url.appendedQuery(data: data)
+		XCTAssertEqual(result.queryItemsDictionary, ["existing": "keep", "param1": "value1"])
+	}
+	
 	func testURL_WithAppendedQueryEmptyData_ShouldKeepTheSameURL() {
-		let url = URL(string: "https://example.com")!
+		let url = URL(string: "https://example.com?existing=keep")!
 		let data: Data? = nil
 		let result = url.appendedQuery(data: data)
 		XCTAssertEqual(result, url)

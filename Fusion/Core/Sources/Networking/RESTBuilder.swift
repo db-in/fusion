@@ -23,8 +23,8 @@ public extension URL {
 	func appendedQuery(data: Data?) -> URL {
 		var components = URLComponents(url: self, resolvingAgainstBaseURL: false)
 		let query = data?.dictionaryObject.compactMap { URLQueryItem(name: $0, value: "\($1)") } ?? []
-		
-		components?.queryItems = query.count > 0 ? query : nil
+		guard !query.isEmpty else { return self }
+		components?.queryItems = (components?.queryItems ?? []) + query
 		
 		return components?.url ?? self
 	}
