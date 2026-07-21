@@ -8,6 +8,9 @@ import Foundation
 
 public extension Collection {
 	
+	/// Returns true if the collection has more than 1 element.
+	var isMoreThanOne: Bool { count > 1 }
+	
 	/// Returns the first non-nil result by applying the provided closure to each element.
 	/// This function iterates through the elements and applies the closure. It returns the first non-nil result, or `nil` if no result is found.
 	///
@@ -72,9 +75,6 @@ public extension Array {
 	/// Accesses the element at the specified position safely, returning nil if the index does not exist.
 	/// - Complexity: O(1) for both reading / writing.
 	@inlinable subscript(safe index: Int) -> Element?{ indices.contains(index) ? self[index] : nil }
-	
-	/// Returns true if the collection has more than 1 element.
-	var isMoreThanOne: Bool { count > 1 }
 	
 	/// Filters the array over the given fields by any combination in the current text direction (LTR or RTL).
 	///
