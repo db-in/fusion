@@ -98,6 +98,9 @@ public extension URLResponse {
 	
 	/// The possible HTTP header in the response.
 	var httpHeaders: Headers { (http?.allHeaderFields as? Headers) ?? [:] }
+
+	/// Defines if the response is `204 No Content`, the status intended for successful responses without a body.
+	var isNoContent: Bool { httpStatusCode == 204 }
 }
 
 // MARK: - Extension - URLRequest Logs
@@ -156,6 +159,8 @@ public extension URLRequest {
 		set { }
 	}
 	
+	private static var emptyJSONObject: Data { .init("{}".utf8) }
+
 	private func responseResult(_ code: Int, _ data: Data) -> Result<Data, Error> {
 		switch code {
 		case 200..<400:
@@ -192,6 +197,8 @@ public extension URLRequest {
 	}
 
 	/// Maps the response data to a `Result<T, Error>`, where `T` is a `Codable` type.
+	/// A `204 No Content` response is decoded from an empty JSON object, so endpoints without a response
+	/// body (such as `DELETE`) succeed whenever `T` can be represented by it.
 	/// - Parameters:
 	///   - completion: A closure that receives the result of the JSON decoding.
 	func mapJSONResponse<T: Codable>(to completion: Response<T>?) {
@@ -201,7 +208,8 @@ public extension URLRequest {
 				completion?(.failure(error), response)
 			case .success(let data):
 				do {
-					let result = try JSONDecoder.standard.decode(T.self, from: data)
+					let body = response?.isNoContent == true ? Self.emptyJSONObject : data
+					let result = try JSONDecoder.standard.decode(T.self, from: body)
 					completion?(.success(result), response)
 				} catch {
 					self.debugLog(error: error)
