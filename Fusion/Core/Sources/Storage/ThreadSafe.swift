@@ -6,10 +6,13 @@ import Foundation
 
 // MARK: - Definitions -
 
+@available(*, deprecated, renamed: "ThreadSafeAsync")
+public typealias ThreadSafe<Value> = ThreadSafeAsync<Value>
+
 // MARK: - Type -
 
 @propertyWrapper
-public final class ThreadSafe<Value> {
+public final class ThreadSafeAsync<Value> {
 	
 	private var value: Value
 	private let queue = DispatchQueue(label: "\(UUID().uuidString)", attributes: .concurrent)
@@ -20,6 +23,6 @@ public final class ThreadSafe<Value> {
 
 	public var wrappedValue: Value {
 		get { queue.sync(flags: .barrier) { value } }
-		set { queue.sync(flags: .barrier) { value = newValue } }
+		set { queue.async(flags: .barrier) { [weak self] in self?.value = newValue } }
 	}
 }

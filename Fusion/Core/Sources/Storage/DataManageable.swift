@@ -7,7 +7,7 @@ import Foundation
 // MARK: - Definitions -
 
 private struct ThrottleWrapper {
-	@ThreadSafe
+	@ThreadSafeAsync
 	static var timers: [String : DispatchSourceTimer] = [:]
 }
 

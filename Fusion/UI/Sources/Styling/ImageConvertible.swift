@@ -7,7 +7,7 @@ import UIKit
 
 private struct LoaderControl {
 	
-	@ThreadSafe
+	@ThreadSafeAsync
 	private static var loaders: [String : Int] = [:]
 	
 	let key: String

@@ -12,7 +12,7 @@ private struct Keys {
 
 private struct Wrapper {
 	
-	@ThreadSafe
+	@ThreadSafeAsync
 	static var all: [String : [TargetWrapper]] = [:]
 }
 

@@ -14,10 +14,10 @@ public struct InMemoryCache {
 
 // MARK: - Properties
 	
-	@ThreadSafe
+	@ThreadSafeAsync
 	private static var data: [String : Any] = [:]
 	
-	@ThreadSafe
+	@ThreadSafeAsync
 	private static var references: [String : String] = [:]
 
 // MARK: - Constructors

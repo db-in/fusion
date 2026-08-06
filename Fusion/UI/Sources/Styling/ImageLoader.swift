@@ -37,10 +37,10 @@ public extension UIImage {
 	
 // MARK: - Private Methods
 
-	@ThreadSafe
+	@ThreadSafeAsync
 	private static var inMemory: [String : UIImage] = [:]
 	
-	@ThreadSafe
+	@ThreadSafeAsync
 	private static var associated: [String : UIImage] = [:]
 	
 // MARK: - Protected Methods
