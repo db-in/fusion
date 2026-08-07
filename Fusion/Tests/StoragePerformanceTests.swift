@@ -152,13 +152,11 @@ struct ActorAtomic<Value>: Sendable where Value: Sendable {
 
 struct TestStorage: DataManageable {
 
-	typealias Storage = FileManager
+	typealias Storage = StateStorage
 
 	enum Key: String, CaseIterable {
 		case counterKey
 	}
-
-	static func throttleInterval(forKey key: Key) -> TimeInterval { 3_600 }
 
 	@Stored(TestStorage.self, key: .counterKey)
 	static var counter: Int?
@@ -171,7 +169,7 @@ class StoragePerformanceTests: XCTestCase {
 // MARK: - Properties
 
 	private let taskCount = 8
-	private let opsPerTask = 5_000
+	private let opsPerTask = 50_000
 
 // MARK: - Protected Methods
 
@@ -180,7 +178,7 @@ class StoragePerformanceTests: XCTestCase {
 	}
 
 	private func report(_ name: String, _ seconds: Double, count: Int) {
-		let paddedName = name.padding(toLength: 26, withPad: " ", startingAt: 0)
+		let paddedName = name.padding(toLength: 28, withPad: " ", startingAt: 0)
 		print(paddedName + String(format: "%8.4f s", seconds) + "  (final count: \(count))")
 	}
 
@@ -214,63 +212,59 @@ class StoragePerformanceTests: XCTestCase {
 		return count
 	}
 
-	private func benchmarkStorage(_ name: String) -> Int {
-		TestStorage.counter = 0
-		let start = DispatchTime.now()
-		DispatchQueue.concurrentPerform(iterations: taskCount) { _ in
-			for _ in 0..<opsPerTask {
-				TestStorage.counter = (TestStorage.counter ?? 0) + 1
-			}
-		}
-		let count = TestStorage.counter ?? 0
-		report(name, elapsedSeconds(since: start), count: count)
-		TestStorage.remove(keys: [.counterKey])
-		return count
-	}
-
 // MARK: - Exposed Methods
 
 	func testConcurrentAtomicCandidates_ShouldMeasureAndCompareAgainstStorage() async {
 		let expected = taskCount * opsPerTask
-		print("Simulating \(taskCount) concurrent tasks × \(opsPerTask) increments each (\(expected) total per candidate)\n")
+		print("Simulating \(taskCount) concurrent tasks × \(opsPerTask) increments each (\(expected) total per candidate)")
+		print("1–6 use atomic mutate; 7 uses @Stored get+set (not atomic under contention)\n")
 
 		let nsLock = LockedAtomic(wrappedValue: 0)
-		let nsLockCount = benchmarkThreads("1. NSLock") {
+		XCTAssertEqual(benchmarkThreads("1. NSLock") {
 			nsLock.mutate { $0 += 1 }
 		} finalCount: {
 			nsLock.wrappedValue
-		}
-		XCTAssertEqual(nsLockCount, expected)
+		}, expected)
 
 		let recursiveLock = RecursiveLockedAtomic(wrappedValue: 0)
-		let recursiveLockCount = benchmarkThreads("2. NSRecursiveLock") {
+		XCTAssertEqual(benchmarkThreads("2. NSRecursiveLock") {
 			recursiveLock.mutate { $0 += 1 }
 		} finalCount: {
 			recursiveLock.wrappedValue
-		}
-		XCTAssertEqual(recursiveLockCount, expected)
+		}, expected)
 
 		let gcd = GCDAtomic(wrappedValue: 0)
-		let gcdCount = benchmarkThreads("3. GCD barrier") {
+		XCTAssertEqual(benchmarkThreads("3. GCD barrier") {
 			gcd.mutate { $0 += 1 }
 		} finalCount: {
 			gcd.wrappedValue
-		}
-		XCTAssertEqual(gcdCount, expected)
+		}, expected)
 
 		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
 			let unfairLock = UnfairLockAtomic(wrappedValue: 0)
-			let unfairLockCount = benchmarkThreads("4. OSAllocatedUnfairLock") {
+			XCTAssertEqual(benchmarkThreads("4. OSAllocatedUnfairLock") {
 				unfairLock.mutate { $0 += 1 }
 			} finalCount: {
 				unfairLock.wrappedValue
-			}
-			XCTAssertEqual(unfairLockCount, expected)
+			}, expected)
 		}
 
 		let actorCount = await benchmarkActor("5. Actor")
 		XCTAssertEqual(actorCount, expected)
 
-		_ = benchmarkStorage("6. Fusion @Stored")
+		let threadSafe = ThreadSafe(wrappedValue: 0)
+		XCTAssertEqual(benchmarkThreads("6. Fusion ThreadSafe") {
+			threadSafe.mutate { $0 += 1 }
+		} finalCount: {
+			threadSafe.wrappedValue
+		}, expected)
+
+		TestStorage.counter = 0
+		_ = benchmarkThreads("7. Fusion Storage") {
+			TestStorage.counter = (TestStorage.counter ?? 0) + 1
+		} finalCount: {
+			TestStorage.counter ?? 0
+		}
+		TestStorage.remove(keys: [.counterKey])
 	}
 }

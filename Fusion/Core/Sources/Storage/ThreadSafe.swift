@@ -6,23 +6,35 @@ import Foundation
 
 // MARK: - Definitions -
 
-@available(*, deprecated, renamed: "ThreadSafeAsync")
-public typealias ThreadSafe<Value> = ThreadSafeAsync<Value>
-
 // MARK: - Type -
 
 @propertyWrapper
-public final class ThreadSafeAsync<Value> {
+public final class ThreadSafe<Value> {
 	
 	private var value: Value
-	private let queue = DispatchQueue(label: "\(UUID().uuidString)", attributes: .concurrent)
+	private let lock = NSLock()
 
 	public init(wrappedValue: Value) {
 		self.value = wrappedValue
 	}
 
 	public var wrappedValue: Value {
-		get { queue.sync(flags: .barrier) { value } }
-		set { queue.async(flags: .barrier) { [weak self] in self?.value = newValue } }
+		get {
+			lock.lock()
+			defer { lock.unlock() }
+			return value
+		}
+		set {
+			lock.lock()
+			defer { lock.unlock() }
+			value = newValue
+		}
+	}
+
+	@discardableResult
+	public func mutate<Result>(_ transform: (inout Value) -> Result) -> Result {
+		lock.lock()
+		defer { lock.unlock() }
+		return transform(&value)
 	}
 }

@@ -49,12 +49,17 @@ extension FileManager : DataStorageable {
 /// storage.
 public struct StateStorage : DataStorageable {
 	
+	@ThreadSafe
 	private static var objects: [String : Any] = [:]
 	public static let shared: DataStorageable = StateStorage()
 	
 	public func value<T : Decodable>(forKey key: String) -> T? { StateStorage.objects[key] as? T }
-	public func set<T : Encodable>(_ value: T?, forKey key: String) { StateStorage.objects[key] = value }
-	public func removeObject(forKey: String) { StateStorage.objects[forKey] = nil }
+	public func set<T : Encodable>(_ value: T?, forKey key: String) {
+		StateStorage._objects.mutate { $0[key] = value }
+	}
+	public func removeObject(forKey: String) {
+		StateStorage._objects.mutate { $0[forKey] = nil }
+	}
 }
 
 // MARK: - Extension - KeychainStorage

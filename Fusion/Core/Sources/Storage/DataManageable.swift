@@ -7,8 +7,12 @@ import Foundation
 // MARK: - Definitions -
 
 private struct ThrottleWrapper {
-	@ThreadSafeAsync
+	@ThreadSafe
 	static var timers: [String : DispatchSourceTimer] = [:]
+
+	static func mutate(_ transform: (inout [String : DispatchSourceTimer]) -> Void) {
+		_timers.mutate(transform)
+	}
 }
 
 @propertyWrapper
@@ -87,16 +91,18 @@ public extension DataManageable {
 		InMemoryCache.set(key: namespace, newValue: value)
 		let interval = throttleInterval(forKey: key)
 		if interval > 0 {
-			if ThrottleWrapper.timers[namespace] == nil {
-				let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .utility))
-				timer.schedule(deadline: .now() + interval)
-				timer.setEventHandler {
-					let cached: T? = InMemoryCache.get(key: namespace)
-					Storage.shared.set(cached, forKey: namespace)
-					ThrottleWrapper.timers[namespace] = nil
+			ThrottleWrapper.mutate { timers in
+				if timers[namespace] == nil {
+					let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .utility))
+					timer.schedule(deadline: .now() + interval)
+					timer.setEventHandler {
+						let cached: T? = InMemoryCache.get(key: namespace)
+						Storage.shared.set(cached, forKey: namespace)
+						ThrottleWrapper.mutate { $0[namespace] = nil }
+					}
+					timers[namespace] = timer
+					timer.resume()
 				}
-				ThrottleWrapper.timers[namespace] = timer
-				timer.resume()
 			}
 		} else {
 			Storage.shared.set(value, forKey: namespace)
@@ -113,9 +119,11 @@ public extension DataManageable {
 	static func remove<T>(keys: [Key], bindType: T.Type? = Any.self) {
 		keys.forEach {
 			let namespace = namespace($0)
-			if let timer = ThrottleWrapper.timers[namespace] {
-				timer.cancel()
-				ThrottleWrapper.timers[namespace] = nil
+			ThrottleWrapper.mutate { timers in
+				if let timer = timers[namespace] {
+					timer.cancel()
+					timers[namespace] = nil
+				}
 			}
 			Storage.shared.removeObject(forKey: namespace)
 			InMemoryCache.flush(key: namespace)

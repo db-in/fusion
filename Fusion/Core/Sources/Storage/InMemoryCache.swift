@@ -13,12 +13,14 @@ import Foundation
 public struct InMemoryCache {
 
 // MARK: - Properties
-	
-	@ThreadSafeAsync
-	private static var data: [String : Any] = [:]
-	
-	@ThreadSafeAsync
-	private static var references: [String : String] = [:]
+
+	private struct Store {
+		var data: [String : Any] = [:]
+		var references: [String : String] = [:]
+	}
+
+	@ThreadSafe
+	private static var store = Store()
 
 // MARK: - Constructors
 
@@ -33,7 +35,8 @@ public struct InMemoryCache {
 	///   - reference: An optional reference, if set the key will be bind to its reference, if reference changes, the key is invalidated.
 	/// - Returns: The cached value or the new value defined.
 	public static func get<T>(key: String, reference: String? = nil) -> T? {
-		guard let cache = data[key], references[key] == reference else { return nil }
+		let snapshot = store
+		guard let cache = snapshot.data[key], snapshot.references[key] == reference else { return nil }
 		return cache as? T
 	}
 
@@ -47,8 +50,10 @@ public struct InMemoryCache {
 	@discardableResult
 	public static func set<T>(key: String, reference: String? = nil, newValue: @autoclosure () -> T?) -> T? {
 		let value = newValue()
-		data[key] = value
-		references[key] = reference
+		_store.mutate {
+			$0.data[key] = value
+			$0.references[key] = reference
+		}
 		return value
 	}
 
@@ -69,13 +74,17 @@ public struct InMemoryCache {
 	/// Clears the existing cache for a given key.
 	/// - Parameter key: The key to be cleared
 	public static func flush(key: String) {
-		data[key] = nil
-		references[key] = nil
+		_store.mutate {
+			$0.data[key] = nil
+			$0.references[key] = nil
+		}
 	}
 
 	/// Flushes the in memory cache enterely.
 	public static func flushAll() {
-		data.removeAll()
-		references.removeAll()
+		_store.mutate {
+			$0.data.removeAll()
+			$0.references.removeAll()
+		}
 	}
 }

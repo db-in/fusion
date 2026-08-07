@@ -12,8 +12,12 @@ private struct Keys {
 
 private struct Wrapper {
 	
-	@ThreadSafeAsync
+	@ThreadSafe
 	static var all: [String : [TargetWrapper]] = [:]
+
+	static func mutate(_ transform: (inout [String : [TargetWrapper]]) -> Void) {
+		_all.mutate(transform)
+	}
 }
 
 private class DeinitCallback: NSObject {
@@ -103,17 +107,21 @@ public extension DataBindable {
 		let wrapper = TargetWrapper(cancellable, callback: callback)
 		let nameKey = namespace(key)
 		
-		if let item = Wrapper.all[nameKey] {
-			if let index = item.firstIndex(of: wrapper) {
-				item[index].binds.append(callback)
+		Wrapper.mutate { all in
+			if let item = all[nameKey] {
+				if let index = item.firstIndex(of: wrapper) {
+					item[index].binds.append(callback)
+				} else {
+					all[nameKey]?.append(wrapper)
+				}
 			} else {
-				Wrapper.all[nameKey]?.append(wrapper)
+				all[nameKey] = [wrapper]
 			}
-		} else {
-			Wrapper.all[nameKey] = [wrapper]
 		}
 		
-		cancellable.onDeinit { Wrapper.all[nameKey]?.removeAll(where: { $0 == wrapper }) }
+		cancellable.onDeinit {
+			Wrapper.mutate { $0[nameKey]?.removeAll(where: { $0 == wrapper }) }
+		}
 	}
 	
 	/// Binds a closure to be executed on every update of a given key or its removal.
@@ -129,17 +137,21 @@ public extension DataBindable {
 		let wrapper = TargetWrapper(cancellable, callback: callback)
 		let nameKey = namespace(key)
 		
-		if let item = Wrapper.all[nameKey] {
-			if let index = item.firstIndex(of: wrapper) {
-				item[index].binds.append(callback)
+		Wrapper.mutate { all in
+			if let item = all[nameKey] {
+				if let index = item.firstIndex(of: wrapper) {
+					item[index].binds.append(callback)
+				} else {
+					all[nameKey]?.append(wrapper)
+				}
 			} else {
-				Wrapper.all[nameKey]?.append(wrapper)
+				all[nameKey] = [wrapper]
 			}
-		} else {
-			Wrapper.all[nameKey] = [wrapper]
 		}
 		
-		cancellable.onDeinit { Wrapper.all[nameKey]?.removeAll(where: { $0 == wrapper }) }
+		cancellable.onDeinit {
+			Wrapper.mutate { $0[nameKey]?.removeAll(where: { $0 == wrapper }) }
+		}
 	}
 	
 	/// Binds a method in the target to a given key update.
@@ -165,7 +177,7 @@ public extension DataBindable {
 		let wrapper = TargetWrapper(cancellable, callback: nil)
 		let nameKey = namespace(key)
 		
-		Wrapper.all[nameKey]?.removeAll(where: { $0 == wrapper })
+		Wrapper.mutate { $0[nameKey]?.removeAll(where: { $0 == wrapper }) }
 	}
 	
 	/// Binds a closure to be executed only once on the next value update of the specified key.
@@ -218,10 +230,13 @@ public extension DataBindable {
 	///   - value: The new value that has been updated associated with the given key.
 	///   - key: A key that has a bind to it.
 	static func send<T>(forKey key: Key, value: T?) {
-		Wrapper.all[namespace(key)] = Wrapper.all[namespace(key)]?.compactMap { target in
-			guard target.object != nil else { return nil }
-			target.performBinds(value: value)
-			return target
+		let nameKey = namespace(key)
+		Wrapper.mutate { all in
+			all[nameKey] = all[nameKey]?.compactMap { target in
+				guard target.object != nil else { return nil }
+				target.performBinds(value: value)
+				return target
+			}
 		}
 	}
 }

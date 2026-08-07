@@ -129,7 +129,7 @@ public class Tween {
 	private var lastFrameTime: FPoint = 0
 	private static var tweens: [String: Tween] = [:]
 	
-	@ThreadSafeAsync
+	@ThreadSafe
 	private static var tweensQueue: DispatchQueue = .init(label: "tween.\(UUID().uuidString)", attributes: .concurrent)
 
 	public let identifier: String = UUID().uuidString

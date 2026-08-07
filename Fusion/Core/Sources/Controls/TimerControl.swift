@@ -20,10 +20,10 @@ final public class TimerControl {
 
 // MARK: - Properties
 	
-	@ThreadSafeAsync
+	@ThreadSafe
 	private var items: [String : (callback: TimerCallback, queue: DispatchQueue)] = [:]
 	
-	@ThreadSafeAsync
+	@ThreadSafe
 	private var timer: DispatchSourceTimer?
 	
 	private lazy var timerQueue: DispatchQueue = { .init(label: "timer.\(UUID().uuidString)", attributes: .concurrent) }()
