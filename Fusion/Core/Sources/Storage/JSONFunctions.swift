@@ -369,7 +369,8 @@ public extension FileManager {
 	}
 	
 	var appGroup: URL {
-		let directory = containerURL(forSecurityApplicationGroupIdentifier: Bundle.appGroup) ?? temporaryDirectory
+		let group = Bundle.appGroup
+		let directory = group.isEmpty ? temporaryDirectory : (containerURL(forSecurityApplicationGroupIdentifier: group) ?? temporaryDirectory)
 		guard Constant.isDebug else { return directory }
 		
 		let debugFolder = directory.appendingPathComponent("Debug")
