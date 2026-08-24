@@ -13,9 +13,9 @@ private struct Keys {
 private struct Wrapper {
 	
 	@ThreadSafe
-	static var all: [String : [TargetWrapper]] = [:]
+	static var all: [String : [ObjectIdentifier : TargetWrapper]] = [:]
 
-	static func mutate(_ transform: (inout [String : [TargetWrapper]]) -> Void) {
+	static func mutate(_ transform: (inout [String : [ObjectIdentifier : TargetWrapper]]) -> Void) {
 		_all.mutate(transform)
 	}
 }
@@ -42,7 +42,7 @@ private extension NSObject {
 	}
 }
 
-private class TargetWrapper: Equatable {
+private class TargetWrapper {
 	
 	weak var object: AnyObject?
 	var binds: [Any?] = []
@@ -60,10 +60,6 @@ private class TargetWrapper: Equatable {
 				asyncMain { callback() }
 			}
 		}
-	}
-	
-	static func == (lhs: TargetWrapper, rhs: TargetWrapper) -> Bool {
-		lhs.object === rhs.object
 	}
 }
 
@@ -104,23 +100,19 @@ public extension DataBindable {
 	///   - cancellable: A cancellable reference to be observed for deinitialization.
 	///   - callback: The closure to be executed on every update of the key.
 	static func bind<T>(key: Key, cancellable: NSObject, callback: @escaping Input<T>) {
-		let wrapper = TargetWrapper(cancellable, callback: callback)
 		let nameKey = namespace(key)
+		let identifier = ObjectIdentifier(cancellable)
 		
 		Wrapper.mutate { all in
-			if let item = all[nameKey] {
-				if let index = item.firstIndex(of: wrapper) {
-					item[index].binds.append(callback)
-				} else {
-					all[nameKey]?.append(wrapper)
-				}
+			if let target = all[nameKey]?[identifier] {
+				target.binds.append(callback)
 			} else {
-				all[nameKey] = [wrapper]
+				all[nameKey, default: [:]][identifier] = TargetWrapper(cancellable, callback: callback)
 			}
 		}
 		
 		cancellable.onDeinit {
-			Wrapper.mutate { $0[nameKey]?.removeAll(where: { $0 == wrapper }) }
+			Wrapper.mutate { $0[nameKey]?[identifier] = nil }
 		}
 	}
 	
@@ -134,23 +126,19 @@ public extension DataBindable {
 	///   - cancellable: A cancellable reference to be observed for deinitialization.
 	///   - callback: The closure to be executed on every update of the key.
 	static func bind(key: Key, cancellable: NSObject, callback: @escaping (() -> Void)) {
-		let wrapper = TargetWrapper(cancellable, callback: callback)
 		let nameKey = namespace(key)
+		let identifier = ObjectIdentifier(cancellable)
 		
 		Wrapper.mutate { all in
-			if let item = all[nameKey] {
-				if let index = item.firstIndex(of: wrapper) {
-					item[index].binds.append(callback)
-				} else {
-					all[nameKey]?.append(wrapper)
-				}
+			if let target = all[nameKey]?[identifier] {
+				target.binds.append(callback)
 			} else {
-				all[nameKey] = [wrapper]
+				all[nameKey, default: [:]][identifier] = TargetWrapper(cancellable, callback: callback)
 			}
 		}
 		
 		cancellable.onDeinit {
-			Wrapper.mutate { $0[nameKey]?.removeAll(where: { $0 == wrapper }) }
+			Wrapper.mutate { $0[nameKey]?[identifier] = nil }
 		}
 	}
 	
@@ -169,15 +157,15 @@ public extension DataBindable {
 	
 	/// Unbinds all closures associated with a given key and cancellable
 	///
-	/// - Complexity: O(*n*), where n is the current length of the all the keys with a bind.
+	/// - Complexity: O(1)
 	/// - Parameters:
 	///   - key: A given key that has a bind to it.
 	///   - cancellable: A cancellable that has been used in a `bind` call before
 	static func unbind(key: Key, cancellable: NSObject) {
-		let wrapper = TargetWrapper(cancellable, callback: nil)
 		let nameKey = namespace(key)
+		let identifier = ObjectIdentifier(cancellable)
 		
-		Wrapper.mutate { $0[nameKey]?.removeAll(where: { $0 == wrapper }) }
+		Wrapper.mutate { $0[nameKey]?[identifier] = nil }
 	}
 	
 	/// Binds a closure to be executed only once on the next value update of the specified key.
@@ -226,17 +214,26 @@ public extension DataBindable {
 	
 	/// Sends the update message to all the existing valid closures that has used `bind` on the given key.
 	///
+	/// - Complexity: O(*n*), where n is the number of cancellables bound to the given key.
 	/// - Parameters:
 	///   - value: The new value that has been updated associated with the given key.
 	///   - key: A key that has a bind to it.
 	static func send<T>(forKey key: Key, value: T?) {
 		let nameKey = namespace(key)
+		
 		Wrapper.mutate { all in
-			all[nameKey] = all[nameKey]?.compactMap { target in
-				guard target.object != nil else { return nil }
+			guard let targets = all[nameKey] else { return }
+			var expired: [ObjectIdentifier] = []
+			
+			for (identifier, target) in targets {
+				guard target.object != nil else {
+					expired.append(identifier)
+					continue
+				}
 				target.performBinds(value: value)
-				return target
 			}
+			
+			expired.forEach { all[nameKey]?[$0] = nil }
 		}
 	}
 }

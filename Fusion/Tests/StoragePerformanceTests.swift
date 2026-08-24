@@ -156,6 +156,7 @@ struct TestStorage: DataManageable {
 
 	enum Key: String, CaseIterable {
 		case counterKey
+		case bindKey
 	}
 
 	@Stored(TestStorage.self, key: .counterKey)
@@ -192,6 +193,55 @@ class StoragePerformanceTests: XCTestCase {
 		let count = finalCount()
 		report(name, elapsedSeconds(since: start), count: count)
 		return count
+	}
+
+	private func nanoseconds(_ seconds: Double, over operations: Int) -> Double {
+		seconds / Double(operations) * 1_000_000_000
+	}
+
+	private func drainMainQueue() {
+		let drained = expectation(description: "drained")
+		DispatchQueue.main.async { drained.fulfill() }
+		wait(for: [drained], timeout: 60)
+	}
+
+	private func benchmarkBindScaling(subscribers: Int, deliveries: Int) {
+		let key = TestStorage.Key.bindKey
+		let sends = max(1, deliveries / subscribers)
+		let received = LockedAtomic(wrappedValue: 0)
+		var cancellables: [NSObject] = []
+		cancellables.reserveCapacity(subscribers)
+
+		let bindStart = DispatchTime.now()
+		for _ in 0..<subscribers {
+			let cancellable = NSObject()
+			TestStorage.bind(key: key, cancellable: cancellable) { (_: Int?) in
+				received.mutate { $0 += 1 }
+			}
+			cancellables.append(cancellable)
+		}
+		let bindSeconds = elapsedSeconds(since: bindStart)
+
+		let sendStart = DispatchTime.now()
+		for index in 0..<sends {
+			TestStorage.send(forKey: key, value: index)
+		}
+		let sendSeconds = elapsedSeconds(since: sendStart)
+
+		let unbindStart = DispatchTime.now()
+		cancellables.forEach { TestStorage.unbind(key: key, cancellable: $0) }
+		let unbindSeconds = elapsedSeconds(since: unbindStart)
+
+		let column = "\(subscribers)".padding(toLength: 14, withPad: " ", startingAt: 0)
+		print(column + String(format: "%12.0f %14.0f %14.0f %18.0f",
+							  nanoseconds(bindSeconds, over: subscribers),
+							  nanoseconds(unbindSeconds, over: subscribers),
+							  nanoseconds(sendSeconds, over: sends),
+							  nanoseconds(sendSeconds, over: sends * subscribers)))
+
+		cancellables.removeAll()
+		drainMainQueue()
+		XCTAssertEqual(received.wrappedValue, sends * subscribers)
 	}
 
 	private func benchmarkActor(_ name: String) async -> Int {
@@ -266,5 +316,21 @@ class StoragePerformanceTests: XCTestCase {
 			TestStorage.counter ?? 0
 		}
 		TestStorage.remove(keys: [.counterKey])
+	}
+
+	func testBindScaling_ShouldMeasureBindSendAndUnbindAgainstSubscriberCount() {
+		let namespaceOps = 100_000
+		let namespaceStart = DispatchTime.now()
+		for _ in 0..<namespaceOps {
+			_ = TestStorage.namespace(TestStorage.Key.bindKey)
+		}
+		let namespaceSeconds = elapsedSeconds(since: namespaceStart)
+
+		print(String(format: "namespace() costs %.0f ns and is paid once by every bind, unbind and send\n",
+					 nanoseconds(namespaceSeconds, over: namespaceOps)))
+		print("Measuring against a growing number of cancellables bound to a single key")
+		print("subscribers      bind (ns)    unbind (ns)      send (ns)   send per sub (ns)")
+
+		[1, 10, 100, 1_000].forEach { benchmarkBindScaling(subscribers: $0, deliveries: 10_000) }
 	}
 }
