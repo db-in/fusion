@@ -11,11 +11,11 @@ private struct Keys {
 }
 
 private struct Wrapper {
-	
-	@ThreadSafe
-	static var all: [String : [TargetWrapper]] = [:]
 
-	static func mutate(_ transform: (inout [String : [TargetWrapper]]) -> Void) {
+	@ThreadSafe
+	static var all: [String : [ObjectIdentifier : TargetWrapper]] = [:]
+
+	static func mutate(_ transform: (inout [String : [ObjectIdentifier : TargetWrapper]]) -> Void) {
 		_all.mutate(transform)
 	}
 }
@@ -42,16 +42,16 @@ private extension NSObject {
 	}
 }
 
-private class TargetWrapper: Equatable {
-	
+private class TargetWrapper {
+
 	weak var object: AnyObject?
 	var binds: [Any?] = []
-	
+
 	init(_ object: AnyObject?, callback: Any?) {
 		self.object = object
 		self.binds = [callback]
 	}
-	
+
 	func performBinds<T>(value: T?) {
 		binds.forEach {
 			if let callback = ($0 as? Input<T>) {
@@ -60,10 +60,6 @@ private class TargetWrapper: Equatable {
 				asyncMain { callback() }
 			}
 		}
-	}
-	
-	static func == (lhs: TargetWrapper, rhs: TargetWrapper) -> Bool {
-		lhs.object === rhs.object
 	}
 }
 
@@ -104,23 +100,22 @@ public extension DataBindable {
 	///   - cancellable: A cancellable reference to be observed for deinitialization.
 	///   - callback: The closure to be executed on every update of the key.
 	static func bind<T>(key: Key, cancellable: NSObject, callback: @escaping Input<T>) {
-		let wrapper = TargetWrapper(cancellable, callback: callback)
 		let nameKey = namespace(key)
-		
+		let id = ObjectIdentifier(cancellable)
+
 		Wrapper.mutate { all in
-			if let item = all[nameKey] {
-				if let index = item.firstIndex(of: wrapper) {
-					item[index].binds.append(callback)
-				} else {
-					all[nameKey]?.append(wrapper)
-				}
+			if let existing = all[nameKey]?[id] {
+				existing.binds.append(callback)
 			} else {
-				all[nameKey] = [wrapper]
+				all[nameKey, default: [:]][id] = TargetWrapper(cancellable, callback: callback)
 			}
 		}
-		
+
 		cancellable.onDeinit {
-			Wrapper.mutate { $0[nameKey]?.removeAll(where: { $0 == wrapper }) }
+			Wrapper.mutate {
+				$0[nameKey]?[id] = nil
+				if $0[nameKey]?.isEmpty == true { $0[nameKey] = nil }
+			}
 		}
 	}
 	
@@ -134,23 +129,22 @@ public extension DataBindable {
 	///   - cancellable: A cancellable reference to be observed for deinitialization.
 	///   - callback: The closure to be executed on every update of the key.
 	static func bind(key: Key, cancellable: NSObject, callback: @escaping (() -> Void)) {
-		let wrapper = TargetWrapper(cancellable, callback: callback)
 		let nameKey = namespace(key)
-		
+		let id = ObjectIdentifier(cancellable)
+
 		Wrapper.mutate { all in
-			if let item = all[nameKey] {
-				if let index = item.firstIndex(of: wrapper) {
-					item[index].binds.append(callback)
-				} else {
-					all[nameKey]?.append(wrapper)
-				}
+			if let existing = all[nameKey]?[id] {
+				existing.binds.append(callback)
 			} else {
-				all[nameKey] = [wrapper]
+				all[nameKey, default: [:]][id] = TargetWrapper(cancellable, callback: callback)
 			}
 		}
-		
+
 		cancellable.onDeinit {
-			Wrapper.mutate { $0[nameKey]?.removeAll(where: { $0 == wrapper }) }
+			Wrapper.mutate {
+				$0[nameKey]?[id] = nil
+				if $0[nameKey]?.isEmpty == true { $0[nameKey] = nil }
+			}
 		}
 	}
 	
@@ -169,15 +163,18 @@ public extension DataBindable {
 	
 	/// Unbinds all closures associated with a given key and cancellable
 	///
-	/// - Complexity: O(*n*), where n is the current length of the all the keys with a bind.
+	/// - Complexity: O(1)
 	/// - Parameters:
 	///   - key: A given key that has a bind to it.
 	///   - cancellable: A cancellable that has been used in a `bind` call before
 	static func unbind(key: Key, cancellable: NSObject) {
-		let wrapper = TargetWrapper(cancellable, callback: nil)
 		let nameKey = namespace(key)
-		
-		Wrapper.mutate { $0[nameKey]?.removeAll(where: { $0 == wrapper }) }
+		let id = ObjectIdentifier(cancellable)
+
+		Wrapper.mutate {
+			$0[nameKey]?[id] = nil
+			if $0[nameKey]?.isEmpty == true { $0[nameKey] = nil }
+		}
 	}
 	
 	/// Binds a closure to be executed only once on the next value update of the specified key.
@@ -232,7 +229,7 @@ public extension DataBindable {
 	static func send<T>(forKey key: Key, value: T?) {
 		let nameKey = namespace(key)
 		Wrapper.mutate { all in
-			all[nameKey] = all[nameKey]?.compactMap { target in
+			all[nameKey] = all[nameKey]?.compactMapValues { target in
 				guard target.object != nil else { return nil }
 				target.performBinds(value: value)
 				return target
