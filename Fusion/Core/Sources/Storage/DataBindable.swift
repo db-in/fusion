@@ -11,7 +11,7 @@ private struct Keys {
 }
 
 private struct Wrapper {
-	
+
 	@ThreadSafe
 	static var all: [String : [ObjectIdentifier : TargetWrapper]] = [:]
 
@@ -42,16 +42,15 @@ private extension NSObject {
 	}
 }
 
-private class TargetWrapper {
-	
+private class TargetWrapper {	
 	weak var object: AnyObject?
 	var binds: [Any?] = []
-	
+
 	init(_ object: AnyObject?, callback: Any?) {
 		self.object = object
 		self.binds = [callback]
 	}
-	
+
 	func performBinds<T>(value: T?) {
 		binds.forEach {
 			if let callback = ($0 as? Input<T>) {
@@ -110,7 +109,7 @@ public extension DataBindable {
 				all[nameKey, default: [:]][identifier] = TargetWrapper(cancellable, callback: callback)
 			}
 		}
-		
+
 		cancellable.onDeinit {
 			Wrapper.mutate { $0[nameKey]?[identifier] = nil }
 		}
@@ -136,7 +135,7 @@ public extension DataBindable {
 				all[nameKey, default: [:]][identifier] = TargetWrapper(cancellable, callback: callback)
 			}
 		}
-		
+
 		cancellable.onDeinit {
 			Wrapper.mutate { $0[nameKey]?[identifier] = nil }
 		}
