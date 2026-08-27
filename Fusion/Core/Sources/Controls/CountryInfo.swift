@@ -219,7 +219,7 @@ public struct CountryInfo {
 	public func flagURL(type: FlagType) -> String {
 		let isoCode = isoCode2.lowercased()
 		switch type {
-		case .squared: return "https://vectorflags.s3-us-west-2.amazonaws.com/flags/\(isoCode)-square-01.png"
+		case .squared: return "https://raw.githubusercontent.com/db-in/fusion/refs/heads/master/Images/Flags/128/\(isoCode).png"
 		case .vector: return "https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/1x1/\(isoCode).svg"
 		default: return "https://flagcdn.com/\(type.size)/\(isoCode).\(type.format)"
 		}
