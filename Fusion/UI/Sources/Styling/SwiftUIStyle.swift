@@ -236,8 +236,20 @@ public struct AsyncImageCached<Content: View, Placeholder: View>: View {
 	public var body: some View {
 		Group {
 			if let image = image {
-				content?(Image(uiImage: image))
+				if image.images != nil {
+					UIKitView {
+						let imageView = UIImageView(image: image)
+						imageView.contentMode = .scaleAspectFit
+						imageView.clipsToBounds = true
+						imageView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+						imageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+						return imageView
+					}
 					.accessibilityIdentifier(image.accessibilityIdentifier ?? "")
+				} else {
+					content?(Image(uiImage: image))
+						.accessibilityIdentifier(image.accessibilityIdentifier ?? "")
+				}
 			} else {
 				placeholder?()
 			}

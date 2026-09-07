@@ -122,9 +122,12 @@ public extension UIImage {
 	static func loadCache(url: String, allowsBadge: Bool = true, storage: URL? = nil) -> UIImage? {
 		guard !url.isEmpty else { return nil }
 		if let inMemoryImage = inMemory[url]?.resolve(badge: allowsBadge, key: url) { return inMemoryImage }
-			
+		
+		let fileURL = url.toURL
+		let fileData = fileURL.isFileURL ? try? Data(contentsOf: fileURL) : nil
+		
 		guard
-			let data = URLCache.appGroup.cachedResponse(for: .init(url: url.toURL))?.data ?? storage?.readImageData(withKey: url),
+			let data = URLCache.appGroup.cachedResponse(for: .init(url: fileURL))?.data ?? storage?.readImageData(withKey: url) ?? fileData,
 			let image = url.contains(".gif") ? UIImage.images(gifData: data) : UIImage(data: data)
 		else { return nil }
 		
