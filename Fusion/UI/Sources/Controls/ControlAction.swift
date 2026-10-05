@@ -40,6 +40,10 @@ public struct ControlAction {
 // MARK: - Properties
 	
 	public let title: TextConvertible?
+	public let leftBadgeTitle: TextConvertible?
+	public let leftBadgeColor: UIColor?
+	public let rightBadgeTitle: TextConvertible?
+	public let rightBadgeColor: UIColor?
 	public let image: UIImage?
 	public let isEnabled: Bool
 	public let isSelected: Bool
@@ -49,12 +53,20 @@ public struct ControlAction {
 // MARK: - Constructors
 	
 	public init(title: TextConvertible? = nil,
+				leftBadgeTitle: TextConvertible? = nil,
+				leftBadgeColor: UIColor? = nil,
+				rightBadgeTitle: TextConvertible? = nil,
+				rightBadgeColor: UIColor? = nil,
 				image: UIImage? = nil,
 				enabled: Bool = true,
 				selected: Bool = false,
 				highlighted: Bool = false,
 				action: ControlHandler? = nil) {
 		self.title = title
+		self.leftBadgeTitle = leftBadgeTitle
+		self.leftBadgeColor = leftBadgeColor
+		self.rightBadgeTitle = rightBadgeTitle
+		self.rightBadgeColor = rightBadgeColor
 		self.image = image
 		self.action = action
 		self.isEnabled = enabled
