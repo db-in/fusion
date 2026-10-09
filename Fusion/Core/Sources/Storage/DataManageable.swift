@@ -54,6 +54,15 @@ public struct StoredReadOnly<Parent : DataManageable, Value : Codable> {
 /// allowing fine-grained control over which data should have delayed persistence.
 public protocol DataManageable : DataBindable {
 	associatedtype Storage : DataStorageable
+
+	/// Returns the throttle interval for a specific key. Implement this method to provide per-key throttle behavior.
+	/// When set to a value greater than 0, write operations to Storage will be delayed for this key.
+	/// For reading purpose the new value reflects immediately and all DataBindable process remains unaffected.
+	/// The throttle only affects the I/O operation on the actual Storage.
+	///
+	/// - Parameter key: The key to check for a specific throttle interval.
+	/// - Returns: The throttle interval in seconds for the given key. Default is `0` (no throttling).
+	static func throttleInterval(forKey key: Key) -> TimeInterval
 }
 
 // MARK: - Extension - DataManageable
@@ -62,13 +71,10 @@ public extension DataManageable {
 	
 // MARK: - Exposed Methods
 	
-	/// Returns the throttle interval for a specific key. Override this method to provide per-key throttle behavior.
-	/// When set to a value greater than 0, write operations to Storage will be delayed for this key.
-	/// For reading purpose the new value reflects immediately and all DataBindable process remains unaffected.
-	/// The throttle only affects the I/O operation on the actual Storage.
+	/// The default throttle interval, applied when a conforming type does not implement `throttleInterval(forKey:)`.
 	///
 	/// - Parameter key: The key to check for a specific throttle interval.
-	/// - Returns: The throttle interval in seconds for the given key. Default is `0` (no throttling).
+	/// - Returns: `0`, meaning no throttling.
 	static func throttleInterval(forKey key: Key) -> TimeInterval { 0 }
 	
 	/// Retrieves the value associated with a given key.

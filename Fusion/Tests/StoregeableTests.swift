@@ -25,6 +25,25 @@ class StoregeableTests: XCTestCase {
 			case multiTest
 		}
 	}
+
+	class ThrottledMockStorage: DataManageable {
+		typealias Storage = StateStorage
+
+		static let interval: TimeInterval = 0.2
+
+		enum Key : String {
+			case throttled
+			case coalesced
+			case immediate
+		}
+
+		static func throttleInterval(forKey key: Key) -> TimeInterval {
+			switch key {
+			case .throttled, .coalesced: return interval
+			case .immediate: return 0
+			}
+		}
+	}
 	
 // MARK: - Properties
 	
@@ -215,5 +234,45 @@ class StoregeableTests: XCTestCase {
 		Keychain.shared.set(value, forKey: key)
 		Keychain.shared.removeObject(forKey: key)
 		XCTAssertNotEqual(Keychain.shared.value(forKey: key), value)
+	}
+
+	func testThrottleInterval_WithConformerDefinedInterval_ShouldDeferStorageWriteAndKeepValueReadable() {
+		let namespace = ThrottledMockStorage.namespace(ThrottledMockStorage.Key.throttled)
+
+		ThrottledMockStorage.set(value, forKey: .throttled)
+
+		let persisted: String? = StateStorage.shared.value(forKey: namespace)
+		XCTAssertNil(persisted)
+		XCTAssertEqual(ThrottledMockStorage.value(forKey: .throttled), value)
+	}
+
+	func testThrottleInterval_WithZeroInterval_ShouldWriteToStorageImmediately() {
+		let namespace = ThrottledMockStorage.namespace(ThrottledMockStorage.Key.immediate)
+
+		ThrottledMockStorage.set(value, forKey: .immediate)
+
+		let persisted: String? = StateStorage.shared.value(forKey: namespace)
+		XCTAssertEqual(persisted, value)
+	}
+
+	func testThrottleInterval_WithRepeatedWritesInsideTheWindow_ShouldPersistOnlyTheLatestValueAfterTheInterval() {
+		let expectation = expectation(description: #function)
+		let namespace = ThrottledMockStorage.namespace(ThrottledMockStorage.Key.coalesced)
+		let latest = "latest"
+
+		ThrottledMockStorage.set(value, forKey: .coalesced)
+		ThrottledMockStorage.set("intermediate", forKey: .coalesced)
+		ThrottledMockStorage.set(latest, forKey: .coalesced)
+
+		let duringWindow: String? = StateStorage.shared.value(forKey: namespace)
+		XCTAssertNil(duringWindow)
+
+		DispatchQueue.main.asyncAfter(deadline: .now() + ThrottledMockStorage.interval * 2) {
+			let afterWindow: String? = StateStorage.shared.value(forKey: namespace)
+			XCTAssertEqual(afterWindow, latest)
+			expectation.fulfill()
+		}
+
+		wait(for: [expectation], timeout: 1.0)
 	}
 }
