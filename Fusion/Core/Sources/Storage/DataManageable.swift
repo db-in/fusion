@@ -77,6 +77,17 @@ public extension DataManageable {
 	/// - Returns: `0`, meaning no throttling.
 	static func throttleInterval(forKey key: Key) -> TimeInterval { 0 }
 	
+	/// Returns the keys of this type that currently hold a value in its `Storage`, including dynamic keys
+	/// that are not part of `allCases`. The order is not guaranteed.
+	///
+	/// - Complexity: O(*n*), where n is the number of keys tracked by the underlying `Storage`.
+	/// - Parameter prefix: Filters the keys whose raw value starts with the prefix. By default, all keys of this type are returned.
+	/// - Returns: The matching keys.
+	static func keys(prefix: String = "") -> [Key] {
+		let base = "\(Self.prefix)."
+		return Storage.shared.keys(prefix: base + prefix).compactMap { (String($0.dropFirst(base.count)) as? Key.RawValue).flatMap(Key.init(rawValue:)) }
+	}
+	
 	/// Retrieves the value associated with a given key.
 	///
 	/// - Parameter key: The key associated with the value.
@@ -95,6 +106,7 @@ public extension DataManageable {
 	static func set<T : Encodable>(_ value: T?, forKey key: Key) {
 		let namespace = namespace(key)
 		InMemoryCache.set(key: namespace, newValue: value)
+		Storage.shared.track(key: namespace, isStored: value != nil)
 		let interval = throttleInterval(forKey: key)
 		if interval > 0 {
 			ThrottleWrapper.mutate { timers in
@@ -132,6 +144,7 @@ public extension DataManageable {
 				}
 			}
 			Storage.shared.removeObject(forKey: namespace)
+			Storage.shared.track(key: namespace, isStored: false)
 			InMemoryCache.flush(key: namespace)
 			send(forKey: $0, value: nil as T?)
 		}
@@ -165,7 +178,7 @@ public extension DataManageable where Key : CaseIterable & Hashable {
 	
 	static func removeAllKeys(except: [Key] = []) {
 		guard let all = Key.allCases as? [Key] else { return }
-		let filteredKeys = Set(all).subtracting(Set(except))
+		let filteredKeys = Set(all).union(keys()).subtracting(Set(except))
 		remove(keys: Array(filteredKeys))
 	}
 }

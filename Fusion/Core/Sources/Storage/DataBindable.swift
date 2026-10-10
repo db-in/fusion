@@ -85,7 +85,7 @@ public protocol DataBindable {
 
 public extension DataBindable {
 	
-	private static var prefix: String { "\(Constant.isDebug ? "d-" : "")\(Self.self)" }
+	internal static var prefix: String { "\(Constant.isDebug ? "d-" : "")\(Self.self)" }
 	
 	static func namespace<T: RawRepresentable>(_ key: T) -> String { "\(prefix).\(key.rawValue)" }
 	

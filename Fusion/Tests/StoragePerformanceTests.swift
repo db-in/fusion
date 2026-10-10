@@ -163,6 +163,21 @@ struct TestStorage: DataManageable {
 	static var counter: Int?
 }
 
+struct IndexedKey : Hashable, RawRepresentable, CaseIterable {
+	var rawValue: String
+	static var allCases: [IndexedKey] { [] }
+}
+
+struct IndexedStateStorage : DataManageable {
+	typealias Storage = StateStorage
+	typealias Key = IndexedKey
+}
+
+struct IndexedFileStorage : DataManageable {
+	typealias Storage = FileManager
+	typealias Key = IndexedKey
+}
+
 // MARK: - Type -
 
 class StoragePerformanceTests: XCTestCase {
@@ -332,5 +347,43 @@ class StoragePerformanceTests: XCTestCase {
 		print("subscribers      bind (ns)    unbind (ns)      send (ns)   send per sub (ns)")
 
 		[1, 10, 100, 1_000].forEach { benchmarkBindScaling(subscribers: $0, deliveries: 10_000) }
+	}
+
+	private func benchmarkKeyIndex<S : DataManageable>(_ name: String, _ type: S.Type, newKeys: Int, updates: Int) where S.Key == IndexedKey {
+		let newStart = DispatchTime.now()
+		for index in 0..<newKeys {
+			type.set(index, forKey: IndexedKey(rawValue: "item.\(index)"))
+		}
+		let newSeconds = elapsedSeconds(since: newStart)
+
+		let updateStart = DispatchTime.now()
+		for index in 0..<updates {
+			type.set(index, forKey: IndexedKey(rawValue: "item.0"))
+		}
+		let updateSeconds = elapsedSeconds(since: updateStart)
+
+		let listStart = DispatchTime.now()
+		let count = type.keys(prefix: "item.").count
+		let listSeconds = elapsedSeconds(since: listStart)
+
+		let removeStart = DispatchTime.now()
+		type.removeAllKeys()
+		let removeSeconds = elapsedSeconds(since: removeStart)
+
+		let column = name.padding(toLength: 14, withPad: " ", startingAt: 0)
+		print(column + String(format: "%14.0f %14.0f %14.0f %16.0f",
+							  nanoseconds(newSeconds, over: newKeys),
+							  nanoseconds(updateSeconds, over: updates),
+							  nanoseconds(listSeconds, over: 1),
+							  nanoseconds(removeSeconds, over: newKeys)))
+
+		XCTAssertEqual(count, newKeys)
+		XCTAssertTrue(type.keys().isEmpty)
+	}
+
+	func testKeyIndex_ShouldMeasureNewKeysUpdatesListingAndRemoval() {
+		print("storage        new key (ns)    update (ns)     keys() (ns)   remove all (ns/key)")
+		benchmarkKeyIndex("StateStorage", IndexedStateStorage.self, newKeys: 10_000, updates: 100_000)
+		benchmarkKeyIndex("FileManager", IndexedFileStorage.self, newKeys: 1_000, updates: 1_000)
 	}
 }

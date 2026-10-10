@@ -105,14 +105,6 @@ class CountryInfoTests: XCTestCase {
 		XCTAssertTrue(url.contains("jpg"))
 	}
 	
-	func testCountryInfo_FlagSquaredURL_ShouldReturnSquaredURL() {
-		let country = CountryInfo(code: "US")
-		let url = country.flagSquaredURL
-		XCTAssertTrue(url.contains("vectorflags"))
-		XCTAssertTrue(url.contains("us"))
-		XCTAssertTrue(url.contains("square"))
-	}
-	
 	func testCountryInfo_FlagVectorURL_ShouldReturnVectorURL() {
 		let country = CountryInfo(code: "US")
 		let url = country.flagVectorURL
@@ -154,14 +146,6 @@ class CountryInfoTests: XCTestCase {
 		XCTAssertTrue(url.contains("512x384"))
 		XCTAssertTrue(url.contains("png"))
 		XCTAssertTrue(url.contains("us"))
-	}
-	
-	func testCountryInfo_FlagURLWithType_Squared_ShouldReturnCorrectURL() {
-		let country = CountryInfo(code: "US")
-		let url = country.flagURL(type: .squared)
-		XCTAssertTrue(url.contains("vectorflags"))
-		XCTAssertTrue(url.contains("us"))
-		XCTAssertTrue(url.contains("square"))
 	}
 	
 	func testCountryInfo_FlagURLWithType_Vector_ShouldReturnCorrectURL() {

@@ -57,6 +57,27 @@ public struct InMemoryCache {
 		return value
 	}
 
+	/// Atomically mutates the cached value in place for a given key. While the transform runs, the cache doesn't hold
+	/// its own reference to the value, so value types like collections are mutated without a copy.
+	/// If there is no cached value of the expected type, the default value is resolved outside the lock
+	/// and becomes the starting value.
+	///
+	/// - Complexity: O(1), plus the cost of the transform.
+	/// - Parameters:
+	///   - key: A given key for the cache.
+	///   - defaultValue: An autoclosure encapsulated that will only trigger if there is no cache available for the given key.
+	///   - transform: The closure that mutates the value and returns a result.
+	/// - Returns: The result returned by the transform.
+	@discardableResult
+	public static func mutate<T, Result>(key: String, default defaultValue: @autoclosure () -> T, _ transform: (inout T) -> Result) -> Result {
+		let fallback: T? = store.data[key] is T ? nil : defaultValue()
+		return _store.mutate { store in
+			var value = store.data.removeValue(forKey: key) as? T ?? fallback ?? defaultValue()
+			defer { store.data[key] = value }
+			return transform(&value)
+		}
+	}
+
 	/// Returns the cached value if it exists for a given key,
 	/// otherwise uses the `newValue` parameter to define the new value and caches it.
 	///
