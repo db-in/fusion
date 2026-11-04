@@ -1,13 +1,13 @@
-// swift-tools-version:5.7
+// swift-tools-version:6.0
 import PackageDescription
 
 let package = Package(
 	name: "Fusion",
 	platforms: [
-		.macOS(.v12),
-		.iOS(.v15),
-		.tvOS(.v15),
-		.watchOS(.v9)
+		.macOS(.v14),
+		.iOS(.v17),
+		.tvOS(.v17),
+		.watchOS(.v10)
 	],
 	products: [
 		.library(
@@ -52,5 +52,6 @@ let package = Package(
 				.define("GENERATE_INFOPLIST_FILE")
 			]
 		)
-	]
+	],
+	swiftLanguageModes: [.v5]
 )

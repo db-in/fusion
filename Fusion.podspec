@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "Fusion"
-  s.version = "1.7.11"
+  s.version = "2.0.0"
   s.summary = "Micro Feature"
   s.description = <<-DESC
 				  Fusion is resposible for ...
@@ -13,10 +13,10 @@ Pod::Spec.new do |s|
   
   s.swift_version = '5.0'
   s.requires_arc = true
-  s.osx.deployment_target = '12.0'
-  s.ios.deployment_target = '15.0'
-  s.tvos.deployment_target = '15.0'
-  s.watchos.deployment_target = '9.0'
+  s.osx.deployment_target = '14.0'
+  s.ios.deployment_target = '17.0'
+  s.tvos.deployment_target = '17.0'
+  s.watchos.deployment_target = '10.0'
   s.user_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES', 'MARKETING_VERSION' => "#{s.version}" }
   s.pod_target_xcconfig = { 'GENERATE_INFOPLIST_FILE' => 'YES', 'MARKETING_VERSION' => "#{s.version}"  }
   s.resources = 'Fusion/**/*.{xcprivacy}'

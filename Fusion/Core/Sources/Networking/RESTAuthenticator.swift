@@ -14,7 +14,21 @@ public class RESTAuthenticator : NSObject, URLSessionDelegate {
 	
 	public static let shared: RESTAuthenticator = RESTAuthenticator()
 	
-	public static var session: URLSession = {
+	private static let sessionStorage = ThreadSafe<URLSession?>(wrappedValue: nil)
+	
+	public static var session: URLSession {
+		get {
+			sessionStorage.mutate { session in
+				if let session { return session }
+				let newSession = makeSession()
+				session = newSession
+				return newSession
+			}
+		}
+		set { sessionStorage.wrappedValue = newValue }
+	}
+	
+	private static func makeSession() -> URLSession {
 		let storage = HTTPCookieStorage.appGroup
 		let config = URLSessionConfiguration.default
 		
@@ -28,7 +42,7 @@ public class RESTAuthenticator : NSObject, URLSessionDelegate {
 		config.sharedContainerIdentifier = Bundle.appGroup
 		
 		return .init(configuration: config, delegate: RESTAuthenticator.shared, delegateQueue: nil)
-	}()
+	}
 	
 	public func urlSession(_ session: URLSession,
 						   didReceive challenge: URLAuthenticationChallenge,
@@ -48,18 +62,7 @@ public class RESTAuthenticator : NSObject, URLSessionDelegate {
 		
 		var secresult: CFError?
 		let status = SecTrustEvaluateWithError(serverTrust, &secresult)
-		let certificate: SecCertificate?
-		
-		if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-			let chain = (SecTrustCopyCertificateChain(serverTrust) as NSArray?)?.firstObject as? AnyObject
-			if CFGetTypeID(chain) == SecCertificateGetTypeID() {
-				certificate = (chain?.firstObject as! SecCertificate)
-			} else {
-				certificate = nil
-			}
-		} else {
-			certificate = SecTrustGetCertificateAtIndex(serverTrust, 0)
-		}
+		let certificate = (SecTrustCopyCertificateChain(serverTrust) as? [SecCertificate])?.first
 		
 		if status, let validCert = certificate {
 			

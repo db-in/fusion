@@ -25,10 +25,15 @@ public extension Bundle {
 
 // MARK: - Properties
 	
-	private static var cachedLanguages: [String : [Bundle]] = [:]
+	private static let cachedLanguages = ThreadSafe<[String : [Bundle]]>(wrappedValue: [:])
+	
+	private static let hintsStorage = ThreadSafe<[Bundle]>(wrappedValue: [])
 	
 	/// Hints are the first bundles to be scanned for loading contents. Including (but not limited to) languages, images, url, etc.
-	static var hints: [Bundle] = []
+	static var hints: [Bundle] {
+		get { hintsStorage.wrappedValue }
+		set { hintsStorage.wrappedValue = newValue }
+	}
 	
 	/// Returns a combined collection of `Bundle.allBundles` + `Bundle.allFrameworks`, in this given order.
 	static var allOthers: [Bundle] { allBundles + allFrameworks }
@@ -43,7 +48,7 @@ public extension Bundle {
 	
 	/// Flushes the cached languages.
 	static func flushCachedLanguages() {
-		cachedLanguages = [:]
+		cachedLanguages.wrappedValue = [:]
 	}
 	
 	/// Returns the language bundle inside this given bundle for a given language code, otherwise it returns `nil`.
@@ -78,7 +83,7 @@ public extension Bundle {
 			let languageBundle = languages(for: language),
 			let value = languageBundle.localizedString(forKey: key, table: table)
 		else { return nil }
-		Self.cachedLanguages[language, default: []].appendOnce(languageBundle)
+		Self.cachedLanguages.mutate { $0[language, default: []].appendOnce(languageBundle) }
 		return value
 	}
 	
@@ -94,7 +99,7 @@ public extension Bundle {
 	/// convention, utilizing `nocache` to avoid strong caching.
 	/// - SeeAlso: [Apple Loading String Resources Documentation](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/LoadingResources/Strings/Strings.html#//apple_ref/doc/uid/10000051i-CH6-97055-CJBFDJGF)
 	static func localizedString(language: String, key: String, table: String?) -> String? {
-		let value = cachedLanguages[language]?.firstMap({ $0.localizedString(forKey: key, table: table) })
+		let value = cachedLanguages.wrappedValue[language]?.firstMap({ $0.localizedString(forKey: key, table: table) })
 		return value ?? allAvailable.firstMap({ $0.localizedString(language: language, key: key, table: table) })
 	}
 	
@@ -106,10 +111,12 @@ public extension Bundle {
 	/// - Returns: The same `bundle`, for call chaining.
 	@discardableResult
 	static func registering(_ bundle: Bundle, at index: Int? = nil) -> Bundle {
-		if let index {
-			hints.insertOnce(bundle, at: index)
-		} else {
-			hints.appendOnce(bundle)
+		hintsStorage.mutate { hints in
+			if let index {
+				hints.insertOnce(bundle, at: index)
+			} else {
+				hints.appendOnce(bundle)
+			}
 		}
 		return bundle
 	}
@@ -123,8 +130,13 @@ public extension String {
 	
 	private static var tableKey: UInt8 = 1
 	
+	private static let localizableTableStorage = ThreadSafe<String?>(wrappedValue: nil)
+	
 	/// Localizable Table strings.
-	static var localizableTable: String? = nil
+	static var localizableTable: String? {
+		get { localizableTableStorage.wrappedValue }
+		set { localizableTableStorage.wrappedValue = newValue }
+	}
 	
 	/// Returns the language code in ISO 639-1 format (2 alpha codes).
 	var codeISO2: String { prefix(2).lowercased() }
@@ -194,13 +206,7 @@ public extension Locale {
 	/// Example: "ar-AE", "en-US", "de-DE". Returns only language code if region is not available.
 	/// Suitable for use with AppleLanguages UserDefaults key.
 	/// - SeeAlso: [BCP 47](https://en.wikipedia.org/wiki/BCP_47)
-	var languageIdentifier: String {
-		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
-			return language.languageCode?.identifier ?? ""
-		} else {
-			return languageCode ?? ""
-		}
-	}
+	var languageIdentifier: String { language.languageCode?.identifier ?? "" }
 	
 	/// Returns the language code in ISO 639-1 format (2 alpha codes).
 	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
@@ -210,26 +216,14 @@ public extension Locale {
 	/// Example: "US", "DE", "AE". Returns an empty string if region is not available.
 	/// Suitable for use with AppleLanguages UserDefaults key and locale construction.
 	/// - SeeAlso: [BCP 47](https://en.wikipedia.org/wiki/BCP_47)
-	var regionIdentifier: String {
-		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
-			return region?.identifier ?? ""
-		} else {
-			return regionCode ?? ""
-		}
-	}
+	var regionIdentifier: String { region?.identifier ?? "" }
 
 	/// Returns the region code in ISO 3166-1 alpha-2 format (2 alpha codes).
 	/// - SeeAlso: [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1)
 	var regionCodeISO2: String { regionIdentifier.prefix(2).lowercased() }
 	
 	/// Returns true if the given locale has a language code that belong to right to left direction.
-	var isRTL: Bool {
-		if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
-			return language.characterDirection != .leftToRight
-		} else {
-			return Locale.characterDirection(forLanguage: languageCode ?? "") != .leftToRight
-		}
-	}
+	var isRTL: Bool { language.characterDirection != .leftToRight }
 	
 	/// A dictionary that groups locales by their currency code.
 	static let currencyGroups: [String : [Locale]] = {

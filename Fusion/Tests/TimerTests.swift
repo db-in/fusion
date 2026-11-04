@@ -2,134 +2,175 @@
 //  Created by Diney on 5/1/23.
 //
 
-import XCTest
+import Foundation
+import Testing
 @testable import Fusion
 #if canImport(UIKit)
 import UIKit
 #endif
 
-class TimerControlTests: XCTestCase {
+private func sleep(seconds: Double) async {
+	try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+}
+
+extension FusionSuite {
 	
-	let timeout: TimeInterval = 1.0
-	let frequency: TimeInterval = 1.0 / 60.0
-	
-	func testTimerCyclePrecision_WhenAddingAnItem_ShouldExecuteCallbackWithExpectedPrecision() {
-		let expectation = expectation(description: #function)
-		let timer = TimerControl.shared
-		var cycles: Int = 0
+	@Suite
+	struct TimerControlTests {
 		
-		timer.addItem(key: #function) {
-			cycles += 1
+		let timeout: Double = 1.0
+		let frequency: Double = 1.0 / 60.0
+		
+		@Test
+		func timerCyclePrecision_WhenAddingAnItem_ShouldExecuteCallbackWithExpectedPrecision() async {
+			let timer = TimerControl()
+			let cycles = ThreadSafe(wrappedValue: 0)
+			timer.addItem(key: #function, queue: .global()) { cycles.mutate { $0 += 1 } }
+			await sleep(seconds: timeout)
+			timer.removeAll()
+			let expected = Int(timeout / frequency)
+			#expect(abs(cycles.wrappedValue - expected) <= expected / 10)
 		}
 		
-		DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
-			XCTAssertEqual(cycles, Int(self.timeout / self.frequency), accuracy: 1)
-			expectation.fulfill()
+		@Test
+		func addItem_WithItemsAddedWhileRunning_ShouldKeepTheTickFrequency() async {
+			let timer = TimerControl()
+			let cycles = ThreadSafe(wrappedValue: 0)
+			let start = CFAbsoluteTimeGetCurrent()
+			timer.addItem(key: "first", queue: .global()) { cycles.mutate { $0 += 1 } }
+			for index in 0..<250 {
+				timer.addItem(key: "item_\(index)", queue: .global()) { }
+				await sleep(seconds: 0.002)
+			}
+			timer.removeAll()
+			let elapsed = CFAbsoluteTimeGetCurrent() - start
+			#expect(Double(cycles.wrappedValue) <= elapsed / frequency * 1.5 + 2)
 		}
 		
-		wait(for: [expectation], timeout: timeout + 1.0)
-	}
-	
-	func testAddItem_WhenAddingAnItem_ShouldExecuteCallback() {
-		let expectation = expectation(description: #function)
-		let timer = TimerControl()
+		@Test
+		func removeAll_AfterAddingItems_ShouldStopEveryCallback() async {
+			let timer = TimerControl()
+			let cycles = ThreadSafe(wrappedValue: 0)
+			timer.addItem(key: "first", queue: .global()) { cycles.mutate { $0 += 1 } }
+			timer.addItem(key: "second", queue: .global()) { }
+			await sleep(seconds: 0.1)
+			timer.removeAll()
+			await sleep(seconds: 0.05)
+			let stopped = cycles.wrappedValue
+			await sleep(seconds: 0.2)
+			#expect(cycles.wrappedValue == stopped)
+		}
 		
-		timer.addItem(key: #function) {
+		@Test
+		func addItem_WhenAddingAnItem_ShouldExecuteCallback() async {
+			let timer = TimerControl()
+			await confirmation { confirm in
+				await withCheckedContinuation { continuation in
+					timer.addItem(key: #function) {
+						timer.removeItem(key: #function)
+						confirm()
+						continuation.resume()
+					}
+				}
+			}
+		}
+		
+		@Test
+		func timer_WhenRemovingAnItem_ShouldNotExecuteCallbackAfterRemoval() async {
+			let timer = TimerControl()
+			let counter = ThreadSafe(wrappedValue: 0)
+			timer.addItem(key: #function) { counter.mutate { $0 += 1 } }
 			timer.removeItem(key: #function)
-			expectation.fulfill()
+			await sleep(seconds: 0.2)
+			#expect(counter.wrappedValue == 0)
+			#expect(timer.itemsCount == 0)
 		}
 		
-		wait(for: [expectation], timeout: timeout)
-	}
-	
-	func testTimer_WhenRemovingAnItem_ShouldNotExecuteCallbackAfterRemoval() {
-		let expectation = expectation(description: #function)
-		var counter = 0
-		let timer = TimerControl()
-		
-		timer.addItem(key: #function) { counter += 1 }
-		timer.removeItem(key: #function)
-
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-			XCTAssertEqual(counter, 0)
-			XCTAssertEqual(timer.itemsCount, 0)
-			expectation.fulfill()
-		}
-
-		wait(for: [expectation], timeout: timeout)
-	}
-	
-	func testMultithreading_WhenAddingAndRemovingMultipleItems_ShouldNotCrash() {
-		let expectation = expectation(description: #function)
-		let timer = TimerControl()
-		let group = DispatchGroup()
-		
-		for i in 0..<10 {
-			group.enter()
-			DispatchQueue.global(qos: .userInitiated).async {
-				timer.addItem(key: "\(#function)_\(i)") { }
-				usleep(arc4random_uniform(10))
-				timer.removeItem(key: "\(#function)_\(i)")
-				group.leave()
+		@Test
+		func multithreading_WhenAddingAndRemovingMultipleItems_ShouldNotCrash() async {
+			let timer = TimerControl()
+			await withTaskGroup(of: Void.self) { group in
+				for i in 0..<100 {
+					group.addTask {
+						timer.addItem(key: "item_\(i)") { }
+						usleep(arc4random_uniform(10))
+						timer.removeItem(key: "item_\(i)")
+					}
+				}
 			}
+			#expect(timer.itemsCount == 0)
 		}
 		
-		group.notify(queue: .global(qos: .userInitiated)) {
-			expectation.fulfill()
-		}
-		
-		wait(for: [expectation], timeout: 10.0)
-	}
-	
-	func testTimer_RemoveAll_ShouldRemovesAllItems() {
-		let timer = TimerControl()
-		timer.addItem(key: "1", queue: .main) {}
-		timer.addItem(key: "2", queue: .global()) {}
-		timer.addItem(key: "3", queue: .main) {}
-		timer.removeAll()
-		XCTAssertEqual(timer.itemsCount, 0)
-	}
-	
-	func testTimer_WithPauseAndUnpause_ShouldCorrectlyExecuteBoth() {
-		let expectation = expectation(description: #function)
-		var counter = 0
-		let timer = TimerControl()
-		
-		timer.addItem(key: #function) { counter += 1 }
-		
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-			XCTAssertGreaterThan(counter, 0)
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-				XCTAssertGreaterThan(counter, 0)
-				timer.removeItem(key: #function)
-				expectation.fulfill()
+		@Test
+		func multithreading_WhenAddingItemsConcurrently_ShouldKeepEveryItem() async {
+			let timer = TimerControl()
+			await withTaskGroup(of: Void.self) { group in
+				for i in 0..<200 {
+					group.addTask { timer.addItem(key: "item_\(i)", queue: .global()) { } }
+				}
 			}
+			#expect(timer.itemsCount == 200)
+			timer.removeAll()
 		}
 		
-		wait(for: [expectation], timeout: timeout)
-	}
-	
-	#if canImport(UIKit)
-	func testTimer_WithResignAndReactivateState_ShouldProperlyPauseAndResume() {
-		let expectation = expectation(description: #function)
-		let timer = TimerControl()
+		@Test
+		func timer_RemoveAll_ShouldRemovesAllItems() {
+			let timer = TimerControl()
+			timer.addItem(key: "1", queue: .main) {}
+			timer.addItem(key: "2", queue: .global()) {}
+			timer.addItem(key: "3", queue: .main) {}
+			timer.removeAll()
+			#expect(timer.itemsCount == 0)
+		}
 		
-		timer.addItem(key: #function) { }
+		@Test
+		func timer_WithPauseAndUnpause_ShouldCorrectlyExecuteBoth() async {
+			let counter = ThreadSafe(wrappedValue: 0)
+			let timer = TimerControl()
+			timer.addItem(key: #function, queue: .global()) { counter.mutate { $0 += 1 } }
+			await sleep(seconds: 0.2)
+			#expect(counter.wrappedValue > 0)
+			await sleep(seconds: 0.2)
+			#expect(counter.wrappedValue > 0)
+			timer.removeItem(key: #function)
+		}
 		
-		NotificationCenter.post(UIApplication.willResignActiveNotification)
+		@Test
+		func handleTimerTick_WithGapAboveThreshold_ShouldAccumulateBackgroundTime() async {
+			let timer = TimerControl()
+			timer.handleTimerTick()
+			#expect(timer.backgroundTime == 0)
+			await sleep(seconds: 0.6)
+			timer.handleTimerTick()
+			#expect(timer.backgroundTime >= 0.5)
+			#expect(timer.totalBackgroundTime >= 0.5)
+			timer.handleTimerTick()
+			#expect(timer.backgroundTime == 0)
+			#expect(timer.totalBackgroundTime >= 0.5)
+		}
 		
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-			XCTAssertGreaterThan(timer.itemsCount, 0)
-			
+		@Test
+		func handleTimerTick_WithGapBelowThreshold_ShouldNotAccumulateBackgroundTime() async {
+			let timer = TimerControl()
+			timer.handleTimerTick()
+			await sleep(seconds: 0.05)
+			timer.handleTimerTick()
+			#expect(timer.backgroundTime == 0)
+			#expect(timer.totalBackgroundTime == 0)
+		}
+		
+#if canImport(UIKit)
+		@Test
+		func timer_WithResignAndReactivateState_ShouldProperlyPauseAndResume() async {
+			let timer = TimerControl()
+			timer.addItem(key: #function) { }
+			NotificationCenter.post(UIApplication.willResignActiveNotification)
+			await sleep(seconds: 0.1)
+			#expect(timer.itemsCount > 0)
 			NotificationCenter.post(UIApplication.didBecomeActiveNotification)
-			
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-				timer.removeItem(key: #function)
-				expectation.fulfill()
-			}
+			await sleep(seconds: 0.1)
+			timer.removeItem(key: #function)
 		}
-		
-		wait(for: [expectation], timeout: timeout)
+#endif
 	}
-	#endif
 }

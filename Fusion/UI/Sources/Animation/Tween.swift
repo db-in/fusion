@@ -127,10 +127,12 @@ public class Tween {
 	private var callback: TweenCallback?
 	private var allValues: [String : [CGFloat]] = [:]
 	private var lastFrameTime: FPoint = 0
-	private static var tweens: [String: Tween] = [:]
+	private var lastBackgroundTotal: FPoint = 0
+	private var isStopped: Bool = false
+	private let lock = NSRecursiveLock()
 	
 	@ThreadSafe
-	private static var tweensQueue: DispatchQueue = .init(label: "tween.\(UUID().uuidString)", attributes: .concurrent)
+	private static var tweens: [String: Tween] = [:]
 
 	public let identifier: String = UUID().uuidString
 	public var duration: FPoint
@@ -163,19 +165,21 @@ public class Tween {
 	}
 	
 	public var isPaused: Bool {
-		get { options.isPaused }
+		get { lock.withLock { options.isPaused } }
 		set {
-			guard options.isPaused != newValue else { return }
-			
-			if lastTime == 0.0 || newValue {
-				lastTime = CFAbsoluteTimeGetCurrent()
+			lock.withLock {
+				guard options.isPaused != newValue else { return }
+				
+				if lastTime == 0.0 || newValue {
+					lastTime = CFAbsoluteTimeGetCurrent()
+				}
+				
+				if !newValue {
+					idleTime += CFAbsoluteTimeGetCurrent() - lastTime
+				}
+				
+				options.isPaused = newValue
 			}
-			
-			if !newValue {
-				idleTime += CFAbsoluteTimeGetCurrent() - lastTime
-			}
-			
-			options.isPaused = newValue
 		}
 	}
 	
@@ -218,10 +222,12 @@ public class Tween {
 // MARK: - Protected Methods
 	
 	private func startTween() {
-		isReady = false
-		currentCycle = 0
-		resetTime()
-		Self.tweens[identifier] = self
+		lock.withLock {
+			isReady = false
+			currentCycle = 0
+			resetTime()
+		}
+		Self._tweens.mutate { $0[identifier] = self }
 		updateTargetValues()
 		TimerControl.shared.addItem(key: identifier, queue: .global(qos: .userInteractive)) {
 			self.timerCallBack()
@@ -233,6 +239,7 @@ public class Tween {
 		currentTime = 0.0
 		lastFrameTime = 0.0
 		idleTime = CFAbsoluteTimeGetCurrent()
+		lastBackgroundTotal = TimerControl.shared.totalBackgroundTime
 	}
 	
 	private func finishCycle() {
@@ -263,6 +270,9 @@ public class Tween {
 	}
 	
 	private func updateTargetValues(reverting: Bool, revertEase: Bool) {
+		lock.lock()
+		defer { lock.unlock() }
+		
 		if !isReady {
 			isReady = true
 			
@@ -306,16 +316,23 @@ public class Tween {
 	}
 	
 	private func updateTargetValues() {
-		preUpdateValues()
-		var currentValues: [String : CGFloat] = [:]
-		allValues.forEach {
-			let value = options.ease.calculate($0.value[0], $0.value[1], deltaTime, duration)
-			currentValues[$0.key] = value
-			target?[$0.key] = value
+		let (currentValues, delegate, callback) = lock.withLock { () -> ([String : CGFloat], TweenDelegate?, TweenCallback?) in
+			guard !isStopped else { return ([:], nil, nil) }
+			preUpdateValues()
+			var currentValues: [String : CGFloat] = [:]
+			allValues.forEach {
+				let value = options.ease.calculate($0.value[0], $0.value[1], deltaTime, duration)
+				currentValues[$0.key] = value
+				target?[$0.key] = value
+			}
+			return (currentValues, options.delegate, self.callback)
 		}
-		options.delegate?.tween(self, values: currentValues)
+		delegate?.tween(self, values: currentValues)
 		callback?(self, currentValues)
-		postUpdateValues()
+		lock.withLock {
+			guard !isStopped else { return }
+			postUpdateValues()
+		}
 	}
 	
 	private func timerCallBack() {
@@ -324,20 +341,27 @@ public class Tween {
 			return
 		}
 		
-		guard !isPaused else { return }
+		let shouldUpdate = lock.withLock { () -> Bool in
+			guard !isPaused else { return false }
+			
+			let backgroundTotal = TimerControl.shared.totalBackgroundTime
+			idleTime += backgroundTotal - lastBackgroundTotal
+			lastBackgroundTotal = backgroundTotal
+			currentTime = CFAbsoluteTimeGetCurrent() - idleTime
+			
+			let delay = currentCycle == 0 ? options.delay : options.repetitionDelay
+			guard delay <= currentTime else { return false }
+			
+			let frameInterval = 1.0 / options.fps
+			guard currentTime - lastFrameTime >= frameInterval else { return false }
+			lastFrameTime = currentTime
+			
+			beginTime = (beginTime == 0.0) ? currentTime : beginTime
+			deltaTime = min(currentTime - beginTime, duration)
+			return true
+		}
 		
-		idleTime += TimerControl.shared.backgroundTime
-		currentTime = CFAbsoluteTimeGetCurrent() - idleTime
-		
-		let delay = currentCycle == 0 ? options.delay : options.repetitionDelay
-		guard delay <= currentTime else { return }
-		
-		let frameInterval = 1.0 / options.fps
-		guard currentTime - lastFrameTime >= frameInterval else { return }
-		lastFrameTime = currentTime
-		
-		beginTime = (beginTime == 0.0) ? currentTime : beginTime
-		deltaTime = min(currentTime - beginTime, duration)
+		guard shouldUpdate else { return }
 		
 		DispatchQueue.asyncMainIfNeeded {
 			self.updateTargetValues()
@@ -347,48 +371,54 @@ public class Tween {
 // MARK: - Exposed Methods
 	
 	public func restartTween() {
-		resetTime()
-		
-		if isMirrored {
-			setTargetValues(reverting: true, revertEase: options.repetition == .mirrorValuesAndEase)
-			isMirrored = false
-		}
-		
-		DispatchQueue.asyncMainIfNeeded {
-			self.allValues.forEach {
-				self.target?[$0.key] = $0.value[0]
-			}
-		}
-		
-		currentCycle = 0
-	}
-	
-	public func stopTween(option: Tween.Behavior = .current) {
-		
-		switch option {
-		case .final:
+		lock.withLock {
+			resetTime()
+			
 			if isMirrored {
 				setTargetValues(reverting: true, revertEase: options.repetition == .mirrorValuesAndEase)
 				isMirrored = false
 			}
 			
-			if allValues.isEmpty {
-				setTargetValues(reverting: options.isReversed, revertEase: false)
-			}
-			
 			DispatchQueue.asyncMainIfNeeded {
-				self.allValues.forEach {
-					self.target?[$0.key] = $0.value[0] + $0.value[1]
+				self.lock.withLock {
+					self.allValues.forEach {
+						self.target?[$0.key] = $0.value[0]
+					}
 				}
 			}
-		default:
-			break
+			
+			currentCycle = 0
+		}
+	}
+	
+	public func stopTween(option: Tween.Behavior = .current) {
+		lock.withLock {
+			isStopped = true
+			
+			switch option {
+			case .final:
+				if isMirrored {
+					setTargetValues(reverting: true, revertEase: options.repetition == .mirrorValuesAndEase)
+					isMirrored = false
+				}
+				
+				if allValues.isEmpty {
+					setTargetValues(reverting: options.isReversed, revertEase: false)
+				}
+				
+				DispatchQueue.asyncMainIfNeeded {
+					self.lock.withLock {
+						self.allValues.forEach {
+							self.target?[$0.key] = $0.value[0] + $0.value[1]
+						}
+					}
+				}
+			default:
+				break
+			}
 		}
 		
-		_ = Self.tweensQueue.sync(flags: .barrier) {
-			Self.tweens.removeValue(forKey: identifier)
-		}
-		
+		Self._tweens.mutate { _ = $0.removeValue(forKey: identifier) }
 		TimerControl.shared.removeItem(key: identifier)
 	}
 }
@@ -411,9 +441,7 @@ public extension Tween {
 	/// - Parameter target: The target of the tween you are looking for.
 	/// - Returns: The related Tween instance or nil if not found.
 	static func tweens(withTarget target: UIView) -> [Tween] {
-		return tweensQueue.sync(flags: .barrier) {
-			tweens.values.filter { $0.targetView == target }
-		}
+		tweens.values.filter { $0.targetView == target }
 	}
 
 	/// Returns a Tween instance with the informed name.
@@ -421,9 +449,7 @@ public extension Tween {
 	/// - Parameter name: The name of the tween you are looking for.
 	/// - Returns: The related Tween instance or nil if not found.
 	static func tweens(withName name: String) -> [Tween] {
-		return tweensQueue.sync(flags: .barrier) {
-			tweens.values.filter { $0.options.name == name }
-		}
+		tweens.values.filter { tween in tween.lock.withLock { tween.options.name } == name }
 	}
 	
 	/// Acts as ``stopTween()`` method, but working for all tweens of a specific target.

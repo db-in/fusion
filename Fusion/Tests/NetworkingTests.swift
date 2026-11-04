@@ -2,12 +2,13 @@
 //  Created by Diney Bomfim on 09/06/2023.
 //
 
-import XCTest
+import Foundation
+import Testing
 @testable import Fusion
 
 // MARK: - Definitions -
 
-public struct MockModel: Codable {
+public struct MockModel: Codable, Equatable {
 	public let args: [String: String]
 	public let origin: String
 	public let url: String
@@ -27,29 +28,17 @@ public struct MockModelStorage : DataManageable {
 	}
 }
 
-// MARK: - Type -
-
 public struct MockService {
 	
-// MARK: - Properties
-	
-	private static var getRequest: RESTBuilder<MockModel> {
-		.init(url: "https://t.ly/SYGU", method: .get)
-	}
-	
-	private static var deleteRequest: RESTBuilder<MockModel> {
-		.init(url: "https://invalid.url.com", method: .delete)
-	}
-	
-	private static var dataRequest: RESTBuilder<MockModel> {
-		.init(url: "https://t.ly/SYGU", method: .post)
-	}
-	
-	private static var dataUpload: RESTBuilder<Data> {
-		.init(url: "https://t.ly/SYGU", method: .put)
-	}
-	
-// MARK: - Exposed Methods
+	static var getRequest: RESTBuilder<MockModel> { .init(url: MockEndpoint.model, method: .get) }
+	static var postRequest: RESTBuilder<MockModel> { .init(url: MockEndpoint.model, method: .post) }
+	static var deleteRequest: RESTBuilder<MockModel> { .init(url: MockEndpoint.unauthorized, method: .delete) }
+	static var noContentRequest: RESTBuilder<Data> { .init(url: MockEndpoint.noContent, method: .get) }
+	static var serverErrorRequest: RESTBuilder<MockModel> { .init(url: MockEndpoint.serverError, method: .get) }
+	static var malformedRequest: RESTBuilder<MockModel> { .init(url: MockEndpoint.malformed, method: .get) }
+	static var uploadRequest: RESTBuilder<Data> { .init(url: MockEndpoint.upload, method: .put) }
+	static var uploadFailureRequest: RESTBuilder<Data> { .init(url: MockEndpoint.uploadFailure, method: .put) }
+	static var uploadSessionRequest: RESTBuilder<Data> { .init(url: MockEndpoint.uploadSession, method: .put) }
 	
 	public static func mockSuccess(completion: Response<MockModel>? = nil) {
 		getRequest.execute(then: MockModelStorage.map(.model, to: completion))
@@ -60,113 +49,216 @@ public struct MockService {
 	}
 	
 	public static func mockBody(body: String, completion: Response<MockModel>? = nil) {
-		dataRequest.execute(body: body, headers: [:], then: MockModelStorage.map(.model, to: completion))
+		postRequest.execute(body: body, headers: [:], then: MockModelStorage.map(.model, to: completion))
 	}
 	
 	public static func mockUpload(completion: Response<Data?>? = nil) {
-		dataUpload.upload(data: .init(), then: completion)
+		uploadRequest.upload(data: .init(), then: completion)
 	}
 }
 
 // MARK: - Type -
 
-class NetworkingTests: XCTestCase {
-
-	override class func setUp() {
-		ServerMock.startLocalServer()
-	}
+extension FusionSuite {
 	
-//	func testFullNetworking_WithMockRequest_ShouldPerformLocalStubServerAndPersistResultDataLocally() {
-//		let expectation = expectation(description: #function)
-//		
-//		MockService.mockSuccess { result, _ in
-//			let value = try! result.get()
-//			XCTAssertEqual(value.url, "https://httpbin.org/get")
-//			XCTAssertEqual(MockModelStorage.localModel?.url, value.url)
-//			expectation.fulfill()
-//		}
-//		
-//		wait(for: [expectation], timeout: 15.0)
-//	}
-	
-	func testFullNetworking_WithMockFailRequest_ShouldFail() {
-		let expectation = expectation(description: #function)
+	@Suite
+	struct NetworkingTests {
 		
-		MockService.mockFail { result, _ in
-			switch result {
-			case .failure(_):
-				expectation.fulfill()
-			default:
-				XCTFail("It should not be successful")
+		init() {
+			ServerMock.startLocalServer()
+			MockModelStorage.remove(keys: [.model])
+		}
+		
+		@Test
+		func fullNetworking_WithMockRequest_ShouldPerformLocalStubServerAndPersistResultDataLocally() async throws {
+			let (result, response) = await awaitResponse(MockService.mockSuccess)
+			let value = try result.get()
+			#expect(value.url == "https://httpbin.org/get")
+			#expect(response?.httpStatusCode == 200)
+			#expect(MockModelStorage.localModel == value)
+		}
+		
+		@Test
+		func fullNetworking_WithMockFailRequest_ShouldFail() async {
+			let (result, response) = await awaitResponse(MockService.mockFail)
+			#expect(!result.isSuccess)
+			#expect(response?.httpStatusCode == 401)
+		}
+		
+		@Test
+		func fullNetworking_WithBodyMockRequest_ShouldSucceed() async throws {
+			let (result, _) = await awaitResponse { MockService.mockBody(body: "foo", completion: $0) }
+			let value = try result.get()
+			#expect(value.url == "https://httpbin.org/get")
+			#expect(MockModelStorage.localModel == value)
+		}
+		
+		@Test
+		func fullNetworking_WithUploadMockRequest_ShouldSucceed() async throws {
+			let (result, response) = await awaitResponse(MockService.mockUpload)
+			let value = try #require(try result.get())
+			#expect(String(data: value, encoding: .utf8) == "Success")
+			#expect(response?.httpStatusCode == 200)
+		}
+		
+		@Test
+		func fullNetworking_WithNoContentResponse_ShouldSucceedWithEmptyData() async throws {
+			let (result, response) = await awaitResponse { MockService.noContentRequest.execute(then: $0) }
+			#expect(try result.get().isEmpty)
+			#expect(response?.httpStatusCode == 204)
+		}
+		
+		@Test
+		func fullNetworking_WithServerError_ShouldFailCarryingTheBody() async {
+			let (result, response) = await awaitResponse { MockService.serverErrorRequest.execute(then: $0) }
+			let error: RESTError? = result.error()
+			guard case let .unkown(data) = error else {
+				Issue.record("Expected RESTError.unkown")
+				return
+			}
+			#expect(data.flatMap { String(data: $0, encoding: .utf8) } == "{\"error\":\"server\"}")
+			#expect(response?.httpStatusCode == 500)
+		}
+		
+		@Test
+		func fullNetworking_WithMalformedJSON_ShouldFail() async {
+			let (result, response) = await awaitResponse { MockService.malformedRequest.execute(then: $0) }
+			#expect(!result.isSuccess)
+			#expect(response?.httpStatusCode == 200)
+		}
+		
+		@Test
+		func fullNetworking_WithUnmatchedRoute_ShouldNeverReachTheRealNetwork() async {
+			let request = RESTBuilder<MockModel>(url: "https://fusion.test/unknown", method: .get)
+			let (result, response) = await awaitResponse { request.execute(then: $0) }
+			#expect(!result.isSuccess)
+			#expect(response?.httpStatusCode == 404)
+		}
+		
+		@Test
+		func upload_WithServerError_ShouldFail() async {
+			let (result, response) = await awaitResponse { MockService.uploadFailureRequest.upload(data: .init(), then: $0) }
+			#expect(!result.isSuccess)
+			#expect(response?.httpStatusCode == 500)
+		}
+		
+		@Test
+		func upload_WithConfiguredSession_ShouldUseTheRESTAuthenticatorSession() async {
+			let (result, response) = await awaitResponse { MockService.uploadSessionRequest.upload(data: .init(), then: $0) }
+			#expect(result.isSuccess)
+			#expect(response?.httpStatusCode == 200)
+		}
+		
+		@Test
+		func executeAsync_WithSameRoute_ShouldMatchTheCompletionResult() async throws {
+			let (completionResult, _) = await awaitResponse { MockService.getRequest.execute(then: $0) }
+			let (asyncValue, response) = try await MockService.getRequest.execute()
+			#expect(try completionResult.get() == asyncValue)
+			#expect(response?.httpStatusCode == 200)
+		}
+		
+		@Test
+		func executeAsync_WithBody_ShouldDecodeTheResponse() async throws {
+			let (value, _) = try await MockService.postRequest.execute(body: "foo")
+			#expect(value.url == "https://httpbin.org/get")
+		}
+		
+		@Test
+		func executeAsync_WithDataType_ShouldReturnTheRawData() async throws {
+			let (value, response) = try await MockService.noContentRequest.execute()
+			#expect(value.isEmpty)
+			#expect(response?.httpStatusCode == 204)
+		}
+		
+		@Test
+		func executeAsync_WithUnauthorizedRoute_ShouldThrow() async {
+			await #expect(throws: RESTError.self) {
+				_ = try await MockService.deleteRequest.execute()
 			}
 		}
 		
-		wait(for: [expectation], timeout: 15.0)
+		@Test
+		func executeAsync_WithMalformedJSON_ShouldThrow() async {
+			await #expect(throws: (any Error).self) {
+				_ = try await MockService.malformedRequest.execute()
+			}
+		}
+		
+		@Test
+		func uploadAsync_WithSuccess_ShouldReturnTheResponseBody() async throws {
+			let data = try #require(try await MockService.uploadRequest.upload(data: .init()))
+			#expect(String(data: data, encoding: .utf8) == "Success")
+		}
+		
+		@Test
+		func uploadAsync_WithServerError_ShouldThrow() async {
+			await #expect(throws: RESTError.self) {
+				_ = try await MockService.uploadFailureRequest.upload(data: .init())
+			}
+		}
+		
+		@Test
+		func withResponse_WithCompletionAPI_ShouldBridgeTheValue() async throws {
+			let value = try await withResponse(MockService.mockSuccess)
+			#expect(value.url == "https://httpbin.org/get")
+			#expect(MockModelStorage.localModel == value)
+		}
+		
+		@Test
+		func withResponse_WithCompletionCalledTwice_ShouldResumeOnlyOnce() async throws {
+			let value: Int = try await withResponse { completion in
+				completion(.success(1), nil)
+				completion(.success(2), nil)
+			}
+			#expect(value == 1)
+		}
+		
+		@Test
+		func withURLResponse_WithFailure_ShouldThrowTheSameError() async {
+			await #expect(throws: RESTError.self) {
+				let _: (Int, URLResponse?) = try await withURLResponse { $0(.failure(RESTError.unkown(nil)), nil) }
+			}
+		}
 	}
 	
-//	func testFullNetworking_WithBodyMockRequest_ShouldSucceed() {
-//		let expectation = expectation(description: #function)
-//		
-//		MockService.mockBody(body: "foo") { result, _ in
-//			let value = try! result.get()
-//			XCTAssertEqual(value.url, "https://httpbin.org/get")
-//			XCTAssertEqual(MockModelStorage.localModel?.url, value.url)
-//			expectation.fulfill()
-//		}
-//		
-//		wait(for: [expectation], timeout: 15.0)
-//	}
-//	
-//	func testFullNetworking_WithUploadMockRequest_ShouldSucceed() {
-//		let expectation = expectation(description: #function)
-//		
-//		MockService.mockUpload { result, _ in
-//			let value = try! result.get()
-//			XCTAssertNotEqual(value?.count, 0)
-//			expectation.fulfill()
-//		}
-//		
-//		wait(for: [expectation], timeout: 15.0)
-//	}
-}
-
-class DictionaryURLQueryItemTests: XCTestCase {
-
-	func testDictionary_WithSumOfURLQueryItemOperator_ShouldProperlyCombineBoth() {
-		let dictionary: [String: String] = ["key1": "value1", "key2": "value2"]
-		let queryItem = URLQueryItem(name: "key3", value: "value3")
-		let result = dictionary + queryItem
-		XCTAssertEqual(result, ["key1": "value1", "key2": "value2", "key3": "value3"])
-	}
-}
-
-class URLTests: XCTestCase {
-
-	func testURL_WithValidQueryItemsDictionary_ShouldCorrectlyIdentifyThem() {
-		let url = URL(string: "https://example.com?param1=value1&param2=value2")!
-		let queryItemsDictionary = url.queryItemsDictionary
-		XCTAssertEqual(queryItemsDictionary, ["param1": "value1", "param2": "value2"])
-	}
-
-	func testURL_WithAppendedQueryWithData_ShouldProperlyAppendData() {
-		let url = URL(string: "https://example.com")!
-		let data: Data? = ["param1": "value1", "param2": "value2"].data
-		let result = url.appendedQuery(data: data)
-		let expectedURL = URL(string: "https://example.com?param1=value1&param2=value2")!
-		XCTAssertEqual(result.queryItemsDictionary, expectedURL.queryItemsDictionary)
+	@Suite
+	struct DictionaryURLQueryItemTests {
+		
+		@Test
+		func dictionary_WithSumOfURLQueryItemOperator_ShouldProperlyCombineBoth() {
+			let dictionary: [String: String] = ["key1": "value1", "key2": "value2"]
+			let queryItem = URLQueryItem(name: "key3", value: "value3")
+			#expect(dictionary + queryItem == ["key1": "value1", "key2": "value2", "key3": "value3"])
+		}
 	}
 	
-	func testURL_WithAppendedQueryOnExistingQuery_ShouldCombineQueryItems() {
-		let url = URL(string: "https://example.com?existing=keep")!
-		let data: Data? = ["param1": "value1"].data
-		let result = url.appendedQuery(data: data)
-		XCTAssertEqual(result.queryItemsDictionary, ["existing": "keep", "param1": "value1"])
-	}
-	
-	func testURL_WithAppendedQueryEmptyData_ShouldKeepTheSameURL() {
-		let url = URL(string: "https://example.com?existing=keep")!
-		let data: Data? = nil
-		let result = url.appendedQuery(data: data)
-		XCTAssertEqual(result, url)
+	@Suite
+	struct URLTests {
+		
+		@Test
+		func url_WithValidQueryItemsDictionary_ShouldCorrectlyIdentifyThem() {
+			let url = URL(string: "https://example.com?param1=value1&param2=value2")!
+			#expect(url.queryItemsDictionary == ["param1": "value1", "param2": "value2"])
+		}
+		
+		@Test
+		func url_WithAppendedQueryWithData_ShouldProperlyAppendData() {
+			let url = URL(string: "https://example.com")!
+			let data: Data? = ["param1": "value1", "param2": "value2"].data
+			#expect(url.appendedQuery(data: data).queryItemsDictionary == ["param1": "value1", "param2": "value2"])
+		}
+		
+		@Test
+		func url_WithAppendedQueryOnExistingQuery_ShouldCombineQueryItems() {
+			let url = URL(string: "https://example.com?existing=keep")!
+			let data: Data? = ["param1": "value1"].data
+			#expect(url.appendedQuery(data: data).queryItemsDictionary == ["existing": "keep", "param1": "value1"])
+		}
+		
+		@Test
+		func url_WithAppendedQueryEmptyData_ShouldKeepTheSameURL() {
+			let url = URL(string: "https://example.com?existing=keep")!
+			#expect(url.appendedQuery(data: nil) == url)
+		}
 	}
 }

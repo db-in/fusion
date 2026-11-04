@@ -79,7 +79,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "60CC2E972A50C5CB00E43713"
             BuildableName = "Sample watchOS.app"
-            BlueprintName = "Sample watchOS"
             ReferencedContainer = "container:Fusion.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -96,7 +95,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "60CC2E972A50C5CB00E43713"
             BuildableName = "Sample watchOS.app"
-            BlueprintName = "Sample watchOS"
             ReferencedContainer = "container:Fusion.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

@@ -36,19 +36,28 @@ public extension Data {
 	/// Returns the by count into a given readable format.
 	var byteCount: String { ByteCountFormatter().string(fromByteCount: Int64(count)) }
 	
+	private static let pendingDataToAppend = ThreadSafe<[String : Any]?>(wrappedValue: nil)
+	
 	/// Prepare some extra data to be appended into the very next request.
-	/// The data will be automatically flushed after used, until there it's retained.
-	static var dataToAppend: [String : Any]?
+	/// The data will be automatically flushed after used, until there it's retained. This property is thread safe.
+	static var dataToAppend: [String : Any]? {
+		get { pendingDataToAppend.wrappedValue }
+		set { pendingDataToAppend.wrappedValue = newValue }
+	}
 	
 	/// Appends and flushes the data temporary stored into the `dataToAppend`.
+	/// The pending data is taken and flushed atomically, so concurrent requests never consume it twice.
 	/// - Returns: The new full data if the merging is completed with success or the original data if it fails.
 	func appendDataIfNeeded() -> Data {
 		guard
-			let data = Self.dataToAppend,
-			let jsonDict = try? JSONSerialization.jsonObject(with: self) as? [String : Any]
+			Self.dataToAppend != nil,
+			let jsonDict = try? JSONSerialization.jsonObject(with: self) as? [String : Any],
+			let data = Self.pendingDataToAppend.mutate({ pending -> [String : Any]? in
+				defer { pending = nil }
+				return pending
+			})
 		else { return self }
 		
-		Self.dataToAppend = nil
 		return (try? JSONSerialization.data(withJSONObject: jsonDict + data)) ?? self
 	}
 }
@@ -132,5 +141,38 @@ public struct RESTBuilder<T> where T : Codable {
 		var request = buildRequest()
 		request.allHTTPHeaderFields = headers
 		request.mapUpload(data: data, to: completion)
+	}
+}
+
+// MARK: - Extension - RESTBuilder Async
+
+public extension RESTBuilder {
+	
+	/// Builds and executes a network request with a body data.
+	/// It bridges ``execute(body:headers:then:)``, so both forms share the same behavior.
+	/// - Parameters:
+	///   - body: A body, data or codable as a JSON
+	///   - headers: A custom header. The standard header will be used if none is provided
+	/// - Returns: The decoded value and the `URLResponse`.
+	func execute<U : Codable>(body: U, headers: Headers = [:]) async throws -> (T, URLResponse?) {
+		try await withURLResponse { execute(body: body, headers: headers, then: $0) }
+	}
+	
+	/// Builds and executes a network request without body.
+	/// It bridges ``execute(headers:then:)``, so both forms share the same behavior.
+	/// - Parameter headers: A custom header. The standard header will be used if none is provided
+	/// - Returns: The decoded value and the `URLResponse`.
+	func execute(headers: Headers = [:]) async throws -> (T, URLResponse?) {
+		try await withURLResponse { execute(headers: headers, then: $0) }
+	}
+	
+	/// Builds and executes a data upload with the networking engine.
+	/// It bridges ``upload(data:headers:then:)``, so both forms share the same behavior.
+	/// - Parameters:
+	///   - data: The data to be uploaded
+	///   - headers: A custom header. The standard header will be used if none is provided
+	/// - Returns: The response data, if any.
+	func upload(data: Data, headers: Headers = [:]) async throws -> Data? {
+		try await withResponse { upload(data: data, headers: headers, then: $0) }
 	}
 }

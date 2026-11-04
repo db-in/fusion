@@ -16,12 +16,17 @@ private struct LoaderControl {
 	init<T>(target: T) {
 		self.key = "\(target)".replacing(regex: ".*?0x(.*?);.*", with: "$1")
 		self.reference = .random(in: 0...9999999)
-		Self.loaders[key] = reference
+		Self._loaders.mutate { [key, reference] in $0[key] = reference }
 	}
 	
 	static func isValid(_ control: LoaderControl) -> Bool { loaders[control.key] == control.reference }
 	
-	static func flush(_ control: LoaderControl) { loaders[control.key] = nil }
+	static func flush(_ control: LoaderControl) {
+		_loaders.mutate {
+			guard $0[control.key] == control.reference else { return }
+			$0[control.key] = nil
+		}
+	}
 }
 
 // MARK: - Type - ImageConvertible

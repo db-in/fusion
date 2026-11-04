@@ -37,8 +37,7 @@ public extension UIImage {
 	
 // MARK: - Private Methods
 
-	@ThreadSafe
-	private static var inMemory: [String : UIImage] = [:]
+	private static let inMemory: NSCache<NSString, UIImage> = .init()
 	
 	@ThreadSafe
 	private static var associated: [String : UIImage] = [:]
@@ -61,19 +60,24 @@ public extension UIImage {
 	func addBadge(_ image: UIImage, proportion: CGFloat = 0.5) -> UIImage {
 		let scaledSize = CGSize(width: size.width * proportion, height: size.height * proportion)
 		let scaledRect = CGRect(origin: .zero, size: scaledSize)
+		let canvasSize = CGSize(width: size.width + scaledSize.width * 0.25, height: size.height + scaledSize.height * 0.25)
+		let drawing = {
+			self.draw(in: CGRect(origin: .init(x: scaledSize.width * 0.25, y: scaledSize.height * 0.25), size: self.size))
+			image.draw(in: scaledRect, blendMode: .normal, alpha: 1)
+		}
 		
-		UIGraphicsBeginImageContext(.init(width: size.width + scaledSize.width * 0.25, height: size.height + scaledSize.height * 0.25))
-		draw(in: CGRect(origin: .init(x: scaledSize.width * 0.25, y: scaledSize.height * 0.25), size: size))
-		image.draw(in: scaledRect, blendMode: .normal, alpha: 1)
-		
-		guard let newImage = UIGraphicsGetImageFromCurrentImageContext() else { return self }
-		UIGraphicsEndImageContext()
-		
-#if !os(watchOS)
+#if os(watchOS)
+		UIGraphicsBeginImageContextWithOptions(canvasSize, false, scale)
+		defer { UIGraphicsEndImageContext() }
+		drawing()
+		return UIGraphicsGetImageFromCurrentImageContext() ?? self
+#else
+		let format = UIGraphicsImageRendererFormat.preferred()
+		format.scale = scale
+		let newImage = UIGraphicsImageRenderer(size: canvasSize, format: format).image { _ in drawing() }
 		newImage.accessibilityIdentifier = accessibilityIdentifier
-#endif
-		
 		return newImage
+#endif
 	}
 	
 	/// This function can associate and dissociate a badge images to be placed on top of the original images when indicated in the loading functions.
@@ -82,7 +86,7 @@ public extension UIImage {
 	///   - image: The badge image.
 	///   - to: The url which will be used to load the original image later on.
 	static func associateBadge(_ image: UIImage?, to: String) {
-		associated[to] = image
+		_associated.mutate { $0[to] = image }
 	}
 	
 	/// Creates an animated UIImage from GIF data with proper frame durations.
@@ -121,7 +125,7 @@ public extension UIImage {
 	/// - Returns: The final `UIImage`
 	static func loadCache(url: String, allowsBadge: Bool = true, storage: URL? = nil) -> UIImage? {
 		guard !url.isEmpty else { return nil }
-		if let inMemoryImage = inMemory[url]?.resolve(badge: allowsBadge, key: url) { return inMemoryImage }
+		if let inMemoryImage = inMemory.object(forKey: url as NSString)?.resolve(badge: allowsBadge, key: url) { return inMemoryImage }
 		
 		let fileURL = url.toURL
 		let fileData = fileURL.isFileURL ? try? Data(contentsOf: fileURL) : nil
@@ -132,7 +136,7 @@ public extension UIImage {
 		else { return nil }
 		
 		image.accessibilityIdentifier = url
-		inMemory[url] = image
+		inMemory.setObject(image, forKey: url as NSString)
 		storage?.writeImage(data: data, withKey: url)
 		
 		return image.resolve(badge: allowsBadge, key: url)
@@ -194,7 +198,7 @@ public extension UIImage {
 	static func flushCache(storage: URL? = nil) {
 		URLCache.appGroup.removeAllCachedResponses()
 		storage?.flushImageCache()
-		inMemory = [:]
+		inMemory.removeAllObjects()
 	}
 }
 

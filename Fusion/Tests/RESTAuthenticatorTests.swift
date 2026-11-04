@@ -2,83 +2,83 @@
 //  Created by Diney Bomfim on 09/06/2023.
 //
 
-import XCTest
+import Foundation
+import Security
+import Testing
 @testable import Fusion
 
 // MARK: - Definitions -
 
-class MockSpace : URLProtectionSpace {
+private enum MockCertificate {
 	
-	private var isValid: Bool
-	private var signature: String {
-  """
-  -----BEGIN CERTIFICATE-----
-  MIIDWTCCAkGgAwIBAgIJAKxTSxNvww62MA0GCSqGSIb3DQEBCwUAMEIxCzAJBgNV
-  BAYTAlVTMREwDwYDVQQIDAhMaW1hc2hlbGwxEjAQBgNVBAcMCUxpbWFzaGVsbDEY
-  MBYGA1UECgwPT3BlbkFJIFNlY3VyaXR5MRMwEQYDVQQDDApNb2NrIENvbW1vbjAe
-  Fw0yMTA5MjgxODI2MzFaFw0zMTA5MjUxODI2MzFaMEIxCzAJBgNVBAYTAlVTMREw
-  DwYDVQQIDAhMaW1hc2hlbGwxEjAQBgNVBAcMCUxpbWFzaGVsbDEYMBYGA1UECgwP
-  T3BlbkFJIFNlY3VyaXR5MRMwEQYDVQQDDApNb2NrIENvbW1vbjCCASIwDQYJKoZI
-  hvcNAQEBBQADggEPADCCAQoCggEBAMNBKmltpYnGJey4NLHrDq7thSxrL0PoyEJH
-  d38OFaXYsG4WBlAQ3MeFibjUjNQy4ZPVuBq5/McUj1kmhIGq8zGkZ09ZQU9ijM9I
-  9qNSzpdn86xwazVt4IpevjoR1pDw5g+tjIJbT5S0pQ2H/Fbpm25fW7OotcUrKwIs
-  4aPTbR0/1UwvmWRaVlDN8q3bX7ZQ74fQLhKf9oAGiog/tT5VlxpNFBWSDEcHwX5O
-  /R3VQ0ieQbN3Q/rSy0Kf5i5AkVEnDEsRmv5EDj0G6sMpkfCKE2qMLlm7kD1QdVZi
-  v/dPYOWh+eT+xHfYqYk25r0PjDVuoM4Np3G8BJyGKTy6ewovrXkCAwEAAaNTMFEw
-  HQYDVR0OBBYEFMIf45C7gKh25sDTTNySOJixSlTlMB8GA1UdIwQYMBaAFMIf45C7
-  gKh25sDTTNySOJixSlTlMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQAD
-  ggEBAInJq0+DyS3/+H7G4iYpRn8/hugIFN0XgffNE6nBzZvPGznxFDCzFYmo5A1k
-  fW2o3/tJWexElvYVh/w4Y9Uaz9HOM/yOYemfh3uvMo1aFw+DQz6POX2k3aeGijhM
-  or3rGNhqMl7NVmf67oYqzMlFzg6gcOMCJ5eBdQK4/RL1X0p6O/yMfd6j1L1Ukozq
-  dnG/Fb3YiDJGneE1PrTEBwWZP8Q7YzwvthlCYiVPOK34VeFeY+e7plzGjxUARy3u
-  6tKjHLQUA9oyxW7MBFIsfYfyrW1OmS8PMz0VzCIPM8rJgffv3gjW8mVYbXKgeTfT
-  4eW6BwRlPCqlM75xGZyvdqR7Ndo=
-  -----END CERTIFICATE-----
-  """
+	static let pem = """
+	MIIC7jCCAdagAwIBAgIUAl8NV/ByXXxnn88HSPvJVlqIpgEwDQYJKoZIhvcNAQEL
+	BQAwFjEUMBIGA1UEAwwLZnVzaW9uLnRlc3QwIBcNMjYxMTA0MDgzMjUyWhgPMjEy
+	NjEwMTEwODMyNTJaMBYxFDASBgNVBAMMC2Z1c2lvbi50ZXN0MIIBIjANBgkqhkiG
+	9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6Y1EdvxShpIC85HTtX5HU+dk6AqfDYj5EyBl
+	s651S9vUMv/EDcF0LVIcMdkjwLPtSsiDEf4r2atDR/2msPU2IZXs5Jn1QOLRq5RT
+	1RxGLjsn6P6Wsri7k5JViTXhPkABE4WwwoB7vBvcGv4asRebDZsPJSrKaZbE7QBS
+	U6DxEqZ91x5tEyh9X2RC62iRK91CUTuHMzq5u/W6qzFfjP0R836BR1BOQxQRuoI4
+	dx/GqpsbsfZw7Kd509tnyPuAEaTF1ZG1b9PpKIc7ul7AaA/JpbK3aEjMZyC2KC8H
+	DH5Sn3rvMAh/Ia3lyDHvNj/HKdHKxij+5pyiji7Mj/+FWnbn1wIDAQABozIwMDAd
+	BgNVHQ4EFgQU4UnHDRsLAfPiqUO+aZDkRiCAyxwwDwYDVR0TAQH/BAUwAwEB/zAN
+	BgkqhkiG9w0BAQsFAAOCAQEABZS/K5jGcS5RAJSrK73VN4kiDmoPA7F7Mav0JTPM
+	x1bJeBTd3ha/kKJDmJbeHEBEiOcP+qcQow/GC86Nu51Yj1FOUwsZFjRGN168/It+
+	4OWwsXRxwU9II6ptqFmTFmOkBVfVDK7yf+VNL6fu/zZS8b2YeCK4VGSLD2Zqdc01
+	VxVFo1P6LfpMFDYltbom/Xhk/sktki+NLzZM4sUfqIckUvXYayoW8ED73yYe5MHI
+	Yq0SS/yh0UA6w1nl1v8E76CYkrk+kEHMnkI5tD8ld+4LyrJe0p/Slct2HQZcnd9j
+	99CLZnj/Kxtssqe6Vd3+CVFcMQD6rmnIjeJUgZh9ofkB/A==
+	"""
+	
+	static var certificate: SecCertificate? {
+		Data(base64Encoded: pem, options: .ignoreUnknownCharacters).flatMap { SecCertificateCreateWithData(nil, $0 as CFData) }
 	}
 	
-	override var authenticationMethod: String {
-		NSURLAuthenticationMethodServerTrust
-	}
-	
-//	override var serverTrust: SecTrust? {
-//		isValid ? createValidServerTrust() : createInvalidServerTrust()
-//	}
-	
-	init(isValid: Bool) {
-		self.isValid = isValid
-		super.init(
-			host: "example.com",
-			port: 443,
-			protocol: "https",
-			realm: nil,
-			authenticationMethod: NSURLAuthenticationMethodServerTrust
-		)
-	}
-	
-	required convenience init?(coder: NSCoder) {
-		self.init(isValid: true)
-	}
-	
-	private func createValidServerTrust() -> SecTrust {
+	static func trust(anchored: Bool) -> SecTrust? {
+		guard let certificate else { return nil }
 		var trust: SecTrust?
-		let certificateData = signature.data(using: .utf8)!
-		let certificate = SecCertificateCreateWithData(nil, certificateData as CFData)!
 		SecTrustCreateWithCertificates([certificate] as CFArray, SecPolicyCreateBasicX509(), &trust)
-		return trust!
-	}
-
-	private func createInvalidServerTrust() -> SecTrust {
-		var trust: SecTrust?
-		let certificateData = Data()
-		let certificate = SecCertificateCreateWithData(nil, certificateData as CFData)!
-		SecTrustCreateWithCertificates([certificate] as CFArray, SecPolicyCreateBasicX509(), &trust)
-		return trust!
+		if anchored, let trust {
+			SecTrustSetAnchorCertificates(trust, [certificate] as CFArray)
+			SecTrustSetAnchorCertificatesOnly(trust, true)
+		}
+		return trust
 	}
 	
+	static var publicKeyHash: String? {
+		guard
+			let certificate,
+			let key = SecCertificateCopyKey(certificate),
+			let data = SecKeyCopyExternalRepresentation(key, nil) as Data?
+		else { return nil }
+		let header: [UInt8] = [
+			0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
+			0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00
+		]
+		return Data(data.sha256(header: header)).base64EncodedString()
+	}
 }
 
-class MockSender: NSObject, URLAuthenticationChallengeSender {
+final class MockSpace : URLProtectionSpace, @unchecked Sendable {
+	
+	private let trust: SecTrust?
+	
+	override var authenticationMethod: String { NSURLAuthenticationMethodServerTrust }
+	
+	override var serverTrust: SecTrust? { trust }
+	
+	init(trust: SecTrust?) {
+		self.trust = trust
+		super.init(host: "fusion.test", port: 443, protocol: "https", realm: nil, authenticationMethod: NSURLAuthenticationMethodServerTrust)
+	}
+	
+	required init?(coder: NSCoder) {
+		self.trust = nil
+		super.init(coder: coder)
+	}
+}
+
+final class MockSender: NSObject, URLAuthenticationChallengeSender {
 	func use(_ credential: URLCredential, for challenge: URLAuthenticationChallenge) { }
 	func continueWithoutCredential(for challenge: URLAuthenticationChallenge) { }
 	func cancel(_ challenge: URLAuthenticationChallenge) { }
@@ -88,57 +88,65 @@ class MockSender: NSObject, URLAuthenticationChallengeSender {
 
 // MARK: - Type -
 
-class RESTAuthenticatorTests: XCTestCase {
+extension FusionSuite {
 	
-	private func challenge(withTrust: Bool) -> URLAuthenticationChallenge {
-		.init(protectionSpace: MockSpace(isValid: withTrust),
-			  proposedCredential: nil,
-			  previousFailureCount: 0,
-			  failureResponse: nil,
-			  error: nil,
-			  sender: MockSender())
-	}
-	
-	func testUrlSession_NoHashKeys_PerformDefaultHandling() {
-		let authenticator = RESTAuthenticator()
-		let session = URLSession.shared
+	@Suite
+	struct RESTAuthenticatorTests {
 		
-		authenticator.hashKeys = []
-		authenticator.urlSession(session, didReceive: challenge(withTrust: false)) { disposition, credential in
-			XCTAssertEqual(disposition, .performDefaultHandling)
-			XCTAssertNil(credential)
+		private func challenge(trust: SecTrust?) -> URLAuthenticationChallenge {
+			.init(protectionSpace: MockSpace(trust: trust),
+				  proposedCredential: nil,
+				  previousFailureCount: 0,
+				  failureResponse: nil,
+				  error: nil,
+				  sender: MockSender())
 		}
-	}
-	
-	func testUrlSession_InvalidAuthenticationMethod_CancelAuthenticationChallenge() {
-		let authenticator = RESTAuthenticator()
-		let session = URLSession.shared
 		
-		authenticator.hashKeys = [""]
-		authenticator.urlSession(session, didReceive: challenge(withTrust: true)) { disposition, credential in
-			XCTAssertEqual(disposition, .cancelAuthenticationChallenge)
-			XCTAssertNil(credential)
+		private func evaluate(hashKeys: [String], trust: SecTrust?) -> (URLSession.AuthChallengeDisposition, URLCredential?) {
+			let authenticator = RESTAuthenticator()
+			var outcome: (URLSession.AuthChallengeDisposition, URLCredential?) = (.rejectProtectionSpace, nil)
+			authenticator.hashKeys = hashKeys
+			authenticator.urlSession(.shared, didReceive: challenge(trust: trust)) { outcome = ($0, $1) }
+			return outcome
 		}
-	}
-	
-	func testUrlSession_ValidServerTrust_EvaluateCertificate() {
-		let authenticator = RESTAuthenticator()
-		let session = URLSession.shared
 		
-		authenticator.hashKeys = [""]
-		authenticator.urlSession(session, didReceive: challenge(withTrust: true)) { disposition, credential in
-			XCTAssertEqual(disposition, .cancelAuthenticationChallenge)
-			XCTAssertNil(credential)
+		@Test
+		func urlSession_NoHashKeys_PerformDefaultHandling() {
+			let (disposition, credential) = evaluate(hashKeys: [], trust: nil)
+			#expect(disposition == .performDefaultHandling)
+			#expect(credential == nil)
 		}
-	}
-	
-	func testUrlSession_InvalidServerTrust_CancelAuthenticationChallenge() {
-		let authenticator = RESTAuthenticator()
-		let session = URLSession.shared
 		
-		authenticator.urlSession(session, didReceive: challenge(withTrust: true)) { disposition, credential in
-			XCTAssertEqual(disposition, .performDefaultHandling)
-			XCTAssertNil(credential)
+		@Test
+		func urlSession_MissingServerTrust_CancelAuthenticationChallenge() {
+			let (disposition, credential) = evaluate(hashKeys: [""], trust: nil)
+			#expect(disposition == .cancelAuthenticationChallenge)
+			#expect(credential == nil)
+		}
+		
+		@Test
+		func urlSession_UntrustedServerTrust_CancelAuthenticationChallengeWithoutCrashing() throws {
+			let trust = try #require(MockCertificate.trust(anchored: false))
+			let (disposition, credential) = evaluate(hashKeys: ["unmatched"], trust: trust)
+			#expect(disposition == .cancelAuthenticationChallenge)
+			#expect(credential == nil)
+		}
+		
+		@Test
+		func urlSession_TrustedServerTrustWithUnmatchedPin_CancelAuthenticationChallenge() throws {
+			let trust = try #require(MockCertificate.trust(anchored: true))
+			let (disposition, credential) = evaluate(hashKeys: ["unmatched"], trust: trust)
+			#expect(disposition == .cancelAuthenticationChallenge)
+			#expect(credential == nil)
+		}
+		
+		@Test
+		func urlSession_TrustedServerTrustWithMatchedPin_UseCredential() throws {
+			let trust = try #require(MockCertificate.trust(anchored: true))
+			let hash = try #require(MockCertificate.publicKeyHash)
+			let (disposition, credential) = evaluate(hashKeys: [hash], trust: trust)
+			#expect(disposition == .useCredential)
+			#expect(credential != nil)
 		}
 	}
 }

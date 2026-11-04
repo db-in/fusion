@@ -170,6 +170,34 @@ public extension DataManageable {
 			asyncResponse(completion)(result, response)
 		}
 	}
+	
+	/// Runs an asynchronous operation and persists its result under the key. It's the async counterpart of ``map(_:nonDestructive:to:)``.
+	/// When the operation throws, the stored value is kept, unless `nonDestructive` is `false`, in which case it's removed.
+	/// This method triggers all the binds associated to the key.
+	///
+	/// ```swift
+	/// let user = try await UserStorage.store(.current) { try await UserService.fetch() }
+	/// ```
+	///
+	/// - Parameters:
+	///   - key: The key associated with the data.
+	///   - nonDestructive: Indicates if the old value should be kept in case the operation fails. By default is `true`, keeping old values.
+	///   - operation: The asynchronous operation producing the value.
+	/// - Returns: The value produced by the operation.
+	/// - Throws: The error thrown by the operation.
+	@discardableResult
+	static func store<T : Codable>(_ key: Key, nonDestructive: Bool = true, _ operation: () async throws -> T) async throws -> T {
+		do {
+			let value = try await operation()
+			set(value, forKey: key)
+			return value
+		} catch {
+			if !nonDestructive {
+				set(nil as T?, forKey: key)
+			}
+			throw error
+		}
+	}
 }
 
 // MARK: - Extension - DataManageable & CaseIterable

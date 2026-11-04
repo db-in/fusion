@@ -10,6 +10,7 @@ public typealias Response<T> = (Result<T, Error>, URLResponse?) -> Void
 public typealias Headers = [String : String]
 
 @inlinable public func syncMain(_ callback: @escaping () -> Void) {
+	guard !Thread.isMainThread else { return callback() }
 	DispatchQueue.main.sync { callback() }
 }
 
@@ -27,6 +28,46 @@ public typealias Headers = [String : String]
 
 @inlinable public func asyncResponse<T>(_ callback: Response<T>?) -> Response<T> {
 	{ result, response in asyncMain { callback?(result, response) } }
+}
+
+/// Bridges any API based on a ``Response`` completion into `async throws`, returning the value and the `URLResponse`.
+/// The completion API remains the single source of truth, the bridge only awaits its first callback.
+///
+/// ```swift
+/// let (user, response) = try await withURLResponse { UserService.fetch(completion: $0) }
+/// ```
+///
+/// - Parameter body: A closure that starts the completion based work, forwarding the given completion.
+/// - Returns: The successful value and the associated `URLResponse`.
+/// - Throws: The failure delivered by the completion.
+public func withURLResponse<T>(_ body: (@escaping Response<T>) -> Void) async throws -> (T, URLResponse?) {
+	let resumed = ThreadSafe(wrappedValue: false)
+	return try await withCheckedThrowingContinuation { continuation in
+		body { result, response in
+			let isFirst = resumed.mutate { done -> Bool in
+				defer { done = true }
+				return !done
+			}
+			guard isFirst else { return }
+			continuation.resume(with: result.map { ($0, response) })
+		}
+	}
+}
+
+/// Bridges any API based on a ``Response`` completion into `async throws`.
+/// The completion API remains the single source of truth, the bridge only awaits its first callback.
+///
+/// ```swift
+/// public static func fetch() async throws -> User {
+///     try await withResponse { fetch(completion: $0) }
+/// }
+/// ```
+///
+/// - Parameter body: A closure that starts the completion based work, forwarding the given completion.
+/// - Returns: The successful value.
+/// - Throws: The failure delivered by the completion.
+public func withResponse<T>(_ body: (@escaping Response<T>) -> Void) async throws -> T {
+	try await withURLResponse(body).0
 }
 
 public enum HTTPMethod : String {
@@ -149,13 +190,6 @@ public extension URLRequest {
 	/// Returns the absolute string representation of the request's URL, or an empty string if the URL is nil.
 	var urlString: String { url?.absoluteString ?? "" }
 	
-	/// Maximum number of concurrent network requests allowed.
-	/// The default value is 8, but this can be modified by setting a new value.
-	static var maxConcurrentRequests: Int {
-		get { 0 }
-		set { }
-	}
-	
 	private func responseResult(_ code: Int, _ data: Data) -> Result<Data, Error> {
 		switch code {
 		case 200..<400:
@@ -211,7 +245,8 @@ public extension URLRequest {
 		}
 	}
 
-	/// Uploads the given data and maps the response.
+	/// Uploads the given data through ``RESTAuthenticator/session`` and maps the response.
+	/// Status codes outside the `200..<400` range are reported as failures carrying the response body.
 	/// - Parameters:
 	///   - data: The data to upload.
 	///   - completion: A closure that receives the result of the upload operation.
@@ -219,16 +254,21 @@ public extension URLRequest {
 		debugLogRequest()
 		let time = currentTime
 		
-		URLSession.shared.uploadTask(with: self, from: data) { (data, response, error) in
+		RESTAuthenticator.session.uploadTask(with: self, from: data) { (data, response, error) in
 			let elapsed = currentTime - time
+			let result: Result<Data?, Error>
 			
 			if let validError = error {
 				self.debugLog(error: validError)
-				completion?(.failure(validError), response)
+				result = .failure(validError)
 			} else {
-				self.debugLog(response: response, data: data ?? Data(), seconds: elapsed)
-				completion?(.success(data), response)
+				let body = data ?? Data()
+				self.debugLog(response: response, data: body, seconds: elapsed)
+				result = responseResult(response?.httpStatusCode ?? 0, body).map { _ in data }
 			}
+			
+			HTTPCookieStorage.appGroup.sync()
+			completion?(result, response)
 		}.resume()
 	}
 }

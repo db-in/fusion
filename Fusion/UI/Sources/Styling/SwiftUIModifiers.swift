@@ -229,6 +229,7 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 	@State private var numberAttributes: [NSAttributedString.Key: Any] = [:]
 	@State private var decimals: Int = 0
 	@State private var currentValue: Double = 0
+	@State private var tweenName: String = UUID().uuidString
 	
 	/// The source text content that will be displayed and animated.
 	public let sourceText: TextConvertible
@@ -260,8 +261,9 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 		updateTemplate(with: attributed)
 		let newTarget = currentNumberValue(in: template)
 		guard newTarget != currentValue else { return }
+		Tween.stopTweens(withName: tweenName)
 		Tween(duration: duration,
-			  options: .init(ease: ease, delegate: self, fps: fps),
+			  options: .init(name: tweenName, ease: ease, delegate: self, fps: fps),
 			  fromValues: ["value": CGFloat(currentValue)],
 			  toValues: ["value": CGFloat(newTarget)])
 	}

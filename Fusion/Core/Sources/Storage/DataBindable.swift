@@ -53,13 +53,25 @@ private class TargetWrapper {
 
 	func performBinds<T>(value: T?) {
 		binds.forEach {
-			if let callback = ($0 as? Input<T>) {
+			if let stream = ($0 as? StreamInput<T>) {
+				stream.yield(value)
+			} else if let stream = ($0 as? StreamSignal) {
+				stream.yield()
+			} else if let callback = ($0 as? Input<T>) {
 				asyncMain { callback(value) }
 			} else if let callback = ($0 as? () -> Void) {
 				asyncMain { callback() }
 			}
 		}
 	}
+}
+
+private struct StreamInput<T> {
+	let yield: Input<T>
+}
+
+private struct StreamSignal {
+	let yield: () -> Void
 }
 
 public typealias Input<T> = (T?) -> Void
@@ -99,20 +111,7 @@ public extension DataBindable {
 	///   - cancellable: A cancellable reference to be observed for deinitialization.
 	///   - callback: The closure to be executed on every update of the key.
 	static func bind<T>(key: Key, cancellable: NSObject, callback: @escaping Input<T>) {
-		let nameKey = namespace(key)
-		let identifier = ObjectIdentifier(cancellable)
-		
-		Wrapper.mutate { all in
-			if let target = all[nameKey]?[identifier] {
-				target.binds.append(callback)
-			} else {
-				all[nameKey, default: [:]][identifier] = TargetWrapper(cancellable, callback: callback)
-			}
-		}
-
-		cancellable.onDeinit {
-			Wrapper.mutate { $0[nameKey]?[identifier] = nil }
-		}
+		register(key: key, cancellable: cancellable, callback: callback)
 	}
 	
 	/// Binds a closure to be executed on every update of a given key or its removal.
@@ -125,6 +124,10 @@ public extension DataBindable {
 	///   - cancellable: A cancellable reference to be observed for deinitialization.
 	///   - callback: The closure to be executed on every update of the key.
 	static func bind(key: Key, cancellable: NSObject, callback: @escaping (() -> Void)) {
+		register(key: key, cancellable: cancellable, callback: callback)
+	}
+	
+	private static func register(key: Key, cancellable: NSObject, callback: Any) {
 		let nameKey = namespace(key)
 		let identifier = ObjectIdentifier(cancellable)
 		
@@ -292,10 +295,54 @@ public extension DataBindable {
 }
 #endif
 
-#if compiler(>=5.5) && canImport(_Concurrency)
 public extension DataBindable {
 	
+	/// Creates an `AsyncStream` that yields every update of the specified key, including its removal as `nil`.
+	/// The binding is created immediately and removed as soon as the stream terminates,
+	/// either by the cancellation of the iterating task or by leaving the loop.
+	///
+	/// Example usage in an `@Observable` view model:
+	/// ```swift
+	/// for await users: [User]? in Storage.stream(key: .users) {
+	///     self.users = users ?? []
+	/// }
+	/// ```
+	///
+	/// - Complexity: O(1)
+	/// - Parameter key: The key to observe for value updates
+	/// - Returns: A stream of optional values of type T
+	static func stream<T>(key: Key) -> AsyncStream<T?> {
+		AsyncStream { continuation in
+			let holder = NSObject()
+			register(key: key, cancellable: holder, callback: StreamInput<T> { continuation.yield($0) })
+			continuation.onTermination = { _ in unbind(key: key, cancellable: holder) }
+		}
+	}
+	
+	/// Creates an `AsyncStream` that yields on every update of the specified key, including its removal.
+	/// The binding is created immediately and removed as soon as the stream terminates,
+	/// either by the cancellation of the iterating task or by leaving the loop.
+	///
+	/// Example usage:
+	/// ```swift
+	/// for await _ in Storage.stream(key: .someKey) as AsyncStream<Void> {
+	///     reload()
+	/// }
+	/// ```
+	///
+	/// - Complexity: O(1)
+	/// - Parameter key: The key to observe for updates
+	/// - Returns: A stream that yields void on every update
+	static func stream(key: Key) -> AsyncStream<Void> {
+		AsyncStream { continuation in
+			let holder = NSObject()
+			register(key: key, cancellable: holder, callback: StreamSignal { continuation.yield() })
+			continuation.onTermination = { _ in unbind(key: key, cancellable: holder) }
+		}
+	}
+	
 	/// Waits asynchronously for the next notification of the specified key.
+	/// It returns early when the current task is cancelled.
 	///
 	/// Example usage:
 	/// ```swift
@@ -305,37 +352,22 @@ public extension DataBindable {
 	/// - Complexity: O(1)
 	/// - Parameter key: The key to observe for updates
 	static func waitForNotification(key: Key) async {
-		await withCheckedContinuation { continuation in
-			let holder = NSObject()
-			bind(key: key, cancellable: holder) {
-				continuation.resume()
-				unbind(key: key, cancellable: holder)
-			}
-		}
+		for await _ in stream(key: key) as AsyncStream<Void> { return }
 	}
 	
 	/// Waits asynchronously for the next value update of the specified key.
+	/// It returns `nil` early when the current task is cancelled.
 	///
 	/// Example usage:
 	/// ```swift
-	/// let newValue = try await Storage.waitForValue(.someKey)
+	/// let newValue: String? = await Storage.waitForValue(.someKey)
 	/// ```
 	///
 	/// - Complexity: O(1)
 	/// - Parameter key: The key to observe for value updates
 	/// - Returns: The next value received for the specified key
 	static func waitForValue<T>(key: Key) async -> T? {
-		await withCheckedContinuation { continuation in
-			let holder = NSObject()
-			var hasResumed = false
-			
-			bind(key: key, cancellable: holder) { (value: T?) in
-				guard !hasResumed else { return }
-				hasResumed = true
-				continuation.resume(returning: value)
-				unbind(key: key, cancellable: holder)
-			}
-		}
+		for await value in stream(key: key) as AsyncStream<T?> { return value }
+		return nil
 	}
 }
-#endif

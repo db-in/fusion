@@ -429,16 +429,12 @@ public extension UIViewController {
 	func presentOver(_ target: UIViewController, style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom) {
 		let isModal = style.isModal
 #if os(iOS) && !os(visionOS)
-		if #available(iOS 15.0, *), style == .pageSheet || style == .formSheet {
+		if style == .pageSheet || style == .formSheet {
 			target.modalPresentationStyle = style
 			target.transitioningDelegate = nil
 			let sheet = target.sheetPresentationController
-			if #available(iOS 16.0, *) {
-				let detent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { _ in target.preferredSize.height }
-				sheet?.detents = [detent]
-			} else {
-				sheet?.detents = [.large()]
-			}
+			let detent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { _ in target.preferredSize.height }
+			sheet?.detents = [detent]
 			
 			if isModal {
 				sheet?.preferredCornerRadius = target.presentation.cornerRadius.topLeft

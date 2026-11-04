@@ -2,136 +2,150 @@
 //  Created by Diney Bomfim on 09/06/2023.
 //
 
-import XCTest
+import Foundation
+import Testing
 @testable import Fusion
 
 // MARK: - Definitions -
 
 // MARK: - Type -
 
-class HTTPCookieTests: XCTestCase {
+extension FusionSuite {
 	
-	func testHTTPCookie_WithMerge_ShouldCreateNewValidCookie() {
-		let oldCookie = HTTPCookie(properties: [
-			.domain: "domain.com",
-			.name: "name",
-			.value: "oldValue",
-			.path: "/oldPath"
-		])
+	@Suite
+	struct HTTPCookieTests {
 		
-		let newProperties: HTTPCookieInfo = [
-			.value: "newValue",
-			.domain: "newdomain.com",
-			.expires: Date(timeIntervalSinceNow: 3600)
-		]
+		init() {
+			HTTPCookieStorage.shared.deleteAll()
+			HTTPCookieStorage.appGroup.deleteAll()
+		}
 		
-		let newCookie = oldCookie?.merged(with: newProperties)
+		@Test
+		func httpCookie_WithMerge_ShouldCreateNewValidCookie() {
+			let oldCookie = HTTPCookie(properties: [
+				.domain: "domain.com",
+				.name: "name",
+				.value: "oldValue",
+				.path: "/oldPath"
+			])
+			
+			let newProperties: HTTPCookieInfo = [
+				.value: "newValue",
+				.domain: "newdomain.com",
+				.expires: Date(timeIntervalSinceNow: 3600)
+			]
+			
+			let newCookie = oldCookie?.merged(with: newProperties)
+			
+			#expect(newCookie?.value == "newValue")
+			#expect(newCookie?.domain == "newdomain.com")
+			#expect(newCookie?.path == "/oldPath")
+		}
 		
-		XCTAssertEqual(newCookie?.value, "newValue")
-		XCTAssertEqual(newCookie?.domain, "newdomain.com")
-		XCTAssertEqual(newCookie?.path, "/oldPath")
-	}
-	
-	func testSetCookie() {
-		let cookieStorage = HTTPCookieStorage.shared
-		let oldCookie = HTTPCookie(properties: [
-			.domain: "domain.com",
-			.name: "name",
-			.value: "oldValue",
-			.path: "/oldPath"
-		])!
-		let cookieProperties: HTTPCookieInfo = [
-			.name: "cookieName",
-			.value: "cookieValue",
-			.domain: "example.com",
-			.expires: Date(timeIntervalSinceNow: 3600),
-			.path: "/testPath"
-		]
+		@Test
+		func setCookie() throws {
+			let cookieStorage = HTTPCookieStorage.shared
+			let oldCookie = try #require(HTTPCookie(properties: [
+				.domain: "domain.com",
+				.name: "name",
+				.value: "oldValue",
+				.path: "/oldPath"
+			]))
+			let cookieProperties: HTTPCookieInfo = [
+				.name: "cookieName",
+				.value: "cookieValue",
+				.domain: "example.com",
+				.expires: Date(timeIntervalSinceNow: 3600),
+				.path: "/testPath"
+			]
+			
+			cookieStorage.setCookies([oldCookie])
+			cookieStorage.addCookie(cookieProperties)
+			#expect(cookieStorage.cookies?.first?.value == "cookieValue")
+			
+			cookieStorage.addCookie([:])
+			#expect(cookieStorage.cookies?.first?.value == "cookieValue")
+			
+			cookieStorage.addCookie([.init(rawValue: "invalidKey"): "invalidValue"])
+			#expect(cookieStorage.cookies?.first?.value == "cookieValue")
+			
+			cookieStorage.addCookie([.name : "newName"])
+			#expect(cookieStorage.cookies?.first?.value == "cookieValue")
+			#expect(cookieStorage.cookies?.first?.name == "cookieName")
+		}
 		
-		cookieStorage.setCookies([oldCookie])
-		cookieStorage.addCookie(cookieProperties)
-		XCTAssertEqual(cookieStorage.cookies?.first?.value, "cookieValue")
+		@Test
+		func setCookies() {
+			let cookieStorage = HTTPCookieStorage.shared
+			let cookie1Properties: HTTPCookieInfo = [
+				.name: "cookie1",
+				.value: "value1",
+				.domain: "example.com",
+				.path: "/path1"
+			]
+			let cookie2Properties: HTTPCookieInfo = [
+				.name: "cookie2",
+				.value: "value2",
+				.domain: "example.com",
+				.path: "/path2"
+			]
+			let cookies = [HTTPCookie(properties: cookie1Properties), HTTPCookie(properties: cookie2Properties)].compactMap { $0 }
+			
+			cookieStorage.setCookies(cookies)
+			#expect(cookieStorage.cookies?.count == 2)
+			
+			cookieStorage.setCookies([])
+			#expect(cookieStorage.cookies?.count == 0)
+		}
 		
-		cookieStorage.addCookie([:])
-		XCTAssertEqual(cookieStorage.cookies?.first?.value, "cookieValue")
+		@Test
+		func deleteAll() {
+			let cookieStorage = HTTPCookieStorage.shared
+			let cookieProperties: HTTPCookieInfo = [
+				.name: "cookieName",
+				.value:"cookieValue",
+				.domain: "example.com",
+				.path: "/testPath"
+			]
+			cookieStorage.addCookie(cookieProperties)
+			#expect(cookieStorage.hasCookies == true)
+			
+			cookieStorage.deleteAll()
+			#expect(cookieStorage.hasCookies == false)
+		}
 		
-		cookieStorage.addCookie([.init(rawValue: "invalidKey"): "invalidValue"])
-		XCTAssertEqual(cookieStorage.cookies?.first?.value, "cookieValue")
-		
-		cookieStorage.addCookie([.name : "newName"])
-		XCTAssertEqual(cookieStorage.cookies?.first?.value, "cookieValue")
-		XCTAssertEqual(cookieStorage.cookies?.first?.name, "cookieName")
-	}
-	
-	func testSetCookies() {
-		let cookieStorage = HTTPCookieStorage.shared
-		let cookie1Properties: HTTPCookieInfo = [
-			.name: "cookie1",
-			.value: "value1",
-			.domain: "example.com",
-			.path: "/path1"
-		]
-		let cookie2Properties: HTTPCookieInfo = [
-			.name: "cookie2",
-			.value: "value2",
-			.domain: "example.com",
-			.path: "/path2"
-		]
-		let cookies = [HTTPCookie(properties: cookie1Properties), HTTPCookie(properties: cookie2Properties)].compactMap { $0 }
-		
-		cookieStorage.setCookies(cookies)
-		XCTAssertEqual(cookieStorage.cookies?.count, 2)
-		
-		cookieStorage.setCookies([])
-		XCTAssertEqual(cookieStorage.cookies?.count, 0)
-	}
-	
-	func testDeleteAll() {
-		let cookieStorage = HTTPCookieStorage.shared
-		let cookieProperties: HTTPCookieInfo = [
-			.name: "cookieName",
-			.value:"cookieValue",
-			.domain: "example.com",
-			.path: "/testPath"
-		]
-		let cookie = HTTPCookie(properties: cookieProperties)
-		cookieStorage.addCookie(cookieProperties)
-		XCTAssertEqual(cookieStorage.hasCookies, true)
-		
-		cookieStorage.deleteAll()
-		XCTAssertEqual(cookieStorage.hasCookies, false)
-	}
-	
-	func testSyncTo() {
-		let cookieStorage = HTTPCookieStorage.shared
-		let otherCookieStorage = HTTPCookieStorage.appGroup
-		
-		let cookieProperties: HTTPCookieInfo = [
-			.name: "cookieName",
-			.value: "cookieValue",
-			.domain: "example.com",
-			.expires: Date(timeIntervalSinceNow: 3600),
-			.path: "/testPath"
-		]
-		
-		let cookie = HTTPCookie(properties: cookieProperties)!
-		
-		cookieStorage.setCookie(cookie)
-		
-		XCTAssertEqual(cookieStorage.hasCookies, true)
-		XCTAssertEqual(otherCookieStorage.hasCookies, false)
-		XCTAssertEqual(cookieStorage.cookies?.first?.name, "cookieName")
-		XCTAssertEqual(cookieStorage.cookies?.first?.value, "cookieValue")
-		XCTAssertEqual(cookieStorage.cookies?.first?.domain, "example.com")
-		XCTAssertEqual(cookieStorage.cookies?.first?.path, "/testPath")
-		
-		cookieStorage.sync(to: otherCookieStorage)
-		
-		XCTAssertEqual(cookieStorage.hasCookies, true)
-		XCTAssertEqual(otherCookieStorage.hasCookies, true)
-		XCTAssertEqual(otherCookieStorage.cookies?.first?.name, "cookieName")
-		XCTAssertEqual(otherCookieStorage.cookies?.first?.value, "cookieValue")
-		XCTAssertEqual(otherCookieStorage.cookies?.first?.domain, "example.com")
-		XCTAssertEqual(otherCookieStorage.cookies?.first?.path, "/testPath")
+		@Test
+		func syncTo() throws {
+			let cookieStorage = HTTPCookieStorage.shared
+			let otherCookieStorage = HTTPCookieStorage.appGroup
+			
+			let cookieProperties: HTTPCookieInfo = [
+				.name: "cookieName",
+				.value: "cookieValue",
+				.domain: "example.com",
+				.expires: Date(timeIntervalSinceNow: 3600),
+				.path: "/testPath"
+			]
+			
+			let cookie = try #require(HTTPCookie(properties: cookieProperties))
+			
+			cookieStorage.setCookie(cookie)
+			
+			#expect(cookieStorage.hasCookies == true)
+			#expect(otherCookieStorage.hasCookies == false)
+			#expect(cookieStorage.cookies?.first?.name == "cookieName")
+			#expect(cookieStorage.cookies?.first?.value == "cookieValue")
+			#expect(cookieStorage.cookies?.first?.domain == "example.com")
+			#expect(cookieStorage.cookies?.first?.path == "/testPath")
+			
+			cookieStorage.sync(to: otherCookieStorage)
+			
+			#expect(cookieStorage.hasCookies == true)
+			#expect(otherCookieStorage.hasCookies == true)
+			#expect(otherCookieStorage.cookies?.first?.name == "cookieName")
+			#expect(otherCookieStorage.cookies?.first?.value == "cookieValue")
+			#expect(otherCookieStorage.cookies?.first?.domain == "example.com")
+			#expect(otherCookieStorage.cookies?.first?.path == "/testPath")
+		}
 	}
 }

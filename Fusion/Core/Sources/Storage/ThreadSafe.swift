@@ -38,3 +38,5 @@ public final class ThreadSafe<Value> {
 		return transform(&value)
 	}
 }
+
+extension ThreadSafe : @unchecked Sendable {}

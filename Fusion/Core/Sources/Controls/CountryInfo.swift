@@ -75,13 +75,7 @@ public extension String {
 public extension Locale {
 	
 	/// Returns the currency code for the current locale.
-	var currencyIdentifier: String {
-		if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
-			return currency?.identifier ?? ""
-		} else {
-			return currencyCode ?? ""
-		}
-	}
+	var currencyIdentifier: String { currency?.identifier ?? "" }
 	
 	/// Returns the language's name localized for the current locale.
 	var languageName: String { localizedString(forLanguageCode: languageCodeISO2)?.capitalized ?? "" }
@@ -96,11 +90,7 @@ public extension Locale {
 	/// Returns a list of all available countries for the given locale on the device.
 	/// The countries are filtered to only include those with valid names and are sorted alphabetically.
 	static let availableCountries: [CountryInfo] = {
-		if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
-			return Locale.Region.isoRegions.filter(\.subRegions.isEmpty).map(\.identifier).map(\.countryInfoAsCode).filter(\.name.isEmpty == false).sorted()
-		} else {
-			return Locale.isoRegionCodes.map(\.countryInfoAsCode).filter(\.name.isEmpty == false).sorted()
-		}
+		Locale.Region.isoRegions.filter(\.subRegions.isEmpty).map(\.identifier).map(\.countryInfoAsCode).filter(\.name.isEmpty == false).sorted()
 	}()
 }
 

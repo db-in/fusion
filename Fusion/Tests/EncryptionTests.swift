@@ -2,67 +2,78 @@
 //  Created by Diney Bomfim on 09/06/2023.
 //
 
-import XCTest
+import Foundation
+import Testing
 @testable import Fusion
 
 // MARK: - Definitions -
 
 // MARK: - Type -
 
-class EncryptionTests: XCTestCase {
-
-	func testEncryptBase64() {
+@Suite
+struct EncryptionTests {
+	
+	@Test
+	func encryptBase64() {
 		let string = "Hello, World!"
 		let encryptedString = string.encryptBase64
-		XCTAssertEqual(encryptedString, "SGVsbG8sIFdvcmxkIQ==")
+		#expect(encryptedString == "SGVsbG8sIFdvcmxkIQ==")
 	}
-
-	func testDecryptBase64() {
+	
+	@Test
+	func decryptBase64() {
 		let encryptedString = "SGVsbG8sIFdvcmxkIQ=="
 		let decryptedString = encryptedString.decryptBase64
-		XCTAssertEqual(decryptedString, "Hello, World!")
+		#expect(decryptedString == "Hello, World!")
 	}
-
-	func testEncryptBase64By() {
+	
+	@Test
+	func encryptBase64By() {
 		let string = "Hello, World!"
 		let encryptionCount = 3
 		let encryptedString = string.encryptBase64(by: encryptionCount)
-		XCTAssertEqual(encryptedString, "VTBkV2MySkhPSE5KUm1SMlkyMTRhMGxSUFQwPQ==")
+		#expect(encryptedString == "VTBkV2MySkhPSE5KUm1SMlkyMTRhMGxSUFQwPQ==")
 	}
-
-	func testDecryptBase64By() {
+	
+	@Test
+	func decryptBase64By() {
 		let encryptedString = "VTBkV2MySkhPSE5KUm1SMlkyMTRhMGxSUFQwPQ=="
 		let decryptionCount = 3
 		let decryptedString = encryptedString.decryptBase64(by: decryptionCount)
-		XCTAssertEqual(decryptedString, "Hello, World!")
+		#expect(decryptedString == "Hello, World!")
 	}
 }
 
-class SequenceEncryptionTests: XCTestCase {
-
-	func testHex() {
+@Suite
+struct SequenceEncryptionTests {
+	
+	@Test
+	func hex() {
 		let sequence: [UInt8] = [0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21]
 		let hexString = sequence.hex
-		XCTAssertEqual(hexString, "48656c6c6f2c20576f726c6421")
+		#expect(hexString == "48656c6c6f2c20576f726c6421")
 	}
 }
 
-class DataEncryptionTests: XCTestCase {
-
-	func testSHA256() {
-		let data = "Hello, World!".data(using: .utf8)!
+@Suite
+struct DataEncryptionTests {
+	
+	@Test
+	func sha256() throws {
+		let data = try #require("Hello, World!".data(using: .utf8))
 		let digest = data.sha256()
 		let expectedDigest: [UInt8] = [
 			0xDF, 0xFD, 0x60, 0x21, 0xBB, 0x2B, 0xD5, 0xB0, 0xAF, 0x67, 0x62,
 			0x90, 0x80, 0x9E, 0xC3, 0xA5, 0x31, 0x91, 0xDD, 0x81, 0xC7, 0xF7,
 			0x0A, 0x4B, 0x28, 0x68, 0x8A, 0x36, 0x21, 0x82, 0x98, 0x6F
 		]
-		XCTAssertEqual(digest, expectedDigest)
+		#expect(digest == expectedDigest)
 	}
-
-	func testHMACSHA512() {
+	
+	@Test
+	func hmacSHA512() throws {
 		let key = "SecretKey"
-		let data = "Hello, World!".data(using: .utf8)!
+		let data = try #require("Hello, World!".data(using: .utf8))
 		let digest = data.hmacSHA512(key: key)
 		let expectedDigest: [UInt8] = [
 			0x0A, 0x76, 0xF1, 0x9D, 0x15, 0x8A, 0xAC, 0x9B, 0x7B, 0xD4, 0x69,
@@ -72,13 +83,14 @@ class DataEncryptionTests: XCTestCase {
 			0x7F, 0x45, 0xD0, 0xCB, 0x9C, 0x2C, 0xF5, 0xFF, 0x55, 0x0A, 0x76,
 			0x7E, 0x20, 0x83, 0xD8, 0xD1, 0x2F, 0x62, 0x43, 0x5D
 		]
-		XCTAssertEqual(digest, expectedDigest)
+		#expect(digest == expectedDigest)
 	}
 	
-	func testSHA512() {
+	@Test
+	func sha512() {
 		let testData = Data("Hello, World!".utf8)
 		let digest = testData.sha512()
-
+		
 		let expectedDigest: [UInt8] = [
 			0x37, 0x4D, 0x79, 0x4A, 0x95, 0xCD, 0xCF, 0xD8, 0xB3, 0x59, 0x93,
 			0x18, 0x5F, 0xEF, 0x9B, 0xA3, 0x68, 0xF1, 0x60, 0xD8, 0xDA, 0xF4,
@@ -87,6 +99,6 @@ class DataEncryptionTests: XCTestCase {
 			0xF1, 0x8C, 0x19, 0xDE, 0xF4, 0xE6, 0x17, 0xC3, 0x3C, 0xE5, 0x2E,
 			0xF0, 0xA6, 0xE5, 0xFB, 0xE3, 0x18, 0xCB, 0x03, 0x87
 		]
-		XCTAssertEqual(digest, expectedDigest)
+		#expect(digest == expectedDigest)
 	}
 }

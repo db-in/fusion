@@ -56,21 +56,38 @@ public class AsyncOperation: Operation, @unchecked Sendable {
 		case executing
 		case finished
 		case cancelled
+		
+		fileprivate var keyPaths: [String] {
+			switch self {
+			case .ready:
+				return ["isReady"]
+			case .executing:
+				return ["isExecuting"]
+			case .finished:
+				return ["isFinished"]
+			case .cancelled:
+				return ["isCancelled", "isFinished"]
+			}
+		}
 	}
 	
 	private let task: AsyncTask
+	private let lock = NSLock()
+	private var storedState: State = .ready
 	
 	/// The current state of the operation.
 	///
-	/// This property manages state transitions and triggers key-value observation when the state changes.
-	public var state: State = .ready {
-		willSet {
-			willChangeValue(forKey: newValue.rawValue)
-			willChangeValue(forKey: state.rawValue)
-		}
-		didSet {
-			didChangeValue(forKey: oldValue.rawValue)
-			didChangeValue(forKey: state.rawValue)
+	/// This property is thread safe. It manages state transitions and triggers the `Operation` key-value observation when the state changes.
+	/// A cancelled operation is also reported as finished, so an `OperationQueue` releases its slot.
+	public var state: State {
+		get { lock.withLock { storedState } }
+		set {
+			let oldValue = state
+			guard oldValue != newValue else { return }
+			let keyPaths = Array(Set(oldValue.keyPaths + newValue.keyPaths))
+			keyPaths.forEach { willChangeValue(forKey: $0) }
+			lock.withLock { storedState = newValue }
+			keyPaths.forEach { didChangeValue(forKey: $0) }
 		}
 	}
 	
@@ -83,8 +100,8 @@ public class AsyncOperation: Operation, @unchecked Sendable {
 	/// Indicates whether the operation is currently executing.
 	public override var isExecuting: Bool { state == .executing }
 	
-	/// Indicates whether the operation has finished execution.
-	public override var isFinished: Bool { state == .finished }
+	/// Indicates whether the operation has finished execution or has been cancelled.
+	public override var isFinished: Bool { state == .finished || state == .cancelled }
 	
 	/// Indicates whether the operation has been cancelled.
 	public override var isCancelled: Bool { state == .cancelled }
@@ -108,8 +125,9 @@ public class AsyncOperation: Operation, @unchecked Sendable {
 	
 // MARK: - Overridden Methods
 	
-	/// Marks the operation as cancelled and sets its state to `.cancelled`.
+	/// Marks the operation as cancelled and sets its state to `.cancelled`. A finished operation is not affected.
 	public override func cancel() {
+		guard state != .finished else { return }
 		state = .cancelled
 	}
 	

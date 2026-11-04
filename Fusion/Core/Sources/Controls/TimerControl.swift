@@ -3,15 +3,16 @@
 //
 
 import Foundation
-#if os(macOS)
-	import AppKit
-#elseif os(iOS) || os(tvOS)
-	import UIKit
-#endif
 
 // MARK: - Definitions -
 
 public typealias TimerCallback = () -> Void
+
+private struct TimerClock {
+	var lastTick: Double = 0.0
+	var lastGap: Double = 0.0
+	var totalGap: Double = 0.0
+}
 
 // MARK: - Type -
 
@@ -26,13 +27,20 @@ final public class TimerControl {
 	@ThreadSafe
 	private var timer: DispatchSourceTimer?
 	
+	@ThreadSafe
+	private var clock: TimerClock = .init()
+	
+	private static let suspensionThreshold: Double = 0.5
+	
 	private lazy var timerQueue: DispatchQueue = { .init(label: "timer.\(UUID().uuidString)", attributes: .concurrent) }()
 	
 	/// Returns the count for the current number of items.
 	public var itemsCount: Int { items.count }
 	
 	/// The time passed while in the background. This is only available on the first cycle after resuming activity.
-	public private(set) var backgroundTime: Double = 0.0
+	public var backgroundTime: Double { clock.lastGap }
+	
+	var totalBackgroundTime: Double { clock.totalGap }
 	
 	/// The singleton instance of ``TimerControl``.
 	public static let shared: TimerControl = TimerControl()
@@ -41,7 +49,6 @@ final public class TimerControl {
 	
 	public init() {
 		startIfNeeded()
-		setupNotifications()
 	}
 
 // MARK: - Protected Methods
@@ -55,16 +62,31 @@ final public class TimerControl {
 	}
 	
 	private func startIfNeeded() {
-		guard !items.isEmpty else { return }
-		timer = newDispatch()
+		_timer.mutate { timer in
+			guard timer == nil, !items.isEmpty else { return }
+			_clock.mutate { $0.lastTick = 0.0 }
+			timer = newDispatch()
+		}
 	}
 	
 	private func cancelIfNeeded() {
-		guard items.isEmpty else { return }
-		timer?.cancel()
+		_timer.mutate { timer in
+			guard items.isEmpty else { return }
+			timer?.cancel()
+			timer = nil
+		}
 	}
 	
-	private func handleTimerTick() {
+	func handleTimerTick() {
+		let now = CFAbsoluteTimeGetCurrent()
+		
+		_clock.mutate { clock in
+			let gap = clock.lastTick > 0.0 ? now - clock.lastTick : 0.0
+			clock.lastGap = gap > Self.suspensionThreshold ? gap : 0.0
+			clock.totalGap += clock.lastGap
+			clock.lastTick = now
+		}
+		
 		items.forEach { item in
 			let callback = item.value.callback
 			let queue = item.value.queue
@@ -72,32 +94,6 @@ final public class TimerControl {
 				callback()
 			}
 		}
-		
-		backgroundTime = 0.0
-	}
-	
-	private func setupNotifications() {
-		let center = NotificationCenter.default
-		center.removeObserver(self)
-		
-#if os(macOS)
-		center.addObserver(self, selector: #selector(pauseForBackground), name: NSApplication.willResignActiveNotification, object: nil)
-		center.addObserver(self, selector: #selector(resumeFromBackground), name: NSApplication.didBecomeActiveNotification, object: nil)
-		center.addObserver(self, selector: #selector(pauseForBackground), name: NSApplication.willTerminateNotification, object: nil)
-#elseif os(iOS) || os(tvOS)
-		center.addObserver(self, selector: #selector(pauseForBackground), name: UIApplication.willResignActiveNotification, object: nil)
-		center.addObserver(self, selector: #selector(resumeFromBackground), name: UIApplication.didBecomeActiveNotification, object: nil)
-		center.addObserver(self, selector: #selector(pauseForBackground), name: UIApplication.willTerminateNotification, object: nil)
-#endif
-	}
-	
-	@objc private func pauseForBackground() {
-		backgroundTime = CFAbsoluteTimeGetCurrent()
-	}
-	
-	@objc private func resumeFromBackground() {
-		guard backgroundTime > 0.0 else { return }
-		backgroundTime = CFAbsoluteTimeGetCurrent() - backgroundTime
 	}
 	
 // MARK: - Exposed Methods
@@ -109,20 +105,20 @@ final public class TimerControl {
 	///   - queue: A queue where the callback will be called on. By default this value is ``main``.
 	///   - callback: The callback which will be called on every loop.
 	public func addItem(key: String, queue: DispatchQueue = .main, callback: @escaping TimerCallback) {
-		items[key] = (callback, queue)
+		_items.mutate { $0[key] = (callback, queue) }
 		startIfNeeded()
 	}
 	
 	/// Removes a callback item from the timer associated with a key.
 	/// - Parameter key: The key associated with the callback.
 	public func removeItem(key: String) {
-		items[key] = nil
+		_items.mutate { $0[key] = nil }
 		cancelIfNeeded()
 	}
 	
 	/// Removes all the current callbacks from the timer.
 	public func removeAll() {
-		items = [:]
+		_items.mutate { $0.removeAll() }
 		cancelIfNeeded()
 	}
 	
