@@ -370,4 +370,64 @@ public extension DataBindable {
 		for await value in stream(key: key) as AsyncStream<T?> { return value }
 		return nil
 	}
+
+	/// Observes every update of the specified key and calls the action on the main actor with the target.
+	/// The target is weakly referenced, the observation finishes when the target is deallocated
+	/// or when the returned task is cancelled.
+	///
+	/// Example usage:
+	/// ```swift
+	/// observation = Storage.observe(key: .someKey, target: self) { $0.refresh() }
+	/// ```
+	///
+	/// - Complexity: O(1)
+	/// - Parameters:
+	///   - key: The key to observe for updates
+	///   - target: The object passed to the action. It's weakly referenced.
+	///   - action: The closure to be executed on every update of the key
+	/// - Returns: The task running the observation. Cancel it to stop observing.
+	@discardableResult
+	static func observe<Target: AnyObject>(key: Key,
+										   target: Target,
+										   action: @escaping @MainActor (Target) -> Void) -> Task<Void, Never> {
+		// The stream is created upfront, so updates sent right after this call are not missed.
+		let updates: AsyncStream<Void> = stream(key: key)
+		return Task { [weak target] in
+			for await _ in updates {
+				guard !Task.isCancelled, let target else { return }
+				await action(target)
+			}
+		}
+	}
+
+	/// Observes every value update of the specified key and calls the action on the main actor with the target and the new value.
+	/// The target is weakly referenced, the observation finishes when the target is deallocated
+	/// or when the returned task is cancelled.
+	///
+	/// Example usage:
+	/// ```swift
+	/// observation = Storage.observe(key: .users, target: self) { (owner, users: [User]?) in
+	///     owner.users = users ?? []
+	/// }
+	/// ```
+	///
+	/// - Complexity: O(1)
+	/// - Parameters:
+	///   - key: The key to observe for value updates
+	///   - target: The object passed to the action. It's weakly referenced.
+	///   - action: The closure to be executed with the new value on every update of the key
+	/// - Returns: The task running the observation. Cancel it to stop observing.
+	@discardableResult
+	static func observe<Target: AnyObject, T>(key: Key,
+											  target: Target,
+											  action: @escaping @MainActor (Target, T?) -> Void) -> Task<Void, Never> {
+		// The stream is created upfront, so updates sent right after this call are not missed.
+		let updates: AsyncStream<T?> = stream(key: key)
+		return Task { [weak target] in
+			for await value in updates {
+				guard !Task.isCancelled, let target else { return }
+				await action(target, value)
+			}
+		}
+	}
 }
