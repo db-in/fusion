@@ -16,7 +16,14 @@ struct AsyncMockStorage : DataManageable {
 		case value
 		case notification
 		case stored
+		case observed
 	}
+}
+
+@MainActor
+final class ObserverTarget {
+	var refreshCount = 0
+	var values: [String?] = []
 }
 
 // MARK: - Type -
@@ -154,6 +161,69 @@ extension FusionSuite {
 			}
 			let finished = await completes(within: 1) { _ = await task.value }
 			#expect(finished)
+		}
+		
+		@Test @MainActor
+		func observe_WhenKeyIsUpdated_ShouldCallTheActionOnEveryUpdate() async {
+			let target = ObserverTarget()
+			let task = AsyncMockStorage.observe(key: .observed, target: target) { $0.refreshCount += 1 }
+			defer { task.cancel() }
+			AsyncMockStorage.set(1, forKey: .observed)
+			try? await Task.sleep(nanoseconds: 20_000_000)
+			AsyncMockStorage.set(2, forKey: .observed)
+			try? await Task.sleep(nanoseconds: 50_000_000)
+			#expect(target.refreshCount == 2)
+		}
+		
+		@Test @MainActor
+		func observe_WhenKeyIsUpdated_ShouldPassEveryValueIncludingRemoval() async {
+			let target = ObserverTarget()
+			let task = AsyncMockStorage.observe(key: .observed, target: target) { (owner, value: String?) in
+				owner.values.append(value)
+			}
+			defer { task.cancel() }
+			AsyncMockStorage.set("first", forKey: .observed)
+			try? await Task.sleep(nanoseconds: 20_000_000)
+			AsyncMockStorage.set("second", forKey: .observed)
+			try? await Task.sleep(nanoseconds: 20_000_000)
+			AsyncMockStorage.remove(keys: [.observed], bindType: String.self)
+			try? await Task.sleep(nanoseconds: 50_000_000)
+			#expect(target.values == ["first", "second", nil])
+		}
+		
+		@Test @MainActor
+		func observe_WhenUpdatedRightAfterTheCall_ShouldNotMissTheUpdate() async {
+			let target = ObserverTarget()
+			let task = AsyncMockStorage.observe(key: .observed, target: target) { $0.refreshCount += 1 }
+			defer { task.cancel() }
+			AsyncMockStorage.set(1, forKey: .observed)
+			try? await Task.sleep(nanoseconds: 50_000_000)
+			#expect(target.refreshCount == 1)
+		}
+		
+		@Test @MainActor
+		func observe_WhenTaskIsCancelled_ShouldStopCallingTheAction() async {
+			let target = ObserverTarget()
+			let task = AsyncMockStorage.observe(key: .observed, target: target) { $0.refreshCount += 1 }
+			task.cancel()
+			#expect(await completes(within: 1) { await task.value })
+			AsyncMockStorage.set(1, forKey: .observed)
+			try? await Task.sleep(nanoseconds: 50_000_000)
+			#expect(target.refreshCount == 0)
+		}
+		
+		@Test @MainActor
+		func observe_WhenTargetIsDeallocated_ShouldFinishOnTheNextUpdate() async {
+			weak var weakTarget: ObserverTarget?
+			let task: Task<Void, Never>
+			do {
+				let target = ObserverTarget()
+				weakTarget = target
+				task = AsyncMockStorage.observe(key: .observed, target: target) { $0.refreshCount += 1 }
+			}
+			#expect(weakTarget == nil)
+			AsyncMockStorage.set(1, forKey: .observed)
+			#expect(await completes(within: 1) { await task.value })
 		}
 	}
 	
