@@ -4,6 +4,68 @@
 
 import Foundation
 
+// MARK: - Definitions -
+
+enum DateFormatterCache {
+	
+	private struct ComponentsKey : Hashable {
+		let units: UInt
+		let style: Int
+		let zero: UInt
+		let locale: String
+	}
+	
+	private struct FormatKey : Hashable {
+		let source: ObjectIdentifier
+		let format: String
+		let locale: Locale?
+		let timeZone: TimeZone?
+		let calendar: Calendar?
+	}
+	
+	private final class FormatEntry {
+		weak var source: DateFormatter?
+		let formatter: DateFormatter
+		
+		init(source: DateFormatter, formatter: DateFormatter) {
+			self.source = source
+			self.formatter = formatter
+		}
+	}
+	
+	private static let limit: Int = 256
+	private static let components = ThreadSafe<[ComponentsKey : DateComponentsFormatter]>(wrappedValue: [:])
+	private static let formats = ThreadSafe<[FormatKey : FormatEntry]>(wrappedValue: [:])
+	
+	static func componentsFormatter(units: NSCalendar.Unit,
+									style: DateComponentsFormatter.UnitsStyle,
+									zero: DateComponentsFormatter.ZeroFormattingBehavior) -> DateComponentsFormatter {
+		let key = ComponentsKey(units: units.rawValue, style: style.rawValue, zero: zero.rawValue, locale: Locale.current.identifier)
+		if let formatter = components.mutate({ $0[key] }) { return formatter }
+		let formatter = DateComponentsFormatter()
+		formatter.allowedUnits = units
+		formatter.unitsStyle = style
+		formatter.zeroFormattingBehavior = zero
+		components.mutate {
+			if $0.count >= limit { $0.removeAll(keepingCapacity: true) }
+			$0[key] = formatter
+		}
+		return formatter
+	}
+	
+	static func formatter(_ source: DateFormatter, format: String) -> DateFormatter {
+		let key = FormatKey(source: ObjectIdentifier(source), format: format, locale: source.locale, timeZone: source.timeZone, calendar: source.calendar)
+		if let entry = formats.mutate({ $0[key] }), entry.source === source { return entry.formatter }
+		let formatter = (source.copy() as? DateFormatter) ?? DateFormatter()
+		formatter.dateFormat = format
+		formats.mutate {
+			if $0.count >= limit { $0.removeAll(keepingCapacity: true) }
+			$0[key] = FormatEntry(source: source, formatter: formatter)
+		}
+		return formatter
+	}
+}
+
 // MARK: - Extension - Int
 
 public extension Int {
@@ -18,11 +80,7 @@ public extension Int {
 	func toTimeUnits(_ units: NSCalendar.Unit = [.minute, .second],
 					 style: DateComponentsFormatter.UnitsStyle = .positional,
 					 zero: DateComponentsFormatter.ZeroFormattingBehavior = .pad) -> String {
-		let formatter = DateComponentsFormatter()
-		formatter.allowedUnits = units
-		formatter.unitsStyle = style
-		formatter.zeroFormattingBehavior = zero
-		return formatter.string(from: TimeInterval(self)) ?? ""
+		DateFormatterCache.componentsFormatter(units: units, style: style, zero: zero).string(from: TimeInterval(self)) ?? ""
 	}
 	
 	/// Converts a Unix timestamp (seconds since 1970) to a Date object.
@@ -97,11 +155,8 @@ public extension Date {
 	///   - formatter: A given formatter object. Default is `standard`.
 	/// - Returns: A new String object with the final format.
 	func toString(format: CustomStringConvertible? = nil, formatter: DateFormatter = .standard) -> String {
-		if let newFormat = format {
-			formatter.dateFormat = "\(newFormat)"
-		}
-		
-		return formatter.string(from: self)
+		guard let newFormat = format else { return formatter.string(from: self) }
+		return DateFormatterCache.formatter(formatter, format: "\(newFormat)").string(from: self)
 	}
 }
 
@@ -116,10 +171,7 @@ public extension String {
 	///   - formatter: A given formatter object. Default is `standard`.
 	/// - Returns: A date object if the string corresponds to valid date or nil otherwise.
 	func toDate(format: CustomStringConvertible? = nil, formatter: DateFormatter = .standard) -> Date? {
-		if let newFormat = format {
-			formatter.dateFormat = "\(newFormat)"
-		}
-		
-		return formatter.date(from: self)
+		guard let newFormat = format else { return formatter.date(from: self) }
+		return DateFormatterCache.formatter(formatter, format: "\(newFormat)").date(from: self)
 	}
 }

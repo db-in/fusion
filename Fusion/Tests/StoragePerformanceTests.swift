@@ -368,6 +368,7 @@ class StoragePerformanceTests: XCTestCase {
 
 		let removeStart = DispatchTime.now()
 		type.removeAllKeys()
+		type.flushPendingWrites()
 		let removeSeconds = elapsedSeconds(since: removeStart)
 
 		let column = name.padding(toLength: 14, withPad: " ", startingAt: 0)

@@ -6,12 +6,19 @@ import Foundation
 
 // MARK: - Definitions -
 
-private struct ThrottleWrapper {
-	@ThreadSafe
-	static var timers: [String : DispatchSourceTimer] = [:]
+private func isEqualValue<L : Equatable>(_ lhs: L, _ rhs: Any) -> Bool {
+	guard let rhs = rhs as? L else { return false }
+	return lhs == rhs
+}
 
-	static func mutate(_ transform: (inout [String : DispatchSourceTimer]) -> Void) {
-		_timers.mutate(transform)
+private func isSameValue(_ lhs: Any?, _ rhs: Any?) -> Bool {
+	switch (lhs, rhs) {
+	case (nil, nil):
+		return true
+	case let (lhs as any Equatable, rhs?):
+		return isEqualValue(lhs, rhs)
+	default:
+		return false
 	}
 }
 
@@ -63,6 +70,10 @@ public protocol DataManageable : DataBindable {
 	/// - Parameter key: The key to check for a specific throttle interval.
 	/// - Returns: The throttle interval in seconds for the given key. Default is `0` (no throttling).
 	static func throttleInterval(forKey key: Key) -> TimeInterval
+	
+	static func persistsAsynchronously(forKey key: Key) -> Bool
+	
+	static func notifiesOnlyOnChange(forKey key: Key) -> Bool
 }
 
 // MARK: - Extension - DataManageable
@@ -76,6 +87,17 @@ public extension DataManageable {
 	/// - Parameter key: The key to check for a specific throttle interval.
 	/// - Returns: `0`, meaning no throttling.
 	static func throttleInterval(forKey key: Key) -> TimeInterval { 0 }
+	
+	static func persistsAsynchronously(forKey key: Key) -> Bool {
+		let storage = Storage.shared
+		return !(storage is StateStorage || storage is Keychain || storage is UserDefaults)
+	}
+	
+	static func notifiesOnlyOnChange(forKey key: Key) -> Bool { false }
+	
+	static func flushPendingWrites() {
+		StoragePersistence.flushPendingWrites()
+	}
 	
 	/// Returns the keys of this type that currently hold a value in its `Storage`, including dynamic keys
 	/// that are not part of `allCases`. The order is not guaranteed.
@@ -94,7 +116,11 @@ public extension DataManageable {
 	/// - Returns: The value if it exists, or `nil`.
 	static func value<T : Decodable>(forKey key: Key) -> T? {
 		let namespace = namespace(key)
-		return InMemoryCache.getOrSet(key: namespace, newValue: Storage.shared.value(forKey: namespace))
+		return InMemoryCache.getOrLoad(key: namespace) { () -> T? in
+			let pending = StoragePersistence.pendingValue(forKey: namespace)
+			guard pending.found else { return Storage.shared.value(forKey: namespace) }
+			return pending.value as? T
+		}
 	}
 	
 	/// Sets the value and associate it with a given key. The key must be unique and its value is replaced when it's set multiple times.
@@ -105,25 +131,23 @@ public extension DataManageable {
 	///   - key: The unique key that represents the value.
 	static func set<T : Encodable>(_ value: T?, forKey key: Key) {
 		let namespace = namespace(key)
-		InMemoryCache.set(key: namespace, newValue: value)
+		
+		if notifiesOnlyOnChange(forKey: key) {
+			let previous = InMemoryCache.getRaw(key: namespace)
+			if let previous, isSameValue(value, previous is AbsentValue ? nil : previous) { return }
+		}
+		
+		InMemoryCache.set(key: namespace, newValue: value.map { $0 as Any } ?? AbsentValue.marker)
 		Storage.shared.track(key: namespace, isStored: value != nil)
 		let interval = throttleInterval(forKey: key)
+		let write = { Storage.shared.set(value, forKey: namespace) }
+		
 		if interval > 0 {
-			ThrottleWrapper.mutate { timers in
-				if timers[namespace] == nil {
-					let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .utility))
-					timer.schedule(deadline: .now() + interval)
-					timer.setEventHandler {
-						let cached: T? = InMemoryCache.get(key: namespace)
-						Storage.shared.set(cached, forKey: namespace)
-						ThrottleWrapper.mutate { $0[namespace] = nil }
-					}
-					timers[namespace] = timer
-					timer.resume()
-				}
-			}
+			StoragePersistence.throttle(key: namespace, value: value, interval: interval, write: write)
+		} else if persistsAsynchronously(forKey: key) {
+			StoragePersistence.enqueue(key: namespace, value: value, write: write)
 		} else {
-			Storage.shared.set(value, forKey: namespace)
+			write()
 		}
 		send(forKey: key, value: value)
 	}
@@ -137,15 +161,14 @@ public extension DataManageable {
 	static func remove<T>(keys: [Key], bindType: T.Type? = Any.self) {
 		keys.forEach {
 			let namespace = namespace($0)
-			ThrottleWrapper.mutate { timers in
-				if let timer = timers[namespace] {
-					timer.cancel()
-					timers[namespace] = nil
-				}
+			StoragePersistence.cancel(key: namespace)
+			if persistsAsynchronously(forKey: $0) {
+				StoragePersistence.enqueue(key: namespace, value: nil) { Storage.shared.removeObject(forKey: namespace) }
+			} else {
+				Storage.shared.removeObject(forKey: namespace)
 			}
-			Storage.shared.removeObject(forKey: namespace)
 			Storage.shared.track(key: namespace, isStored: false)
-			InMemoryCache.flush(key: namespace)
+			InMemoryCache.set(key: namespace, newValue: AbsentValue.marker)
 			send(forKey: $0, value: nil as T?)
 		}
 	}

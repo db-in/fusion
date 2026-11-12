@@ -71,12 +71,19 @@ public extension DateFormatter {
 		return formatter
 	}
 	
-	static func date(from: String) -> Date {
+	private static let utcFormatters = ThreadSafe<[String : DateFormatter]>(wrappedValue: [:])
+	
+	static func utc(format: String) -> DateFormatter {
+		if let formatter = utcFormatters.mutate({ $0[format] }) { return formatter }
 		let formatter = DateFormatter.utc
-		
+		formatter.dateFormat = format
+		utcFormatters.mutate { $0[format] = formatter }
+		return formatter
+	}
+	
+	static func date(from: String) -> Date {
 		for format in validFormats {
-			formatter.dateFormat = format
-			guard let date = formatter.date(from: from) else { continue }
+			guard let date = utc(format: format).date(from: from) else { continue }
 			return date
 		}
 	
@@ -84,11 +91,8 @@ public extension DateFormatter {
 	}
 	
 	static func string(from date: Date) -> String {
-		let formatter = DateFormatter.utc
-		if let format = validFormats.first {
-			formatter.dateFormat = format
-		}
-		return formatter.string(from: date)
+		guard let format = validFormats.first else { return DateFormatter.utc.string(from: date) }
+		return utc(format: format).string(from: date)
 	}
 }
 
@@ -310,7 +314,19 @@ public extension String {
 	
 	/// Returns a `Date` using `DateFormatter.validFormats`. Returns current date if the format is invalid.
 	/// This property takes advantage of `InMemoryCache` and is optimized for maximum performance.
-	var toDate: Date { InMemoryCache.getOrSet(key: "Date-\(self)", newValue: DateFormatter.date(from: self)) ?? .init() }
+	var toDate: Date {
+		let key = self as NSString
+		if let cached = String.dateCache.object(forKey: key) { return cached as Date }
+		let date = DateFormatter.date(from: self)
+		String.dateCache.setObject(date as NSDate, forKey: key)
+		return date
+	}
+	
+	internal static let dateCache: NSCache<NSString, NSDate> = {
+		let cache = NSCache<NSString, NSDate>()
+		cache.countLimit = 4096
+		return cache
+	}()
 	
 	/// Returns the current string as URL.
 	var toURL: URL { .init(string: self) ?? .init(fileURLWithPath: "") }
@@ -368,17 +384,25 @@ public extension FileManager {
 		return hasInsecureApps || isInsecureFileSystem
 	}
 	
+	private static let appGroupURLs = ThreadSafe<[String : URL]>(wrappedValue: [:])
+	
 	var appGroup: URL {
 		let group = Bundle.appGroup
-		let directory = group.isEmpty ? temporaryDirectory : (containerURL(forSecurityApplicationGroupIdentifier: group) ?? temporaryDirectory)
-		guard Constant.isDebug else { return directory }
+		let resolved: URL
 		
-		let debugFolder = directory.appendingPathComponent("Debug")
-		if !fileExists(atPath: debugFolder.path) {
-			try? createDirectory(atPath: debugFolder.path, withIntermediateDirectories: true, attributes: nil)
+		if let cached = FileManager.appGroupURLs.mutate({ $0[group] }) {
+			resolved = cached
+		} else {
+			let directory = group.isEmpty ? temporaryDirectory : (containerURL(forSecurityApplicationGroupIdentifier: group) ?? temporaryDirectory)
+			resolved = Constant.isDebug ? directory.appendingPathComponent("Debug") : directory
+			FileManager.appGroupURLs.mutate { $0[group] = resolved }
 		}
 		
-		return debugFolder
+		if Constant.isDebug, !fileExists(atPath: resolved.path) {
+			try? createDirectory(atPath: resolved.path, withIntermediateDirectories: true, attributes: nil)
+		}
+		
+		return resolved
 	}
 	
 	func move(from: URL, to: URL) {
@@ -421,9 +445,20 @@ public extension Bundle {
 
 public extension URLCache {
 	
+	private static let instances = ThreadSafe<[URL : URLCache]>(wrappedValue: [:])
+	
+	static let appGroupMemoryCapacity: Int = 32 * 1024 * 1024
+	
+	static let appGroupDiskCapacity: Int = 512 * 1024 * 1024
+	
 	static var appGroup: URLCache {
 		let directory = FileManager.default.appGroup.appendingPathComponent("Assets")
-		return .init(memoryCapacity: .max, diskCapacity: .max, directory: directory)
+		return instances.mutate { caches in
+			if let cache = caches[directory] { return cache }
+			let cache = URLCache(memoryCapacity: appGroupMemoryCapacity, diskCapacity: appGroupDiskCapacity, directory: directory)
+			caches[directory] = cache
+			return cache
+		}
 	}
 }
 

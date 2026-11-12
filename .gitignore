@@ -14,6 +14,7 @@ xcuserdata
 *.ipa
 *.xcuserstate
 DerivedData
+.derived/
 docs/
 *.doccarchive
 .build/

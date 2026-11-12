@@ -224,8 +224,12 @@ extension FusionSuite {
 		
 		@Test
 		func appGroup_ReturnsURLCacheWithAppGroupDirectory() {
-			#expect(URLCache.appGroup.diskCapacity == .max)
-			#expect(URLCache.appGroup.memoryCapacity == .max)
+			#expect(URLCache.appGroup.diskCapacity == URLCache.appGroupDiskCapacity)
+			#expect(URLCache.appGroup.memoryCapacity == URLCache.appGroupMemoryCapacity)
+		}
+		@Test
+		func appGroup_WhenAccessedTwice_ShouldReturnTheSameInstance() {
+			#expect(URLCache.appGroup === URLCache.appGroup)
 		}
 	}
 }

@@ -277,6 +277,10 @@ public struct UserFlow: Hashable {
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(identifier)
 	}
+	
+	public static func == (lhs: UserFlow, rhs: UserFlow) -> Bool {
+		lhs.identifier == rhs.identifier
+	}
 // MARK: - Overridden Methods
 
 }

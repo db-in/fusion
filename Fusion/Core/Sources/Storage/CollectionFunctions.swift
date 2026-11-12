@@ -216,15 +216,3 @@ public extension Optional where Wrapped: Collection {
 	/// Returns `true` if the object is `nil` or `empty`. It returns true for non-zero valid objects.
 	var isNilOrEmpty: Bool { self?.isEmpty ?? true }
 }
-
-// MARK: - Extension - Hashable
-
-public extension Hashable {
-	static func == (lhs: Self, rhs: Self) -> Bool { lhs.hashValue == rhs.hashValue }
-}
-
-// MARK: - Extension - Identifiable
-
-public extension Identifiable where Self: Hashable {
-	var id: Int { hashValue }
-}

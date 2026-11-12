@@ -37,7 +37,20 @@ public extension UIFont {
 	
 // MARK: - Properties
 	
-	var monospacedDigit: UIFont { .init(descriptor: fontDescriptor.monospacedDigit, size: 0) }
+	private static let monospacedDigitLimit: Int = 256
+	
+	private static let monospacedDigitCache = ThreadSafe<[String : UIFont]>(wrappedValue: [:])
+	
+	var monospacedDigit: UIFont {
+		let key = "\(fontName)-\(pointSize)-\(fontDescriptor.symbolicTraits.rawValue)"
+		if let cached = Self.monospacedDigitCache.mutate({ $0[key] }) { return cached }
+		let font = UIFont(descriptor: fontDescriptor.monospacedDigit, size: 0)
+		Self.monospacedDigitCache.mutate {
+			if $0.count >= Self.monospacedDigitLimit { $0.removeAll(keepingCapacity: true) }
+			$0[key] = font
+		}
+		return font
+	}
 	
 	var bold: UIFont { withTrait(.traitBold) }
 	

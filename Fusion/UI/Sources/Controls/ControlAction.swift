@@ -71,6 +71,8 @@ public struct ControlAction {
 
 extension ControlAction: Hashable, Identifiable {
 	
+	public var id: Int { hashValue }
+	
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(title?.content)
 		hasher.combine(isSelected)
@@ -78,7 +80,12 @@ extension ControlAction: Hashable, Identifiable {
 		hasher.combine(isHighlighted)
 	}
 	
-	public static func == (lhs: ControlAction, rhs: ControlAction) -> Bool { lhs.hashValue == rhs.hashValue }
+	public static func == (lhs: ControlAction, rhs: ControlAction) -> Bool {
+		lhs.title?.content == rhs.title?.content
+			&& lhs.isSelected == rhs.isSelected
+			&& lhs.isEnabled == rhs.isEnabled
+			&& lhs.isHighlighted == rhs.isHighlighted
+	}
 }
 #endif
 

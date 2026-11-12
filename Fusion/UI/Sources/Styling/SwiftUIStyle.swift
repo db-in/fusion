@@ -175,9 +175,27 @@ public extension UIImage {
 
 public extension UIColor {
 	
+	private struct SUIColorKey : Hashable {
+		let color: UIColor
+		let style: Int
+		let contrast: Int
+	}
+	
+	private static let suiColorLimit: Int = 512
+	
+	private static let suiColorCache = ThreadSafe<[SUIColorKey : SwiftUI.Color]>(wrappedValue: [:])
+	
 	var suiColor: SwiftUI.Color {
+		let traits = UITraitCollection.current
+		let key = SUIColorKey(color: self, style: traits.userInterfaceStyle.rawValue, contrast: traits.accessibilityContrast.rawValue)
+		if let cached = Self.suiColorCache.mutate({ $0[key] }) { return cached }
 		let ciColor = CIColor(color: self)
-		return Color(.sRGB, red: ciColor.red, green: ciColor.green, blue: ciColor.blue, opacity: ciColor.alpha)
+		let color = Color(.sRGB, red: ciColor.red, green: ciColor.green, blue: ciColor.blue, opacity: ciColor.alpha)
+		Self.suiColorCache.mutate {
+			if $0.count >= Self.suiColorLimit { $0.removeAll(keepingCapacity: true) }
+			$0[key] = color
+		}
+		return color
 	}
 }
 
@@ -217,31 +235,52 @@ public struct AsyncImageCached<Content: View, Placeholder: View>: View {
 	
 	private let url: String?
 	private let storage: URL?
+	private let maxPixelSize: CGFloat
 	private let content: ((Image) -> Content)?
 	private let placeholder: (() -> Placeholder)?
 	
 	@State private var image: UIImage?
 	
-	public init(_ url: String?, storage: URL? = nil, content: ((Image) -> Content)? = nil, placeholder: (() -> Placeholder)? = nil) {
+	private var loadKey: String { "\(url ?? "")#\(Int(maxPixelSize))" }
+	
+	public init(_ url: String?,
+				storage: URL? = nil,
+				maxPixelSize: CGFloat? = nil,
+				content: ((Image) -> Content)? = nil,
+				placeholder: (() -> Placeholder)? = nil) {
+		let pixels = maxPixelSize ?? ImagePipeline.screenMaxPixelSize
 		self.url = url
 		self.storage = storage
+		self.maxPixelSize = pixels
 		self.content = content
 		self.placeholder = placeholder
+		_image = State(initialValue: ImagePipeline.shared.cached(url: url ?? "", maxPixelSize: pixels))
+	}
+	
+	private func load() async {
+		let validURL = url ?? ""
+		let pipeline = ImagePipeline.shared
+		
+		if let cached = pipeline.cached(url: validURL, maxPixelSize: maxPixelSize) {
+			if image !== cached { image = cached }
+			return
+		}
+		
+		if image?.accessibilityIdentifier != validURL {
+			image = nil
+		}
+		
+		let loaded = await pipeline.image(url: validURL, maxPixelSize: maxPixelSize, storage: storage)
+		guard !Task.isCancelled else { return }
+		image = loaded
 	}
 	
 	public var body: some View {
 		Group {
-			if let image = image {
+			if let image {
 				if image.images != nil {
-					UIKitView {
-						let imageView = UIImageView(image: image)
-						imageView.contentMode = .scaleAspectFit
-						imageView.clipsToBounds = true
-						imageView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-						imageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-						return imageView
-					}
-					.accessibilityIdentifier(image.accessibilityIdentifier ?? "")
+					AnimatedImageView(image: image)
+						.accessibilityIdentifier(image.accessibilityIdentifier ?? "")
 				} else {
 					content?(Image(uiImage: image))
 						.accessibilityIdentifier(image.accessibilityIdentifier ?? "")
@@ -250,12 +289,22 @@ public struct AsyncImageCached<Content: View, Placeholder: View>: View {
 				placeholder?()
 			}
 		}
-		.onAppear {
-			UIImage.loadOrDownload(url: url ?? "", allowsBadge: true, storage: storage) { loadedImage, fromCache in
-				self.image = loadedImage
-			}
+		.task(id: loadKey) {
+			await load()
 		}
 	}
+}
+
+#Preview("AsyncImageCached") {
+	AsyncImageCached("https://picsum.photos/400/200") { image in
+		image
+			.resizable()
+			.aspectRatio(contentMode: .fill)
+	} placeholder: {
+		Color.gray.opacity(0.3)
+	}
+	.frame(width: 300, height: 150)
+	.clipped()
 }
 
 // MARK: - Type - TextConvertible

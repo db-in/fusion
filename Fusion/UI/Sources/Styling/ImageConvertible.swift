@@ -5,17 +5,25 @@
 #if canImport(UIKit)
 import UIKit
 
-private struct LoaderControl {
+struct LoaderControl {
 	
 	@ThreadSafe
-	private static var loaders: [String : Int] = [:]
+	private static var loaders: [AnyHashable : Int] = [:]
 	
-	let key: String
+	@ThreadSafe
+	private static var counter: Int = 0
+	
+	let key: AnyHashable
 	let reference: Int
 	
+	static func key<T>(for target: T) -> AnyHashable {
+		guard T.self is AnyClass || type(of: target) is AnyClass else { return AnyHashable("\(target)") }
+		return AnyHashable(ObjectIdentifier(target as AnyObject))
+	}
+	
 	init<T>(target: T) {
-		self.key = "\(target)".replacing(regex: ".*?0x(.*?);.*", with: "$1")
-		self.reference = .random(in: 0...9999999)
+		self.key = Self.key(for: target)
+		self.reference = Self._counter.mutate { $0 &+= 1; return $0 }
 		Self._loaders.mutate { [key, reference] in $0[key] = reference }
 	}
 	
@@ -58,14 +66,18 @@ extension ImageConvertible where Self : CustomStringConvertible {
 	/// - SeeAlso: ``load(on:at:)``
 	public func load<T>(on target: T, at path: ReferenceWritableKeyPath<T, UIImage?>, allowsBadge: Bool, storage: URL? = nil) {
 		let control = LoaderControl(target: target)
-		if let image = UIImage.loadCache(url: "\(self)", allowsBadge: allowsBadge, storage: storage) {
+		let url = "\(self)"
+		if let image = ImagePipeline.shared.cached(url: url, allowsBadge: allowsBadge) {
 			target[keyPath: path] = image
 			LoaderControl.flush(control)
 		} else {
-			UIImage.download(url: "\(self)", allowsBadge: allowsBadge, storage: storage) {
-				guard LoaderControl.isValid(control) else { return }
-				target[keyPath: path] = $0 ?? target[keyPath: path]
-				LoaderControl.flush(control)
+			Task.detached(priority: .userInitiated) {
+				let image = await ImagePipeline.shared.image(url: url, allowsBadge: allowsBadge, storage: storage)
+				asyncMain {
+					guard LoaderControl.isValid(control) else { return }
+					target[keyPath: path] = image ?? target[keyPath: path]
+					LoaderControl.flush(control)
+				}
 			}
 		}
 	}

@@ -8,7 +8,7 @@ import Foundation
 
 fileprivate extension Data {
 	
-	func appendToFile(key: String? = nil, newLine: Bool = true) {
+	func appendToFile(key: String? = nil, newLine: Bool = true, maxSize: UInt64 = .max) {
 		let validKey = key ?? "\(type(of: self))"
 		let url = FileManager.default.appGroup.appendingPathComponent(validKey.hash.description)
 		let newLineData = "\n".data(using: .utf8) ?? Data()
@@ -16,11 +16,21 @@ fileprivate extension Data {
 		
 		if let fileHandle = try? FileHandle(forWritingTo: url) {
 			defer { fileHandle.closeFile() }
-			fileHandle.seekToEndOfFile()
+			let size = fileHandle.seekToEndOfFile()
 			fileHandle.write(finalData)
+			guard size + UInt64(finalData.count) > maxSize else { return }
+			Data.trimFile(at: url, keeping: Int(maxSize / 2))
 		} else {
 			try? finalData.write(to: url, options: .atomic)
 		}
+	}
+	
+	static func trimFile(at url: URL, keeping bytes: Int) {
+		guard let data = try? Data(contentsOf: url), data.count > bytes else { return }
+		let tail = data.suffix(bytes)
+		let newLine = UInt8(ascii: "\n")
+		let start = tail.firstIndex(of: newLine).map { tail.index(after: $0) } ?? tail.startIndex
+		try? Data(tail[start...]).write(to: url, options: .atomic)
 	}
 	
 	static func loadFile(key: String? = nil) -> Self? {
@@ -38,6 +48,12 @@ fileprivate struct LogStorage : DataManageable {
 		case logs
 	}
 	
+	static let queue = DispatchQueue(label: "Fusion.Logger", qos: .utility)
+	
+	@ThreadSafe static var maxFileSize: UInt64 = 15 * 1024 * 1024
+	
+	static func persistsAsynchronously(forKey key: Key) -> Bool { false }
+	
 // MARK: - Properties
 	
 	private static var rawLogs: [LogEntry] {
@@ -46,18 +62,24 @@ fileprivate struct LogStorage : DataManageable {
 		guard let validData = rawData else { return [] }
 		let string = String(data: validData, encoding: .utf8)
 		let lines = string?.components(separatedBy: "\n")
-		let entries = lines?.compactMap(LogEntry.load)
+		let entries = lines?.filter { !$0.isEmpty }.compactMap(LogEntry.load)
 		return entries?.reversed() ?? []
 	}
 	
 	fileprivate static var allLogs: [LogEntry] {
-		InMemoryCache.getOrSet(key: namespace(Key.logs), newValue: rawLogs) ?? []
+		queue.sync { InMemoryCache.getOrSet(key: namespace(Key.logs), newValue: rawLogs) ?? [] }
 	}
 	
 	fileprivate static func append(entry: LogEntry) {
 		let namespace = namespace(Key.logs)
-		InMemoryCache.flush(key: namespace)
-		entry.data?.appendToFile(key: namespace, newLine: true)
+		queue.async {
+			entry.data?.appendToFile(key: namespace, newLine: true, maxSize: maxFileSize)
+			InMemoryCache.flush(key: namespace)
+		}
+	}
+	
+	fileprivate static func flush() {
+		queue.sync { removeAllKeys() }
 	}
 }
 
@@ -133,6 +155,11 @@ public enum Logger {
 	
 	/// A local cache of all log entries.
 	public static var localCache: [LogEntry] { LogStorage.allLogs }
+	
+	public static var maxFileSize: UInt64 {
+		get { LogStorage.maxFileSize }
+		set { LogStorage.maxFileSize = newValue }
+	}
 
 // MARK: - Exposed Methods
 
@@ -143,15 +170,18 @@ public enum Logger {
 	///   - full: A closure that provides the full log message. Default is `nil`.
 	///   - save: A Boolean indicating whether to save the log entry to storage. Default is `true`.
 	public func log(basic: @autoclosure LogString = nil, full: @autoclosure LogString = nil, save: Bool = true) {
-		let log: LogEntry
-		
 		switch self {
 		case .basic, .full, .silent:
-			log = .init(basic: basic(), full: full()).printing(self)
+			break
 		case .none:
 			return
 		}
 		
+		let needsBasic = save || self != .silent
+		let needsFull = save || self == .full
+		guard needsBasic || needsFull else { return }
+		
+		let log = LogEntry(basic: needsBasic ? basic() : nil, full: needsFull ? full() : nil).printing(self)
 		guard save else { return }
 		LogStorage.append(entry: log)
 	}
@@ -174,6 +204,6 @@ public enum Logger {
 	
 	/// Clears all local cached logs.
 	public static func flushLocalCache() {
-		LogStorage.removeAllKeys()
+		LogStorage.flush()
 	}
 }

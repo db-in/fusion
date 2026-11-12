@@ -69,5 +69,15 @@ extension FusionSuite {
 			
 			#expect(Logger.localCache.isEmpty)
 		}
+		
+		@Test
+		func maxFileSize_WhenChanged_ShouldBeAppliedToTheStorage() {
+			let original = Logger.maxFileSize
+			defer { Logger.maxFileSize = original }
+			
+			#expect(original == 25 * 1024 * 1024)
+			Logger.maxFileSize = 50 * 1024 * 1024
+			#expect(Logger.maxFileSize == 50 * 1024 * 1024)
+		}
 	}
 }

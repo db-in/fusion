@@ -16,6 +16,11 @@ open class GradientView : UIView {
 	open var start: CGPoint = .init(x: 0, y: 0) { didSet { buildUI() } }
 	open var end: CGPoint = .init(x: 0, y: 1) { didSet { buildUI() } }
 	open var type: CAGradientLayerType = .axial { didSet { buildUI() } }
+	
+	private var builtRect: CGRect?
+	private var builtStyle: UIUserInterfaceStyle?
+	
+	private var gradientRect: CGRect { layer.maskPath?.boundingBox ?? bounds }
 
 // MARK: - Constructors
 
@@ -27,6 +32,8 @@ open class GradientView : UIView {
 // MARK: - Protected Methods
 
 	private func buildUI() {
+		builtRect = gradientRect
+		builtStyle = traitCollection.userInterfaceStyle
 		make(gradient: colors, start: start, end: end, type: type)
 	}
 	
@@ -36,6 +43,7 @@ open class GradientView : UIView {
 	
 	open override func layoutSubviews() {
 		super.layoutSubviews()
+		guard builtRect != gradientRect || builtStyle != traitCollection.userInterfaceStyle else { return }
 		buildUI()
 	}
 }
