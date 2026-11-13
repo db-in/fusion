@@ -451,14 +451,28 @@ public extension URLCache {
 	
 	static let appGroupDiskCapacity: Int = 512 * 1024 * 1024
 	
+	private static var appGroupDirectory: URL {
+		FileManager.default.appGroup.appendingPathComponent("Assets", isDirectory: true)
+	}
+	
 	static var appGroup: URLCache {
-		let directory = FileManager.default.appGroup.appendingPathComponent("Assets")
+		let directory = appGroupDirectory
 		return instances.mutate { caches in
 			if let cache = caches[directory] { return cache }
+			try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
 			let cache = URLCache(memoryCapacity: appGroupMemoryCapacity, diskCapacity: appGroupDiskCapacity, directory: directory)
 			caches[directory] = cache
 			return cache
 		}
+	}
+	
+	static func flushAppGroup() {
+		let directory = appGroupDirectory
+		instances.mutate { caches in
+			caches[directory]?.removeAllCachedResponses()
+			caches.removeValue(forKey: directory)
+		}
+		try? FileManager.default.removeItem(at: directory)
 	}
 }
 

@@ -427,10 +427,9 @@ extension FusionSuite {
 		}
 		
 		@Test
-		func keys_WithEmptyMemoryCache_ShouldReloadTheTrackedKeysFromStorage() async {
+		func keys_WithEmptyMemoryCache_ShouldReloadTheTrackedKeysFromStorage() {
 			FileDynamic.set(value, forKey: .item("COLD"))
-			
-			try? await Task.sleep(nanoseconds: 300_000_000)
+			FileDynamic.flushPendingWrites()
 			InMemoryCache.flushAll()
 			
 			#expect(FileDynamic.keys(prefix: "item.") == [.item("COLD")])

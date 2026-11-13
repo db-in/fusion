@@ -128,5 +128,6 @@ public enum StoragePersistence {
 			}
 			keys.forEach { commit(key: $0, generation: nil) }
 		}
+		DataStorageableKeyTracking.flush()
 	}
 }

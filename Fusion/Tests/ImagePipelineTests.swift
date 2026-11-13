@@ -239,15 +239,18 @@ extension FusionSuite {
 		}
 		
 		@Test
-		func cachedData_WithUndecodableCachedBody_ShouldBeRemoved() async throws {
-			let url = "\(MockEndpoint.host)/images/\(UUID().uuidString).png"
-			let request = URLRequest(url: url.toURL)
-			let response = try #require(HTTPURLResponse(url: url.toURL, statusCode: 200, httpVersion: nil, headerFields: nil))
+		func cachedData_WithUndecodableCachedBody_ShouldDownloadAGoodCopy() async throws {
+			let route = routeImage()
+			let request = URLRequest(url: route.url.toURL)
+			let response = try #require(HTTPURLResponse(url: route.url.toURL, statusCode: 200, httpVersion: nil, headerFields: nil))
 			URLCache.appGroup.storeCachedResponse(.init(response: response, data: Data("not an image".utf8)), for: request)
 			
-			#expect(UIImage.loadCache(url: url) == nil)
-			await waitUntil { URLCache.appGroup.cachedResponse(for: request) == nil }
-			#expect(URLCache.appGroup.cachedResponse(for: request) == nil)
+			#expect(UIImage.loadCache(url: route.url) == nil)
+			
+			let image = await ImagePipeline.shared.image(url: route.url)
+			
+			#expect(image?.size == CGSize(width: 64, height: 32))
+			#expect(route.requests.wrappedValue == 1)
 		}
 	}
 }

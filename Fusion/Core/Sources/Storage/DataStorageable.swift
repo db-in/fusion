@@ -8,6 +8,13 @@ import Foundation
 
 private let keysQueue = DispatchQueue(label: "Fusion.DataStorageable.keys", qos: .utility)
 
+enum DataStorageableKeyTracking {
+	
+	static func flush() {
+		keysQueue.sync { }
+	}
+}
+
 public protocol DataStorageable {
 	
 	static var shared: DataStorageable { get }
