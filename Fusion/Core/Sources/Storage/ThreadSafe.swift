@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import os
 
 // MARK: - Definitions -
 
@@ -11,31 +12,20 @@ import Foundation
 @propertyWrapper
 public final class ThreadSafe<Value> {
 	
-	private var value: Value
-	private let lock = NSLock()
+	private let storage: OSAllocatedUnfairLock<Value>
 
 	public init(wrappedValue: Value) {
-		self.value = wrappedValue
+		storage = OSAllocatedUnfairLock(uncheckedState: wrappedValue)
 	}
 
 	public var wrappedValue: Value {
-		get {
-			lock.lock()
-			defer { lock.unlock() }
-			return value
-		}
-		set {
-			lock.lock()
-			defer { lock.unlock() }
-			value = newValue
-		}
+		get { storage.withLockUnchecked { $0 } }
+		set { storage.withLockUnchecked { $0 = newValue } }
 	}
 
 	@discardableResult
 	public func mutate<Result>(_ transform: (inout Value) -> Result) -> Result {
-		lock.lock()
-		defer { lock.unlock() }
-		return transform(&value)
+		storage.withLockUnchecked(transform)
 	}
 }
 

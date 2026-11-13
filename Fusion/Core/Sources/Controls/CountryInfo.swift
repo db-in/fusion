@@ -282,6 +282,8 @@ public struct CountryInfo {
 
 extension CountryInfo : Hashable, Equatable, Comparable, Identifiable {
 	
+	public var id: Int { hashValue }
+	
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(isoCode2)
 		hasher.combine(isoCode3)

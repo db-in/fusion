@@ -235,17 +235,32 @@ public extension Color {
 		return color.alpha == 0 ? nil : self
 	}
 	
+	private static let hexLimit: Int = 512
+	
+	private static let hexCache = ThreadSafe<[String : Color]>(wrappedValue: [:])
+	
 	init(hex: String?) {
+		let cacheKey = hex ?? ""
+		if let cached = Self.hexCache.mutate({ $0[cacheKey] }) {
+			self = cached
+			return
+		}
+		self = Self.parsed(hex: hex)
+		let color = self
+		Self.hexCache.mutate {
+			if $0.count >= Self.hexLimit { $0.removeAll(keepingCapacity: true) }
+			$0[cacheKey] = color
+		}
+	}
+	
+	private static func parsed(hex: String?) -> Color {
 		let hexSanitized = hex?
 			.trimmingCharacters(in: .whitespacesAndNewlines)
 			.replacingOccurrences(of: "0x", with: "")
 			.replacingOccurrences(of: "#", with: "") ?? ""
 		
 		var rgb: UInt64 = 0
-		guard Scanner(string: hexSanitized).scanHexInt64(&rgb) else {
-			self = .black
-			return
-		}
+		guard Scanner(string: hexSanitized).scanHexInt64(&rgb) else { return .black }
 		
 		let length = hexSanitized.count
 		let r, g, b, a: Double
@@ -268,7 +283,7 @@ public extension Color {
 			a = 1
 		}
 		
-		self = Color(red: r, green: g, blue: b, opacity: a)
+		return Color(red: r, green: g, blue: b, opacity: a)
 	}
 	
 	private static func inAnyBundle(_ named: String) -> Color? {

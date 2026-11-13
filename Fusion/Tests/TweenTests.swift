@@ -270,6 +270,161 @@ extension FusionSuite {
 			#expect(Tween.tweens(withName: name).isEmpty)
 		}
 		
+		private final class Recorder {
+			var values: [CGFloat] = []
+			var finalTime: CFAbsoluteTime?
+		}
+		
+		private func waitUntil(timeout: TimeInterval = 2, _ condition: () -> Bool) async {
+			let deadline = Date().addingTimeInterval(timeout)
+			while !condition() && Date() < deadline {
+				try? await Task.sleep(nanoseconds: 5_000_000)
+			}
+		}
+		
+		@Test
+		func tween_WithLowFpsAndShortDuration_ShouldRenderTheFinalValueWithoutLag() async {
+			let recorder = Recorder()
+			let start = CFAbsoluteTimeGetCurrent()
+			let tween = Tween(duration: 0.05, options: .init(fps: 2), fromValues: ["value": 0], toValues: ["value": 1]) { _, values in
+				guard let value = values["value"] else { return }
+				recorder.values.append(value)
+				if value == 1, recorder.finalTime == nil { recorder.finalTime = CFAbsoluteTimeGetCurrent() }
+			}
+			
+			await waitUntil { recorder.finalTime != nil }
+			tween.stopTween()
+			
+			let elapsed = (recorder.finalTime ?? .infinity) - start
+			#expect(recorder.values.last == 1)
+			#expect(elapsed < 0.3, "final value took \(elapsed)s")
+		}
+		
+		@Test
+		func tween_WithFirstTick_ShouldStartTheClockImmediately() async {
+			let tween = Tween(duration: 1.0, options: .init(fps: 1), fromValues: ["value": 0], toValues: ["value": 1])
+			await waitUntil(timeout: 0.5) { tween.beginTime != 0 }
+			#expect(tween.beginTime != 0)
+			tween.stopTween()
+		}
+		
+		@Test
+		func tween_WhenRestartedOnEveryFastTick_ShouldNeverFreezeOnAnOldValue() async {
+			let recorder = Recorder()
+			let name = "FastTicks-\(UUID().uuidString)"
+			var current: CGFloat = 0
+			var tweenStart: CGFloat = 0
+			var previousTarget: CGFloat = 0
+			
+			for target in 1...10 {
+				let isRunning = !Tween.tweens(withName: name).isEmpty
+				let start = CGFloat(TextUpdateModifier.startValue(current: current, tweenStart: tweenStart, previousTarget: previousTarget, isRunning: isRunning))
+				Tween.stopTweens(withName: name)
+				current = start
+				tweenStart = start
+				previousTarget = CGFloat(target)
+				Tween(duration: 0.05, options: .init(name: name, fps: 2), fromValues: ["value": start], toValues: ["value": CGFloat(target)]) { _, values in
+					guard let value = values["value"] else { return }
+					current = value
+					recorder.values.append(value)
+				}
+				try? await Task.sleep(nanoseconds: 20_000_000)
+			}
+			
+			await waitUntil { current == 10 }
+			Tween.stopTweens(withName: name)
+			
+			#expect(current == 10)
+			#expect(Set(recorder.values).count > 2)
+		}
+		
+		@Test
+		func startValue_ShouldSnapToThePreviousTargetOnlyWhenTheRunningTweenMadeNoProgress() {
+			#expect(TextUpdateModifier.startValue(current: 5, tweenStart: 5, previousTarget: 9, isRunning: true) == 9)
+			#expect(TextUpdateModifier.startValue(current: 6, tweenStart: 5, previousTarget: 9, isRunning: true) == 6)
+			#expect(TextUpdateModifier.startValue(current: 5, tweenStart: 5, previousTarget: 9, isRunning: false) == 5)
+		}
+		
+		@Test
+		func tween_WhenTheMainThreadLagsAtTheEndOfACycle_ShouldFinishTheCycleOnce() async {
+			let tween = Tween(duration: 0.05,
+							  options: .init(repetition: .loop, repetitionCount: 20),
+							  fromValues: ["value": 0],
+							  toValues: ["value": 1])
+			Thread.sleep(forTimeInterval: 0.3)
+			await Task.yield()
+			
+			#expect(tween.currentCycle <= 2)
+			tween.stopTween()
+		}
+		
+		@Test
+		func tween_WithDefaultFps_ShouldStillReachTheFinalValue() async {
+			let view = UIView()
+			let tween = Tween(view, duration: 0.1, toValues: [\.alpha : 0.25])
+			await waitUntil { view.alpha == 0.25 }
+			#expect(view.alpha == 0.25)
+			tween.stopTween()
+		}
+		
+		@Test
+		func tweensWithName_WhenRenamedOrStopped_ShouldKeepTheIndexInSync() {
+			let first = "Index-\(UUID().uuidString)"
+			let second = "Index-\(UUID().uuidString)"
+			let tween = Tween(duration: 1.0, options: .init(name: first), fromValues: ["value": 0], toValues: ["value": 1])
+			
+			#expect(Tween.tweens(withName: first).contains(tween))
+			
+			tween.options.name = second
+			#expect(Tween.tweens(withName: first).isEmpty)
+			#expect(Tween.tweens(withName: second).contains(tween))
+			
+			tween.stopTween()
+			#expect(Tween.tweens(withName: second).isEmpty)
+			
+			tween.options.name = first
+			#expect(Tween.tweens(withName: first).isEmpty)
+		}
+		
+#if os(iOS) || os(tvOS)
+		@Test
+		func driver_OnUIKitPlatforms_ShouldBeTheDisplayLink() {
+			#expect(Tween.driver === DisplayLinkDriver.shared)
+		}
+		
+		@Test
+		func displayLinkDriver_WithItems_ShouldTickAndStopWhenEmpty() async {
+			let driver = DisplayLinkDriver()
+			let ticks = ThreadSafe(wrappedValue: 0)
+			driver.addItem(key: "tick", queue: .global()) { ticks.mutate { $0 += 1 } }
+			
+			await waitUntil { ticks.wrappedValue >= 3 }
+			#expect(ticks.wrappedValue >= 3)
+			#expect(driver.isActive)
+			
+			driver.removeItem(key: "tick")
+			await waitUntil { !driver.isActive }
+			#expect(!driver.isActive)
+			#expect(driver.itemsCount == 0)
+		}
+		
+		@Test
+		func displayLinkDriver_WithGapAboveThreshold_ShouldAccumulateBackgroundTime() {
+			let driver = DisplayLinkDriver()
+			driver.handleTick(at: 100)
+			driver.handleTick(at: 100.016)
+			#expect(driver.totalBackgroundTime == 0)
+			
+			driver.handleTick(at: 103.016)
+			#expect(abs(driver.backgroundTime - 3) < 0.0001)
+			#expect(abs(driver.totalBackgroundTime - 3) < 0.0001)
+			
+			driver.handleTick(at: 103.032)
+			#expect(driver.backgroundTime == 0)
+			#expect(abs(driver.totalBackgroundTime - 3) < 0.0001)
+		}
+#endif
+		
 		@Test
 		func allEasing_WhenCalculatingValue_ShouldReturnCorrectInterpolation() {
 			let begin: FPoint = 0.0

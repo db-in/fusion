@@ -14,9 +14,45 @@ private struct Wrapper {
 
 	@ThreadSafe
 	static var all: [String : [ObjectIdentifier : TargetWrapper]] = [:]
+	
+	static let prefixes = ThreadSafe<[ObjectIdentifier : String]>(wrappedValue: [:])
 
-	static func mutate(_ transform: (inout [String : [ObjectIdentifier : TargetWrapper]]) -> Void) {
+	@discardableResult
+	static func mutate<Result>(_ transform: (inout [String : [ObjectIdentifier : TargetWrapper]]) -> Result) -> Result {
 		_all.mutate(transform)
+	}
+	
+	static func attach(nameKey: String, identifier: ObjectIdentifier, object: AnyObject, callback: Any) {
+		mutate { all in
+			if let target = all[nameKey]?[identifier] {
+				target.binds.append(callback)
+			} else {
+				all[nameKey, default: [:]][identifier] = TargetWrapper(object, callback: callback)
+			}
+		}
+	}
+	
+	static func deliver<T>(nameKey: String, value: T?) {
+		let snapshot = mutate { all in
+			(all[nameKey] ?? [:]).map { (identifier: $0.key, target: $0.value, binds: $0.value.binds) }
+		}
+		guard !snapshot.isEmpty else { return }
+		var expired: [(ObjectIdentifier, TargetWrapper)] = []
+		
+		for entry in snapshot {
+			guard entry.target.object != nil else {
+				expired.append((entry.identifier, entry.target))
+				continue
+			}
+			TargetWrapper.perform(entry.binds, value: value)
+		}
+		
+		guard !expired.isEmpty else { return }
+		mutate { all in
+			expired.forEach { identifier, target in
+				if all[nameKey]?[identifier] === target { all[nameKey]?[identifier] = nil }
+			}
+		}
 	}
 }
 
@@ -51,7 +87,7 @@ private class TargetWrapper {
 		self.binds = [callback]
 	}
 
-	func performBinds<T>(value: T?) {
+	static func perform<T>(_ binds: [Any?], value: T?) {
 		binds.forEach {
 			if let stream = ($0 as? StreamInput<T>) {
 				stream.yield(value)
@@ -97,7 +133,13 @@ public protocol DataBindable {
 
 public extension DataBindable {
 	
-	internal static var prefix: String { "\(Constant.isDebug ? "d-" : "")\(Self.self)" }
+	internal static var prefix: String {
+		let identifier = ObjectIdentifier(Self.self)
+		if let cached = Wrapper.prefixes.mutate({ $0[identifier] }) { return cached }
+		let value = "\(Constant.isDebug ? "d-" : "")\(Self.self)"
+		Wrapper.prefixes.mutate { $0[identifier] = value }
+		return value
+	}
 	
 	static func namespace<T: RawRepresentable>(_ key: T) -> String { "\(prefix).\(key.rawValue)" }
 	
@@ -131,13 +173,7 @@ public extension DataBindable {
 		let nameKey = namespace(key)
 		let identifier = ObjectIdentifier(cancellable)
 		
-		Wrapper.mutate { all in
-			if let target = all[nameKey]?[identifier] {
-				target.binds.append(callback)
-			} else {
-				all[nameKey, default: [:]][identifier] = TargetWrapper(cancellable, callback: callback)
-			}
-		}
+		Wrapper.attach(nameKey: nameKey, identifier: identifier, object: cancellable, callback: callback)
 
 		cancellable.onDeinit {
 			Wrapper.mutate { $0[nameKey]?[identifier] = nil }
@@ -221,27 +257,58 @@ public extension DataBindable {
 	///   - value: The new value that has been updated associated with the given key.
 	///   - key: A key that has a bind to it.
 	static func send<T>(forKey key: Key, value: T?) {
-		let nameKey = namespace(key)
-		
-		Wrapper.mutate { all in
-			guard let targets = all[nameKey] else { return }
-			var expired: [ObjectIdentifier] = []
-			
-			for (identifier, target) in targets {
-				guard target.object != nil else {
-					expired.append(identifier)
-					continue
-				}
-				target.performBinds(value: value)
-			}
-			
-			expired.forEach { all[nameKey]?[$0] = nil }
-		}
+		Wrapper.deliver(nameKey: namespace(key), value: value)
 	}
 }
 
 #if canImport(Combine)
 import Combine
+
+private final class SharedPublisher<Output> {
+	
+	let publisher: AnyPublisher<Output, Never>
+	
+	init(nameKey: String, deliver: @escaping (PassthroughSubject<Output, Never>) -> Any) {
+		let subject = PassthroughSubject<Output, Never>()
+		let holder = NSObject()
+		let identifier = ObjectIdentifier(holder)
+		let subscribers = ThreadSafe(wrappedValue: 0)
+		let callback = deliver(subject)
+		
+		publisher = subject
+			.handleEvents(receiveSubscription: { _ in
+				subscribers.mutate {
+					$0 += 1
+					guard $0 == 1 else { return }
+					Wrapper.attach(nameKey: nameKey, identifier: identifier, object: holder, callback: callback)
+				}
+			}, receiveCancel: {
+				subscribers.mutate {
+					$0 -= 1
+					guard $0 == 0 else { return }
+					Wrapper.mutate { $0[nameKey]?[identifier] = nil }
+				}
+			})
+			.eraseToAnyPublisher()
+	}
+}
+
+private struct SharedPublisherKey : Hashable {
+	let nameKey: String
+	let type: ObjectIdentifier
+}
+
+private let sharedPublishers = ThreadSafe<[SharedPublisherKey : Any]>(wrappedValue: [:])
+
+private func sharedPublisher<Output>(nameKey: String, deliver: @escaping (PassthroughSubject<Output, Never>) -> Any) -> AnyPublisher<Output, Never> {
+	let key = SharedPublisherKey(nameKey: nameKey, type: ObjectIdentifier(Output.self))
+	return sharedPublishers.mutate { all in
+		if let existing = all[key] as? SharedPublisher<Output> { return existing.publisher }
+		let shared = SharedPublisher<Output>(nameKey: nameKey, deliver: deliver)
+		all[key] = shared
+		return shared.publisher
+	}
+}
 
 public extension DataBindable {
 	
@@ -259,14 +326,9 @@ public extension DataBindable {
 	/// - Parameter key: The key to observe for updates
 	/// - Returns: A publisher that emits void when the key receives updates
 	static func bind(key: Key) -> AnyPublisher<Void, Never> {
-		let subject = PassthroughSubject<Void, Never>()
-		let holder = NSObject()
-		bind(key: key, cancellable: holder) { subject.send() }
-		return subject
-			.handleEvents(receiveCancel: {
-				unbind(key: key, cancellable: holder)
-			})
-			.eraseToAnyPublisher()
+		sharedPublisher(nameKey: namespace(key)) { subject in
+			{ () -> Void in subject.send() }
+		}
 	}
 	
 	/// Creates a publisher that emits values when the specified key receives updates.
@@ -283,14 +345,9 @@ public extension DataBindable {
 	/// - Parameter key: The key to observe for value updates
 	/// - Returns: A publisher that emits optional values of type T when the key receives updates
 	static func bind<T>(key: Key) -> AnyPublisher<T?, Never> {
-		let subject = PassthroughSubject<T?, Never>()
-		let holder = NSObject()
-		bind(key: key, cancellable: holder) { (value: T?) in subject.send(value) }
-		return subject
-			.handleEvents(receiveCancel: {
-				unbind(key: key, cancellable: holder)
-			})
-			.eraseToAnyPublisher()
+		sharedPublisher(nameKey: namespace(key)) { subject in
+			{ (value: T?) -> Void in subject.send(value) } as Input<T>
+		}
 	}
 }
 #endif
@@ -311,8 +368,8 @@ public extension DataBindable {
 	/// - Complexity: O(1)
 	/// - Parameter key: The key to observe for value updates
 	/// - Returns: A stream of optional values of type T
-	static func stream<T>(key: Key) -> AsyncStream<T?> {
-		AsyncStream { continuation in
+	static func stream<T>(key: Key, bufferingPolicy: AsyncStream<T?>.Continuation.BufferingPolicy = .unbounded) -> AsyncStream<T?> {
+		AsyncStream(bufferingPolicy: bufferingPolicy) { continuation in
 			let holder = NSObject()
 			register(key: key, cancellable: holder, callback: StreamInput<T> { continuation.yield($0) })
 			continuation.onTermination = { _ in unbind(key: key, cancellable: holder) }
@@ -333,8 +390,8 @@ public extension DataBindable {
 	/// - Complexity: O(1)
 	/// - Parameter key: The key to observe for updates
 	/// - Returns: A stream that yields void on every update
-	static func stream(key: Key) -> AsyncStream<Void> {
-		AsyncStream { continuation in
+	static func stream(key: Key, bufferingPolicy: AsyncStream<Void>.Continuation.BufferingPolicy = .unbounded) -> AsyncStream<Void> {
+		AsyncStream(bufferingPolicy: bufferingPolicy) { continuation in
 			let holder = NSObject()
 			register(key: key, cancellable: holder, callback: StreamSignal { continuation.yield() })
 			continuation.onTermination = { _ in unbind(key: key, cancellable: holder) }

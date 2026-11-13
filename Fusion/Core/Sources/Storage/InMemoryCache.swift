@@ -92,6 +92,15 @@ public struct InMemoryCache {
 		return cache
 	}
 
+	static func getRaw(key: String) -> Any? {
+		_store.mutate { $0.references[key] == nil ? $0.data[key] : nil }
+	}
+	
+	static func getOrLoad<T>(key: String, load: () -> T?) -> T? {
+		if let value = getRaw(key: key) as? T { return value }
+		return set(key: key, newValue: load())
+	}
+	
 	/// Clears the existing cache for a given key.
 	/// - Parameter key: The key to be cleared
 	public static func flush(key: String) {

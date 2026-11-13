@@ -8,10 +8,26 @@ import Foundation
 
 public typealias TimerCallback = () -> Void
 
-private struct TimerClock {
+struct TimerClock {
+	
+	static let suspensionThreshold: Double = 0.5
+	
 	var lastTick: Double = 0.0
 	var lastGap: Double = 0.0
 	var totalGap: Double = 0.0
+	
+	mutating func tick(at now: Double) {
+		let gap = lastTick > 0.0 ? now - lastTick : 0.0
+		lastGap = gap > Self.suspensionThreshold ? gap : 0.0
+		totalGap += lastGap
+		lastTick = now
+	}
+}
+
+protocol FrameDriving : AnyObject {
+	var totalBackgroundTime: Double { get }
+	func addItem(key: String, queue: DispatchQueue, callback: @escaping TimerCallback)
+	func removeItem(key: String)
 }
 
 // MARK: - Type -
@@ -29,8 +45,6 @@ final public class TimerControl {
 	
 	@ThreadSafe
 	private var clock: TimerClock = .init()
-	
-	private static let suspensionThreshold: Double = 0.5
 	
 	private lazy var timerQueue: DispatchQueue = { .init(label: "timer.\(UUID().uuidString)", attributes: .concurrent) }()
 	
@@ -79,18 +93,14 @@ final public class TimerControl {
 	
 	func handleTimerTick() {
 		let now = CFAbsoluteTimeGetCurrent()
-		
-		_clock.mutate { clock in
-			let gap = clock.lastTick > 0.0 ? now - clock.lastTick : 0.0
-			clock.lastGap = gap > Self.suspensionThreshold ? gap : 0.0
-			clock.totalGap += clock.lastGap
-			clock.lastTick = now
-		}
+		_clock.mutate { $0.tick(at: now) }
 		
 		items.forEach { item in
+			let key = item.key
 			let callback = item.value.callback
 			let queue = item.value.queue
-			queue.async {
+			queue.async { [weak self] in
+				guard self?.items[key] != nil else { return }
 				callback()
 			}
 		}
@@ -125,6 +135,8 @@ final public class TimerControl {
 // MARK: - Overridden Methods
 	
 }
+
+extension TimerControl : FrameDriving { }
 
 // MARK: - Extension - DispatchQueue
 

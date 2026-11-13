@@ -128,15 +128,56 @@ public class Tween {
 	private var allValues: [String : [CGFloat]] = [:]
 	private var lastFrameTime: FPoint = 0
 	private var lastBackgroundTotal: FPoint = 0
+	private var isFinalFrameScheduled: Bool = false
 	private var isStopped: Bool = false
 	private let lock = NSRecursiveLock()
 	
+	private struct Registry {
+		var tweens: [String : Tween] = [:]
+		var identifiersByName: [String : Set<String>] = [:]
+		var nameByIdentifier: [String : String] = [:]
+		
+		mutating func insert(_ tween: Tween, name: String?) {
+			tweens[tween.identifier] = tween
+			index(tween.identifier, name: name)
+		}
+		
+		mutating func remove(_ identifier: String) {
+			tweens[identifier] = nil
+			index(identifier, name: nil)
+		}
+		
+		mutating func index(_ identifier: String, name: String?) {
+			if let oldName = nameByIdentifier.removeValue(forKey: identifier) {
+				identifiersByName[oldName]?.remove(identifier)
+				if identifiersByName[oldName]?.isEmpty == true { identifiersByName[oldName] = nil }
+			}
+			guard let name, tweens[identifier] != nil else { return }
+			nameByIdentifier[identifier] = name
+			identifiersByName[name, default: []].insert(identifier)
+		}
+	}
+	
 	@ThreadSafe
-	private static var tweens: [String: Tween] = [:]
+	private static var registry: Registry = .init()
+	
+	private static var tweens: [String: Tween] { registry.tweens }
+	
+#if os(iOS) || os(tvOS)
+	static var driver: FrameDriving { DisplayLinkDriver.shared }
+#else
+	static var driver: FrameDriving { TimerControl.shared }
+#endif
 
 	public let identifier: String = UUID().uuidString
 	public var duration: FPoint
-	public var options: Option
+	public var options: Option {
+		didSet {
+			guard oldValue.name != options.name else { return }
+			let name = options.name
+			Self._registry.mutate { $0.index(identifier, name: name) }
+		}
+	}
 	public var fromValues: [String : CGFloat]
 	public var toValues: [String : CGFloat]
 	public var targetView: UIView? { target?.view }
@@ -227,9 +268,10 @@ public class Tween {
 			currentCycle = 0
 			resetTime()
 		}
-		Self._tweens.mutate { $0[identifier] = self }
+		let name = options.name
+		Self._registry.mutate { $0.insert(self, name: name) }
 		updateTargetValues()
-		TimerControl.shared.addItem(key: identifier, queue: .global(qos: .userInteractive)) {
+		Self.driver.addItem(key: identifier, queue: .global(qos: .userInteractive)) {
 			self.timerCallBack()
 		}
 	}
@@ -238,8 +280,9 @@ public class Tween {
 		beginTime = 0.0
 		currentTime = 0.0
 		lastFrameTime = 0.0
+		isFinalFrameScheduled = false
 		idleTime = CFAbsoluteTimeGetCurrent()
-		lastBackgroundTotal = TimerControl.shared.totalBackgroundTime
+		lastBackgroundTotal = Self.driver.totalBackgroundTime
 	}
 	
 	private func finishCycle() {
@@ -311,7 +354,7 @@ public class Tween {
 	}
 	
 	private func postUpdateValues() {
-		guard currentState != .starting && deltaTime == duration else { return }
+		guard currentState != .starting && deltaTime == duration && isFinalFrameScheduled else { return }
 		finishCycle()
 	}
 	
@@ -344,20 +387,23 @@ public class Tween {
 		let shouldUpdate = lock.withLock { () -> Bool in
 			guard !isPaused else { return false }
 			
-			let backgroundTotal = TimerControl.shared.totalBackgroundTime
+			let backgroundTotal = Self.driver.totalBackgroundTime
 			idleTime += backgroundTotal - lastBackgroundTotal
 			lastBackgroundTotal = backgroundTotal
 			currentTime = CFAbsoluteTimeGetCurrent() - idleTime
 			
 			let delay = currentCycle == 0 ? options.delay : options.repetitionDelay
-			guard delay <= currentTime else { return false }
+			guard delay <= currentTime, !isFinalFrameScheduled else { return false }
 			
+			let isFirstFrame = beginTime == 0.0
+			let isFinalFrame = !isFirstFrame && currentTime - beginTime >= duration
 			let frameInterval = 1.0 / options.fps
-			guard currentTime - lastFrameTime >= frameInterval else { return false }
+			guard isFirstFrame || isFinalFrame || currentTime - lastFrameTime >= frameInterval else { return false }
 			lastFrameTime = currentTime
 			
 			beginTime = (beginTime == 0.0) ? currentTime : beginTime
 			deltaTime = min(currentTime - beginTime, duration)
+			isFinalFrameScheduled = duration > 0 && deltaTime == duration
 			return true
 		}
 		
@@ -418,8 +464,8 @@ public class Tween {
 			}
 		}
 		
-		Self._tweens.mutate { _ = $0.removeValue(forKey: identifier) }
-		TimerControl.shared.removeItem(key: identifier)
+		Self._registry.mutate { $0.remove(identifier) }
+		Self.driver.removeItem(key: identifier)
 	}
 }
 
@@ -429,6 +475,10 @@ extension Tween : Hashable {
 	
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(identifier)
+	}
+	
+	public static func == (lhs: Tween, rhs: Tween) -> Bool {
+		lhs.identifier == rhs.identifier
 	}
 }
 
@@ -449,7 +499,10 @@ public extension Tween {
 	/// - Parameter name: The name of the tween you are looking for.
 	/// - Returns: The related Tween instance or nil if not found.
 	static func tweens(withName name: String) -> [Tween] {
-		tweens.values.filter { tween in tween.lock.withLock { tween.options.name } == name }
+		let candidates = _registry.mutate { registry in
+			(registry.identifiersByName[name] ?? []).compactMap { registry.tweens[$0] }
+		}
+		return candidates.filter { tween in tween.lock.withLock { tween.options.name } == name }
 	}
 	
 	/// Acts as ``stopTween()`` method, but working for all tweens of a specific target.

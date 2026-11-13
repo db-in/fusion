@@ -194,11 +194,18 @@ public extension String {
 	
 // MARK: - Protected Methods
 	
+	private static let nonDigitRegex: NSRegularExpression? = try? NSRegularExpression(pattern: "\\D")
+	
+	private var removingNonDigits: String {
+		guard let regex = Self.nonDigitRegex else { return replacingOccurrences(of: "\\D", with: "", options: .regularExpression) }
+		return regex.stringByReplacingMatches(in: self, range: NSRange(startIndex..., in: self), withTemplate: "")
+	}
+	
 	internal func decimalComponents(locale: Locale = .preferredLocale) -> (integer: String, fraction: String) {
 		let decimalSeparator = locale.decimalSeparator ?? "."
 		let components = components(separatedBy: decimalSeparator)
-		let integer = components.first?.replacingOccurrences(of: "\\D", with: "", options: .regularExpression) ?? ""
-		let fraction = components.last?.replacingOccurrences(of: "\\D", with: "", options: .regularExpression) ?? ""
+		let integer = components.first?.removingNonDigits ?? ""
+		let fraction = components.last?.removingNonDigits ?? ""
 		let value = Double(self) ?? 0
 		let signedInteger = value < 0 ? "-\(integer)" : integer
 		
@@ -226,8 +233,7 @@ public extension String {
 	/// - Returns: The new string with the converted numerals.
 	func convertedDigitsToLocale(_ locale: Locale = .preferredLocale) -> String {
 		let digitsOnly = components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-		let formatter = NumberFormatter()
-		formatter.locale = locale
+		let formatter = NumberFormatterCache.digitFormatter(for: locale)
 
 		let maps: [(original: String, converted: String)] = digitsOnly.map {
 			let original = String($0)
@@ -386,6 +392,76 @@ public extension NSAttributedString {
 	}
 }
 
+// MARK: - Type - NumberFormatterCache
+
+enum NumberFormatterCache {
+	
+	struct Key : Hashable {
+		let locale: Locale
+		let style: NumberFormatter.Style
+		let multiplier: NSNumber?
+		let minimumFractionDigits: Int
+		let maximumFractionDigits: Int
+		let currencySymbol: String?
+		let roundingMode: NumberFormatter.RoundingMode
+		let groupingSize: Int?
+	}
+	
+	private static let limit: Int = 512
+	private static let formatters = ThreadSafe<[Key : NumberFormatter]>(wrappedValue: [:])
+	private static let digitFormatters = ThreadSafe<[Locale : NumberFormatter]>(wrappedValue: [:])
+	
+	static func makeFormatter(_ key: Key) -> NumberFormatter {
+		let formatter = NumberFormatter()
+		formatter.locale = key.locale
+		formatter.numberStyle = key.style
+		formatter.multiplier = key.multiplier
+		formatter.allowsFloats = true
+		formatter.currencySymbol = key.currencySymbol
+		formatter.roundingMode = key.roundingMode
+		
+		if let groupingSize = key.groupingSize {
+			if #available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *) {
+				formatter.minimumGroupingDigits = 1
+			} else {
+				formatter.groupingSize = groupingSize
+				formatter.secondaryGroupingSize = groupingSize
+				formatter.usesGroupingSeparator = true
+			}
+		}
+		
+		formatter.minimumFractionDigits = key.minimumFractionDigits
+		formatter.maximumFractionDigits = key.maximumFractionDigits
+		return formatter
+	}
+	
+	static func formatter(for key: Key) -> NumberFormatter {
+		if let formatter = formatters.mutate({ $0[key] }) { return formatter }
+		let formatter = makeFormatter(key)
+		formatters.mutate {
+			if $0.count >= limit { $0.removeAll(keepingCapacity: true) }
+			$0[key] = formatter
+		}
+		return formatter
+	}
+	
+	static func digitFormatter(for locale: Locale) -> NumberFormatter {
+		if let formatter = digitFormatters.mutate({ $0[locale] }) { return formatter }
+		let formatter = NumberFormatter()
+		formatter.locale = locale
+		digitFormatters.mutate {
+			if $0.count >= limit { $0.removeAll(keepingCapacity: true) }
+			$0[locale] = formatter
+		}
+		return formatter
+	}
+	
+	static func removeAll() {
+		formatters.mutate { $0.removeAll() }
+		digitFormatters.mutate { $0.removeAll() }
+	}
+}
+
 // MARK: - Extension - Numeric
 
 public extension Numeric {
@@ -412,31 +488,14 @@ public extension Numeric {
 				  roundingMode: NumberFormatter.RoundingMode = .down,
 				  trimTrailingZeros: Bool = false,
 				  groupingSize: Int? = nil) -> String {
-		let formatter = NumberFormatter()
-		formatter.locale = locale
-		formatter.numberStyle = style
-		formatter.multiplier = multiplier
-		formatter.allowsFloats = true
-		formatter.currencySymbol = currencySymbol
-		formatter.roundingMode = roundingMode
-		
-		if let groupingSize {
-			if #available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *) {
-				formatter.minimumGroupingDigits = 1
-			} else {
-				formatter.groupingSize = groupingSize
-				formatter.secondaryGroupingSize = groupingSize
-				formatter.usesGroupingSeparator = true
-			}
-		}
-
-		if trimTrailingZeros {
-			formatter.minimumFractionDigits = 0
-			formatter.maximumFractionDigits = decimals
-		} else {
-			formatter.minimumFractionDigits = minimumDecimal ?? decimals
-			formatter.maximumFractionDigits = decimals
-		}
-		return formatter.string(for: self) ?? ""
+		let key = NumberFormatterCache.Key(locale: locale,
+										   style: style,
+										   multiplier: multiplier,
+										   minimumFractionDigits: trimTrailingZeros ? 0 : (minimumDecimal ?? decimals),
+										   maximumFractionDigits: decimals,
+										   currencySymbol: currencySymbol,
+										   roundingMode: roundingMode,
+										   groupingSize: groupingSize)
+		return NumberFormatterCache.formatter(for: key).string(for: self) ?? ""
 	}
 }

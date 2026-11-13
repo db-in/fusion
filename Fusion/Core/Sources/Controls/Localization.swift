@@ -25,14 +25,38 @@ public extension Bundle {
 
 // MARK: - Properties
 	
+	private struct LocalizedKey : Hashable {
+		let language: String
+		let key: String
+		let table: String?
+	}
+	
+	private struct LocalizedCache {
+		var generation: Int = 0
+		var values: [LocalizedKey : String?] = [:]
+	}
+	
+	private static let localizedLimit: Int = 8_192
+	
 	private static let cachedLanguages = ThreadSafe<[String : [Bundle]]>(wrappedValue: [:])
+	
+	private static let localizedCache = ThreadSafe<LocalizedCache>(wrappedValue: .init())
+	
+	private static let localeObserver: NSObjectProtocol = NotificationCenter.default.addObserver(forName: NSLocale.currentLocaleDidChangeNotification,
+																									object: nil,
+																									queue: nil) { _ in
+		flushLocalizedStrings()
+	}
 	
 	private static let hintsStorage = ThreadSafe<[Bundle]>(wrappedValue: [])
 	
 	/// Hints are the first bundles to be scanned for loading contents. Including (but not limited to) languages, images, url, etc.
 	static var hints: [Bundle] {
 		get { hintsStorage.wrappedValue }
-		set { hintsStorage.wrappedValue = newValue }
+		set {
+			hintsStorage.wrappedValue = newValue
+			flushLocalizedStrings()
+		}
 	}
 	
 	/// Returns a combined collection of `Bundle.allBundles` + `Bundle.allFrameworks`, in this given order.
@@ -49,6 +73,16 @@ public extension Bundle {
 	/// Flushes the cached languages.
 	static func flushCachedLanguages() {
 		cachedLanguages.wrappedValue = [:]
+		flushLocalizedStrings()
+	}
+	
+	internal static var localizedGeneration: Int { localizedCache.wrappedValue.generation }
+	
+	internal static func flushLocalizedStrings() {
+		localizedCache.mutate {
+			$0.generation &+= 1
+			$0.values.removeAll(keepingCapacity: true)
+		}
 	}
 	
 	/// Returns the language bundle inside this given bundle for a given language code, otherwise it returns `nil`.
@@ -99,6 +133,23 @@ public extension Bundle {
 	/// convention, utilizing `nocache` to avoid strong caching.
 	/// - SeeAlso: [Apple Loading String Resources Documentation](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/LoadingResources/Strings/Strings.html#//apple_ref/doc/uid/10000051i-CH6-97055-CJBFDJGF)
 	static func localizedString(language: String, key: String, table: String?) -> String? {
+		guard table?.contains("nocache") != true else { return lookUpLocalizedString(language: language, key: key, table: table) }
+		_ = localeObserver
+		let cacheKey = LocalizedKey(language: language, key: key, table: table)
+		let lookup = localizedCache.mutate { ($0.values[cacheKey], $0.generation) }
+		if let cached = lookup.0 { return cached }
+		
+		let resolved = lookUpLocalizedString(language: language, key: key, table: table)
+		
+		localizedCache.mutate {
+			guard $0.generation == lookup.1 else { return }
+			if $0.values.count >= localizedLimit { $0.values.removeAll(keepingCapacity: true) }
+			$0.values[cacheKey] = .some(resolved)
+		}
+		return resolved
+	}
+	
+	private static func lookUpLocalizedString(language: String, key: String, table: String?) -> String? {
 		let value = cachedLanguages.wrappedValue[language]?.firstMap({ $0.localizedString(forKey: key, table: table) })
 		return value ?? allAvailable.firstMap({ $0.localizedString(language: language, key: key, table: table) })
 	}
@@ -118,6 +169,7 @@ public extension Bundle {
 				hints.appendOnce(bundle)
 			}
 		}
+		flushLocalizedStrings()
 		return bundle
 	}
 }
@@ -135,7 +187,10 @@ public extension String {
 	/// Localizable Table strings.
 	static var localizableTable: String? {
 		get { localizableTableStorage.wrappedValue }
-		set { localizableTableStorage.wrappedValue = newValue }
+		set {
+			localizableTableStorage.wrappedValue = newValue
+			Bundle.flushLocalizedStrings()
+		}
 	}
 	
 	/// Returns the language code in ISO 639-1 format (2 alpha codes).
@@ -188,19 +243,38 @@ public extension Locale {
 
 // MARK: - Properties
 	
+	private struct PreferredResolution {
+		let languages: [String]
+		let languageSet: Set<String>
+		let language: String
+		let locale: Locale
+	}
+	
+	private static let preferredResolution = ThreadSafe<PreferredResolution?>(wrappedValue: nil)
+	
+	private static var resolvedPreferred: PreferredResolution {
+		let languages = Locale.preferredLanguages
+		let languageSet = Bundle.languageSet
+		if let cached = preferredResolution.wrappedValue, cached.languages == languages, cached.languageSet == languageSet { return cached }
+		let language = languages.firstMap({ $0.matchingLanguage(in: languageSet) }) ?? "en"
+		let resolution = PreferredResolution(languages: languages, languageSet: languageSet, language: language, locale: Locale(identifier: language))
+		preferredResolution.wrappedValue = resolution
+		return resolution
+	}
+	
 	/// Standard UTC/GMT locale.
 	static var utc: Locale { Locale(identifier: "UTC") }
 	
 	/// Returns the preferred language code in ISO 639-1 format (2 alpha codes) in lower case. For example `"en"`.
 	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
-	static var preferredLanguage: String { Locale.preferredLanguages.firstMap({ $0.matchingLanguage(in: Bundle.languageSet) }) ?? "en" }
+	static var preferredLanguage: String { resolvedPreferred.language }
 
 	/// Returns the preferred language code in ISO 639-1 format (2 alpha codes) in lower case. For example `"en"`, `"zh"`.
 	/// - SeeAlso: [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1)
 	static var preferredLanguageCodeISO2: String { preferredLanguage.codeISO2 }
 	
 	/// Returns the current preferred locale.
-	static var preferredLocale: Locale { Locale(identifier: preferredLanguage) }
+	static var preferredLocale: Locale { resolvedPreferred.locale }
 	
 	/// Returns the language identifier in BCP 47 format (language-region).
 	/// Example: "ar-AE", "en-US", "de-DE". Returns only language code if region is not available.

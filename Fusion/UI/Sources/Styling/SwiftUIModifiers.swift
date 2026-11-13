@@ -229,6 +229,8 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 	@State private var numberAttributes: [NSAttributedString.Key: Any] = [:]
 	@State private var decimals: Int = 0
 	@State private var currentValue: Double = 0
+	@State private var tweenStartValue: Double = 0
+	@State private var targetValue: Double = 0
 	@State private var tweenName: String = UUID().uuidString
 	
 	/// The source text content that will be displayed and animated.
@@ -254,17 +256,29 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 		template = .init(attributedString: attributed)
 		updateNumberRangeIfNeeded(in: template)
 		currentValue = currentNumberValue(in: template)
+		tweenStartValue = currentValue
+		targetValue = currentValue
 		displayText = attributed
+	}
+	
+	static func startValue(current: Double, tweenStart: Double, previousTarget: Double, isRunning: Bool) -> Double {
+		guard isRunning, current == tweenStart else { return current }
+		return previousTarget
 	}
 	
 	private func animate(to attributed: NSAttributedString) {
 		updateTemplate(with: attributed)
 		let newTarget = currentNumberValue(in: template)
 		guard newTarget != currentValue else { return }
+		let isRunning = !Tween.tweens(withName: tweenName).isEmpty
+		let start = Self.startValue(current: currentValue, tweenStart: tweenStartValue, previousTarget: targetValue, isRunning: isRunning)
 		Tween.stopTweens(withName: tweenName)
+		if start != currentValue { updateDisplay(value: start) }
+		tweenStartValue = start
+		targetValue = newTarget
 		Tween(duration: duration,
 			  options: .init(name: tweenName, ease: ease, delegate: self, fps: fps),
-			  fromValues: ["value": CGFloat(currentValue)],
+			  fromValues: ["value": CGFloat(start)],
 			  toValues: ["value": CGFloat(newTarget)])
 	}
 	
@@ -275,7 +289,7 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 	
 	private func updateNumberRangeIfNeeded(in attributed: NSAttributedString) {
 		let string = attributed.string
-		if let range = firstNumberRange(in: string) {
+		if let range = Self.firstNumberRange(in: string) {
 			numberRange = range
 			numberAttributes = attributed.attributes(at: range.location, effectiveRange: nil)
 			decimals = fractionDigits(in: (string as NSString).substring(with: range))
@@ -316,11 +330,11 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 		return 0
 	}
 	
-	private func firstNumberRange(in string: String) -> NSRange? {
-		let pattern = "[0-9][0-9.,]*"
-		guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return nil }
+	private static let numberRegex: NSRegularExpression? = try? NSRegularExpression(pattern: "[0-9][0-9.,]*", options: [])
+	
+	static func firstNumberRange(in string: String) -> NSRange? {
 		let range = NSRange(location: 0, length: (string as NSString).length)
-		return regex.firstMatch(in: string, options: [], range: range)?.range
+		return numberRegex?.firstMatch(in: string, options: [], range: range)?.range
 	}
 	
 // MARK: - Exposed Methods
@@ -450,7 +464,7 @@ public extension TextConvertible {
 	///   - fps: The frames per second rate for the animation. Default is `60.0`.
 	/// - Returns: A view with animated text transitions applied.
 	func textAnimated(duration: Double = Constant.duration, animationCurve: Ease = .smoothOut, fps: FPoint = 60.0) -> some View {
-		text.textTransition(self, duration: duration, animationCurve: animationCurve, fps: fps)
+		Text(verbatim: "").textTransition(self, duration: duration, animationCurve: animationCurve, fps: fps)
 	}
 }
 #endif

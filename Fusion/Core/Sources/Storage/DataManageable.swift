@@ -6,12 +6,19 @@ import Foundation
 
 // MARK: - Definitions -
 
-private struct ThrottleWrapper {
-	@ThreadSafe
-	static var timers: [String : DispatchSourceTimer] = [:]
+private func isEqualValue<L : Equatable>(_ lhs: L, _ rhs: Any) -> Bool {
+	guard let rhs = rhs as? L else { return false }
+	return lhs == rhs
+}
 
-	static func mutate(_ transform: (inout [String : DispatchSourceTimer]) -> Void) {
-		_timers.mutate(transform)
+private func isSameValue(_ lhs: Any?, _ rhs: Any?) -> Bool {
+	switch (lhs, rhs) {
+	case (nil, nil):
+		return true
+	case let (lhs as any Equatable, rhs?):
+		return isEqualValue(lhs, rhs)
+	default:
+		return false
 	}
 }
 
@@ -46,7 +53,8 @@ public struct StoredReadOnly<Parent : DataManageable, Value : Codable> {
 /// - **Optimized InMemoryCache**: All reads and writes go through a fast in-memory cache layer for immediate access
 /// - **Per-Key Throttling**: Define individual throttle intervals for specific keys to delay storage operations
 /// - **Immediate Updates**: Values are immediately available in memory and trigger all DataBindable notifications
-/// - **Deferred Persistence**: Storage I/O operations can be throttled while maintaining real-time data access
+/// - **Deferred Persistence**: Storage I/O operations can be throttled or saved in the background while maintaining real-time data access.
+///   See ``persistsAsynchronously(forKey:)`` for what other processes see before the I/O completes
 /// - **Thread-Safe**: All operations are thread-safe with proper concurrency handling
 /// - **Automatic Cleanup**: Timers and cache entries are automatically managed
 ///
@@ -63,6 +71,27 @@ public protocol DataManageable : DataBindable {
 	/// - Parameter key: The key to check for a specific throttle interval.
 	/// - Returns: The throttle interval in seconds for the given key. Default is `0` (no throttling).
 	static func throttleInterval(forKey key: Key) -> TimeInterval
+	
+	/// Returns whether writes for a specific key are saved to `Storage` on a background queue.
+	///
+	/// When `true`, `set` and `remove` update the in-memory cache and return without waiting for the I/O.
+	/// Every read through this type returns the latest value right away, including pending writes, and all
+	/// DataBindable notifications are delivered as usual. No subscription is needed to read your own writes.
+	///
+	/// Pending writes are saved in order, and only the latest pending value of each key reaches the storage.
+	/// On iOS, tvOS, visionOS and macOS they are saved automatically when the app resigns active, enters the background or terminates.
+	/// On watchOS, call ``flushPendingWrites()`` when the app moves to the background.
+	///
+	/// Things to consider before keeping the default:
+	/// - Readers outside this type, such as app extensions, widgets or direct `FileManager` access to the same files,
+	///   can see the previous value until the pending write is saved. Call ``flushPendingWrites()`` before handing over.
+	/// - Writes still pending when the process crashes are lost. Return `false` for keys that must survive a crash.
+	///
+	/// - Parameter key: The key being written or removed.
+	/// - Returns: `true` by default for `FileManager` and custom storages. `false` for `StateStorage`, `Keychain` and `UserDefaults`.
+	static func persistsAsynchronously(forKey key: Key) -> Bool
+	
+	static func notifiesOnlyOnChange(forKey key: Key) -> Bool
 }
 
 // MARK: - Extension - DataManageable
@@ -76,6 +105,23 @@ public extension DataManageable {
 	/// - Parameter key: The key to check for a specific throttle interval.
 	/// - Returns: `0`, meaning no throttling.
 	static func throttleInterval(forKey key: Key) -> TimeInterval { 0 }
+	
+	/// The default asynchronous persistence, applied when a conforming type does not implement `persistsAsynchronously(forKey:)`.
+	///
+	/// - Parameter key: The key being written or removed.
+	/// - Returns: `false` for `StateStorage`, `Keychain` and `UserDefaults`, which are already fast or shared across processes. `true` otherwise.
+	static func persistsAsynchronously(forKey key: Key) -> Bool {
+		let storage = Storage.shared
+		return !(storage is StateStorage || storage is Keychain || storage is UserDefaults)
+	}
+	
+	static func notifiesOnlyOnChange(forKey key: Key) -> Bool { false }
+	
+	/// Saves every pending asynchronous or throttled write to its storage before returning.
+	/// Call it before another process reads the same storage, for example right before reloading a widget timeline.
+	static func flushPendingWrites() {
+		StoragePersistence.flushPendingWrites()
+	}
 	
 	/// Returns the keys of this type that currently hold a value in its `Storage`, including dynamic keys
 	/// that are not part of `allCases`. The order is not guaranteed.
@@ -94,7 +140,11 @@ public extension DataManageable {
 	/// - Returns: The value if it exists, or `nil`.
 	static func value<T : Decodable>(forKey key: Key) -> T? {
 		let namespace = namespace(key)
-		return InMemoryCache.getOrSet(key: namespace, newValue: Storage.shared.value(forKey: namespace))
+		return InMemoryCache.getOrLoad(key: namespace) { () -> T? in
+			let pending = StoragePersistence.pendingValue(forKey: namespace)
+			guard pending.found else { return Storage.shared.value(forKey: namespace) }
+			return pending.value as? T
+		}
 	}
 	
 	/// Sets the value and associate it with a given key. The key must be unique and its value is replaced when it's set multiple times.
@@ -105,25 +155,23 @@ public extension DataManageable {
 	///   - key: The unique key that represents the value.
 	static func set<T : Encodable>(_ value: T?, forKey key: Key) {
 		let namespace = namespace(key)
+		
+		if notifiesOnlyOnChange(forKey: key) {
+			let previous = InMemoryCache.getRaw(key: namespace)
+			if previous != nil || !Storage.shared.isTracked(key: namespace), isSameValue(value, previous) { return }
+		}
+		
 		InMemoryCache.set(key: namespace, newValue: value)
 		Storage.shared.track(key: namespace, isStored: value != nil)
 		let interval = throttleInterval(forKey: key)
+		let write = { Storage.shared.set(value, forKey: namespace) }
+		
 		if interval > 0 {
-			ThrottleWrapper.mutate { timers in
-				if timers[namespace] == nil {
-					let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .utility))
-					timer.schedule(deadline: .now() + interval)
-					timer.setEventHandler {
-						let cached: T? = InMemoryCache.get(key: namespace)
-						Storage.shared.set(cached, forKey: namespace)
-						ThrottleWrapper.mutate { $0[namespace] = nil }
-					}
-					timers[namespace] = timer
-					timer.resume()
-				}
-			}
+			StoragePersistence.throttle(key: namespace, value: value, interval: interval, write: write)
+		} else if persistsAsynchronously(forKey: key) {
+			StoragePersistence.enqueue(key: namespace, value: value, write: write)
 		} else {
-			Storage.shared.set(value, forKey: namespace)
+			write()
 		}
 		send(forKey: key, value: value)
 	}
@@ -137,13 +185,12 @@ public extension DataManageable {
 	static func remove<T>(keys: [Key], bindType: T.Type? = Any.self) {
 		keys.forEach {
 			let namespace = namespace($0)
-			ThrottleWrapper.mutate { timers in
-				if let timer = timers[namespace] {
-					timer.cancel()
-					timers[namespace] = nil
-				}
+			StoragePersistence.cancel(key: namespace)
+			if persistsAsynchronously(forKey: $0) {
+				StoragePersistence.enqueue(key: namespace, value: nil) { Storage.shared.removeObject(forKey: namespace) }
+			} else {
+				Storage.shared.removeObject(forKey: namespace)
 			}
-			Storage.shared.removeObject(forKey: namespace)
 			Storage.shared.track(key: namespace, isStored: false)
 			InMemoryCache.flush(key: namespace)
 			send(forKey: $0, value: nil as T?)

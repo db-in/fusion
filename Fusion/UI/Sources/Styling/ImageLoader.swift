@@ -7,14 +7,29 @@ import UIKit
 
 // MARK: - Extension - URL UIImage Manager
 
-private extension URL {
+extension URL {
+	
+	func imageFileURL(withKey: String) -> URL {
+		appendingPathComponent("image-\(withKey.sha256)")
+	}
+	
+	func legacyImageFileURL(withKey: String) -> URL {
+		appendingPathComponent("image-\(withKey.hash.description)")
+	}
 	
 	func readImageData(withKey: String) -> Data? {
-		try? Data(contentsOf: appendingPathComponent("image-\(withKey.hash.description)"))
+		let url = imageFileURL(withKey: withKey)
+		if let data = try? Data(contentsOf: url) { return data }
+		let legacy = legacyImageFileURL(withKey: withKey)
+		guard let data = try? Data(contentsOf: legacy) else { return nil }
+		if (try? data.write(to: url)) != nil {
+			try? FileManager.default.removeItem(at: legacy)
+		}
+		return data
 	}
 	
 	func writeImage(data: Data, withKey: String) {
-		try? data.write(to: appendingPathComponent("image-\(withKey.hash.description)"))
+		try? data.write(to: imageFileURL(withKey: withKey))
 	}
 	
 	func flushImageCache() {
@@ -34,23 +49,16 @@ public typealias ImageLoadOrDownloadCallback = (UIImage?, Bool) -> Void
 // MARK: - Extension - UIImage Loader
 
 public extension UIImage {
-	
-// MARK: - Private Methods
 
-	private static let inMemory: NSCache<NSString, UIImage> = .init()
+// MARK: - Properties
 	
-	@ThreadSafe
-	private static var associated: [String : UIImage] = [:]
-	
-// MARK: - Protected Methods
-	
-	private func resolve(badge: Bool, key: String) -> UIImage {
-		guard badge, let badgeImage = Self.associated[key] else { return self }
-		return addBadge(badgeImage)
+	static var memoryCacheLimit: Int {
+		get { ImagePipeline.shared.memory.totalCostLimit }
+		set { ImagePipeline.shared.memory.totalCostLimit = newValue }
 	}
-	
+
 // MARK: - Exposed Methods
-	
+
 	/// Adds a badge to the image by overlaying another image on top of it.
 	///
 	/// - Parameters:
@@ -86,7 +94,7 @@ public extension UIImage {
 	///   - image: The badge image.
 	///   - to: The url which will be used to load the original image later on.
 	static func associateBadge(_ image: UIImage?, to: String) {
-		_associated.mutate { $0[to] = image }
+		ImagePipeline.shared.associateBadge(image, to: to)
 	}
 	
 	/// Creates an animated UIImage from GIF data with proper frame durations.
@@ -125,21 +133,17 @@ public extension UIImage {
 	/// - Returns: The final `UIImage`
 	static func loadCache(url: String, allowsBadge: Bool = true, storage: URL? = nil) -> UIImage? {
 		guard !url.isEmpty else { return nil }
-		if let inMemoryImage = inMemory.object(forKey: url as NSString)?.resolve(badge: allowsBadge, key: url) { return inMemoryImage }
+		let pipeline = ImagePipeline.shared
+		if let image = pipeline.cached(url: url, allowsBadge: allowsBadge) { return image }
+		guard let data = ImagePipeline.cachedData(url: url, storage: storage) else { return nil }
 		
-		let fileURL = url.toURL
-		let fileData = fileURL.isFileURL ? try? Data(contentsOf: fileURL) : nil
+		guard let image = ImagePipeline.decode(data, url: url) else {
+			ImagePipeline.removeCachedData(url: url)
+			return nil
+		}
 		
-		guard
-			let data = URLCache.appGroup.cachedResponse(for: .init(url: fileURL))?.data ?? storage?.readImageData(withKey: url) ?? fileData,
-			let image = url.contains(".gif") ? UIImage.images(gifData: data) : UIImage(data: data)
-		else { return nil }
-		
-		image.accessibilityIdentifier = url
-		inMemory.setObject(image, forKey: url as NSString)
-		storage?.writeImage(data: data, withKey: url)
-		
-		return image.resolve(badge: allowsBadge, key: url)
+		pipeline.cache(image, url: url)
+		return pipeline.resolve(image, url: url, allowsBadge: allowsBadge)
 	}
 	
 	/// Forces the download of a given url and caches it locally. This methods triggers the ``loadCache(url:allowsBadge:storage:)`` once
@@ -156,25 +160,10 @@ public extension UIImage {
 			return
 		}
 		
-		let request = URLRequest(url: url.toURL)
-		let task = URLSession.shared.dataTask(with: request) { (dataResponse, response, error) in
-			guard
-				let data = dataResponse,
-				let validResponse = response
-			else {
-				asyncMain { completion?(nil) }
-				return
-			}
-			
-			let cachedData = CachedURLResponse(response: validResponse, data: data)
-			URLCache.appGroup.storeCachedResponse(cachedData, for: request)
-			let rawImage = url.contains(".gif") ? UIImage.images(gifData: data) : UIImage(data: data)
-			rawImage?.accessibilityIdentifier = url
-			let image = rawImage?.resolve(badge: allowsBadge, key: url)
+		Task.detached(priority: .userInitiated) {
+			let image = await ImagePipeline.shared.image(url: url, allowsBadge: allowsBadge, storage: storage, reload: true)
 			asyncMain { completion?(image) }
 		}
-		
-		task.resume()
 	}
 	
 	/// Attempts to load an image from cache. If unavailable, it downloads and caches it.
@@ -198,7 +187,7 @@ public extension UIImage {
 	static func flushCache(storage: URL? = nil) {
 		URLCache.appGroup.removeAllCachedResponses()
 		storage?.flushImageCache()
-		inMemory.removeAllObjects()
+		ImagePipeline.shared.removeAll()
 	}
 }
 
