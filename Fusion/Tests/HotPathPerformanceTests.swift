@@ -61,6 +61,19 @@ final class HotPathPerformanceTests : XCTestCase {
 		measureLoop { _ = IndexedFileStorage.value(forKey: IndexedKey(rawValue: "absent.\($0 % 20)")) as String? }
 	}
 	
+	func testPresentKeyColdReads() {
+		let keys = (0..<20).map { IndexedKey(rawValue: "present.\($0)") }
+		keys.forEach { IndexedFileStorage.set("value \($0.rawValue)", forKey: $0) }
+		IndexedFileStorage.flushPendingWrites()
+		measureLoop {
+			let key = keys[$0 % keys.count]
+			InMemoryCache.flush(key: IndexedFileStorage.namespace(key))
+			_ = IndexedFileStorage.value(forKey: key) as String?
+		}
+		IndexedFileStorage.remove(keys: keys)
+		IndexedFileStorage.flushPendingWrites()
+	}
+	
 	func testFileStorageWrites() {
 		measureLoop { IndexedFileStorage.set($0, forKey: IndexedKey(rawValue: "hot.\($0 % 20)")) }
 		IndexedFileStorage.removeAllKeys()

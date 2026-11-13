@@ -247,8 +247,8 @@ public extension Decodable {
 	/// - Returns: The decoded data in the file.
 	static func loadFile(key: String? = nil) -> Self? {
 		let validKey = key ?? "\(self)"
-		let url = FileManager.default.appGroup.appendingPathComponent(validKey.hash.description)
-		guard let data = try? Data(contentsOf: url) else { return nil }
+		let url = FileManager.default.appGroup.appendingPathComponent(validKey.hash.description, isDirectory: false)
+		guard FileManager.default.fileExists(atPath: url.path), let data = try? Data(contentsOf: url) else { return nil }
 		guard let result =  load(data: Data(base64Encoded: data) ?? data) else {
 			Logger.global.log(basic: "❌ Key load failed: \(validKey) - File: \(url)")
 			return nil
