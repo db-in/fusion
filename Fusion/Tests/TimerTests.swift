@@ -79,10 +79,20 @@ extension FusionSuite {
 		func timer_WhenRemovingAnItem_ShouldNotExecuteCallbackAfterRemoval() async {
 			let timer = TimerControl()
 			let counter = ThreadSafe(wrappedValue: 0)
-			timer.addItem(key: #function) { counter.mutate { $0 += 1 } }
+			timer.addItem(key: #function, queue: .global()) { counter.mutate { $0 += 1 } }
+			
+			let deadline = Date().addingTimeInterval(timeout)
+			while counter.wrappedValue == 0 && Date() < deadline {
+				await sleep(seconds: 0.01)
+			}
+			#expect(counter.wrappedValue > 0)
+			
 			timer.removeItem(key: #function)
+			await sleep(seconds: 0.05)
+			let countAfterRemoval = counter.wrappedValue
 			await sleep(seconds: 0.2)
-			#expect(counter.wrappedValue == 0)
+			
+			#expect(counter.wrappedValue == countAfterRemoval)
 			#expect(timer.itemsCount == 0)
 		}
 		
