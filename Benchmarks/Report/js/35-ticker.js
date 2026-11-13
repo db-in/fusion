@@ -56,7 +56,10 @@ const Ticker = (() => {
 	function render() {
 		items = compute();
 		const row = items.map(html).join("");
-		belt.innerHTML = row + row;
+		const next = row + row;
+		if (belt.dataset.html === next) return;
+		belt.dataset.html = next;
+		belt.innerHTML = next;
 		belt.style.animationDuration = `${Math.max(30, items.length * 9)}s`;
 		if (!pop.hidden) openPop();
 	}

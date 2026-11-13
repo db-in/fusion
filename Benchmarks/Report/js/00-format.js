@@ -48,6 +48,30 @@ function fmtDelta(d) {
 	return (d > 0 ? "+" : "−") + fixed(Math.abs(d), Math.abs(d) >= 100 ? 0 : 1) + "%";
 }
 
+function fmtSec(ns) {
+	if (ns == null || !Number.isFinite(ns) || ns <= 0) return "~0 s";
+	const s = ns / 1e9;
+	if (s < 0.0005) return "~0 s";
+	if (s < 0.01) return `${fixed(s, 3)} s`;
+	if (s < 10) return `${fixed(s, 3)} s`;
+	return `${fixed(s, 2)} s`;
+}
+
+function fmtSpeedup(original, final) {
+	if (!Number.isFinite(original) || original <= 0) return "—";
+	if (!Number.isFinite(final) || final <= 0) return original > 1e5 ? "cached" : "—";
+	const ratio = original / final;
+	if (ratio >= 0.95 && ratio <= 1.05) return "unchanged";
+	if (final < 5e5 && ratio >= 20) return "cached";
+	if (ratio > 1) {
+		const n = ratio >= 100 ? Math.round(ratio).toLocaleString("en-US") : ratio >= 10 ? String(Math.round(ratio)) : fixed(ratio, ratio >= 2 ? 1 : 1);
+		return `~${n}× faster`;
+	}
+	const slower = final / original;
+	const n = slower >= 10 ? String(Math.round(slower)) : fixed(slower, 1);
+	return `~${n}× slower`;
+}
+
 function statusOf(d) {
 	if (d == null || !Number.isFinite(d)) return "none";
 	if (d > 5) return "bad";

@@ -39,11 +39,23 @@ const App = (() => {
 			Ticker.render();
 			Panels.render();
 			if (!Live.isActive() && !Live.isReplaying()) Log.idle();
+			if (Grid.isOpen()) Grid.render();
+			if (Drawer.isOpen()) Drawer.render();
 		}
-		if (Grid.isOpen()) Grid.render();
-		if (Drawer.isOpen()) Drawer.render();
 		const meta = Model.meta.get(State.run);
-		$("#foot-meta").textContent = `${Model.runIds.length} run${Model.runIds.length === 1 ? "" : "s"} · ${Model.items.size} test rows${meta?.commit ? ` · ${String(meta.commit).slice(0, 10)}${meta.dirty ? " (dirty)" : ""}` : ""}`;
+		const env = meta?.cpu || meta?.model ? meta : null;
+		const help = $("#foot-help");
+		if (help) {
+			if (env) {
+				const parts = [`Machine ${env.cpu || env.model}`];
+				if (env.cores) parts.push(`Cores ${String(env.cores).replace(" physical, ", " physical / ").replace(/ logical$/, " logical")}`);
+				if (meta?.commit) parts.push(`Commit ${String(meta.commit).slice(0, 10)}${meta.dirty ? " (uncommitted changes)" : ""}`);
+				help.textContent = parts.join(" · ");
+			} else {
+				help.textContent = "Press / or T to open the test picker · Esc closes · ← → moves in the deep dive";
+			}
+		}
+		$("#foot-meta").textContent = `Viewing ${State.platform} · run ${shortRun(State.run)} · ${Model.runIds.length} run${Model.runIds.length === 1 ? "" : "s"} · ${Model.list(State.platform).length} tests`;
 	}
 
 	function typing(e) {

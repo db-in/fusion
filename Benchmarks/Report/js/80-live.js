@@ -86,6 +86,10 @@ const Live = (() => {
 		Log.reset(ACTIVE.includes(snap.state) ? "Streaming from .live/live.js." : "Last streamed run.");
 	}
 
+	function phaseKey(snap) {
+		return `${snap.phase || ""}|${(snap.phases || []).map(p => `${p.id}:${p.state}`).join(",")}|${snap.error || ""}|${snap.cooldownEndsAt || ""}`;
+	}
+
 	function receive(snap) {
 		loaded = true;
 		if (!snap || reloading) return;
@@ -106,6 +110,7 @@ const Live = (() => {
 		}
 		if (snap.run !== run) begin(snap);
 		if (active) watched = true;
+		const beforePhases = phaseKey(State.live || {});
 		State.live = snap;
 		const events = snap.events || [];
 		const recent = Date.now() - 4000;
@@ -114,7 +119,8 @@ const Live = (() => {
 		seen = events.length;
 		trackPhases(snap, true);
 		Header.live(headerInfo());
-		if (grew || ACTIVE.includes(snap.state)) schedule();
+		const phasesMoved = phaseKey(snap) !== beforePhases;
+		if (grew || phasesMoved || changed) schedule();
 		if (snap.state === "done" && watched) {
 			reloading = true;
 			Log.line("phase", "Run complete, reloading with the new history…");

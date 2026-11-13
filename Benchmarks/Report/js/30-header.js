@@ -5,14 +5,23 @@ const Header = (() => {
 	const bar = $("#livebar");
 	const ring = $("#live-ring-fg");
 	const STATE_TEXT = { idle: "Report", starting: "Starting", running: "Live", cooldown: "Cooling", done: "Done", failed: "Failed", cancelled: "Cancelled", replay: "Replay" };
+	let lastPlatforms = "", lastMetrics = "";
 
-	function segment(container, options, selected, onPick) {
+	function segment(container, options, selected, onPick, cacheKey) {
+		const key = `${selected}|${options.map(o => `${o.id}:${o.label}:${o.count ?? ""}`).join(",")}`;
+		if (key === cacheKey.value && container.children.length) {
+			$$("button", container).forEach(b => b.setAttribute("aria-selected", b.dataset.id === selected ? "true" : "false"));
+			requestAnimationFrame(() => moveThumb(container));
+			return key;
+		}
+		cacheKey.value = key;
 		container.innerHTML = options.map(o => `<button type="button" role="tab" data-id="${esc(o.id)}" aria-selected="${o.id === selected}">${esc(o.label)}${o.count != null ? `<small>${o.count}</small>` : ""}</button>`).join("") + `<span class="seg-thumb"></span>`;
 		container.onclick = e => {
 			const b = e.target.closest("button");
 			if (b && b.dataset.id !== selected) onPick(b.dataset.id);
 		};
 		requestAnimationFrame(() => moveThumb(container));
+		return key;
 	}
 
 	function moveThumb(container) {
@@ -23,14 +32,15 @@ const Header = (() => {
 	}
 
 	function render() {
-		segment(platforms, Model.platforms().map(p => ({ id: p, label: p, count: Model.list(p).length })), State.platform, p => {
+		const pCache = { value: lastPlatforms }, mCache = { value: lastMetrics };
+		lastPlatforms = segment(platforms, Model.platforms().map(p => ({ id: p, label: p, count: Model.list(p).length })), State.platform, p => {
 			State.follow = false;
 			setPlatform(p);
-		});
-		segment(metrics, Object.entries(METRICS).map(([id, m]) => ({ id, label: m.label })), State.metric, m => {
+		}, pCache);
+		lastMetrics = segment(metrics, Object.entries(METRICS).map(([id, m]) => ({ id, label: m.label })), State.metric, m => {
 			State.metric = m;
 			Bus.emit("change");
-		});
+		}, mCache);
 		const item = State.selected && Model.items.get(State.selected);
 		pickerLabel.textContent = item ? `${item.name} · ${item.platform}` : `All tests · ${Model.list(State.platform).length}`;
 	}

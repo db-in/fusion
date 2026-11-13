@@ -11,6 +11,7 @@ const PHASES = [
 
 const Rail = (() => {
 	const rail = $("#rail");
+	let last = "";
 
 	function render() {
 		const runs = Model.runIds.slice();
@@ -19,8 +20,9 @@ const Rail = (() => {
 			.filter(x => Number.isFinite(x.s));
 		const best = scored.length > 1 ? scored.reduce((a, b) => (b.s < a.s ? b : a)).r : null;
 		const worst = scored.length > 1 ? scored.reduce((a, b) => (b.s > a.s ? b : a)).r : null;
-		const ordered = [Model.baselineRun, ...runs.filter(r => r !== Model.baselineRun).reverse()].filter(Boolean);
-		rail.innerHTML = `<h3>Runs · ${runs.length}</h3><div class="rail-list">${ordered.map((r, i) => {
+		const ordered = runs.slice().reverse();
+		const animate = !last;
+		const html = `<h3>Runs · ${runs.length}</h3><div class="rail-list">${ordered.map((r, i) => {
 			const meta = Model.meta.get(r);
 			const isBase = r === Model.baselineRun, isLive = r === State.live?.run;
 			const liveState = isLive ? State.live.state : null;
@@ -29,12 +31,16 @@ const Rail = (() => {
 			const delta = Number.isFinite(score) ? (score - 1) * 100 : null;
 			const tags = [isBase ? `<span class="tag base">Baseline</span>` : "", isLive ? `<span class="tag live ${esc(liveState || "")}">${liveLabel}</span>` : "", r === best ? `<span class="tag best">Best</span>` : "", r === worst ? `<span class="tag worst">Worst</span>` : ""].join("");
 			const when = meta?.date ? new Date(meta.date) : null;
-			return `<button class="run${isBase ? " base" : ""}${isLive ? " live" : ""}" type="button" data-run="${esc(r)}" aria-current="${r === State.run}" style="animation-delay:${i * 40}ms">
+			const motion = animate ? `animation-delay:${i * 40}ms` : "animation:none";
+			return `<button class="run${isBase ? " base" : ""}${isLive ? " live" : ""}" type="button" data-run="${esc(r)}" aria-current="${r === State.run}" style="${motion}">
 				<b>${esc(isBase ? r : shortRun(r))}</b>
 				<small>${esc(when ? when.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + " · " + when.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) : liveLabel === "Live" ? "in progress" : liveLabel.toLowerCase())}${delta != null ? ` · ${esc(fmtDelta(delta))}` : ""}</small>
 				${tags ? `<span class="tags">${tags}</span>` : ""}
 			</button>`;
 		}).join("")}</div><p class="rail-note">Pick a run to compare it against the pinned baseline. Best and worst use the geometric mean of ${esc(METRICS[State.metric].label.toLowerCase())} ratios.</p>`;
+		if (html === last) return;
+		last = html;
+		rail.innerHTML = html;
 	}
 
 	rail.addEventListener("click", e => {
@@ -49,7 +55,7 @@ const Rail = (() => {
 
 const Desk = (() => {
 	const desk = $("#desk");
-	let timer = null;
+	let timer = null, last = "";
 
 	function machine(env, run) {
 		if (!env) return `<div class="machine"><h3>Machine</h3><b>Unknown machine</b></div>`;
@@ -114,14 +120,13 @@ const Desk = (() => {
 		return `<div class="gates"><h3>Regression gates · ${esc(State.platform)}</h3>${g.map(x => `<div class="gate"><span>${x.kind} · ${x.label} &gt; +${x.limit}%</span><div class="bar"><span style="width:${(x.pass * 100).toFixed(0)}%;background:${x.failed ? "var(--bad)" : "var(--ok)"}"></span></div><b>${x.failed ? `${x.failed} over` : "pass"}</b></div>`).join("")}</div>`;
 	}
 
-	function render() {
-		const live = State.live;
+	function markup(live) {
 		const env = live?.env && Object.keys(live.env).length ? live.env : Model.meta.get(State.run) || Model.meta.get(Model.baselineRun);
 		const steps = PHASES.map((p, i) => {
 			const st = phaseState(live, p.id);
 			return `<div class="step" data-state="${st}" style="animation-delay:${i * 30}ms"><i></i><span>${esc(p.label)}<br><small>${esc(p.hint)}</small></span><small>${live ? esc(duration(live, p.id)) : ""}</small></div>`;
 		}).join("");
-		desk.innerHTML = `
+		return `
 			${machine(env, live?.run || State.run)}
 			<div><h3>Pipeline${live ? ` · ${esc(live.state)}` : " · completed run"}</h3><div class="pipeline">${steps}</div></div>
 			${cooldown(live)}
@@ -136,7 +141,32 @@ const Desk = (() => {
 				<li>Streams progress to <code>.live/live.js</code>, which this page polls once a second.</li>
 			</ol></details>
 			${gates()}`;
+	}
+
+	function fingerprint(live) {
+		const env = live?.env && Object.keys(live.env).length ? live.env : Model.meta.get(State.run) || Model.meta.get(Model.baselineRun);
+		const phases = (live?.phases || []).map(p => `${p.id}:${p.state}`).join(",");
+		const g = gates();
+		return `${live?.run || State.run}|${live?.state || ""}|${live?.phase || ""}|${phases}|${live?.error || ""}|${!!live?.cooldownEndsAt}|${live?.runner || ""}|${env?.cpu || ""}|${State.platform}|${State.metric}|${g}`;
+	}
+
+	function render() {
+		const live = State.live;
+		const key = fingerprint(live);
+		if (key === last) {
+			arm(live);
+			return;
+		}
+		const first = !last;
+		last = key;
+		desk.innerHTML = markup(live);
+		if (!first) $$(".step, .gate .bar span, .cool", desk).forEach(n => { n.style.animation = "none"; });
+		arm(live);
+	}
+
+	function arm(live) {
 		clearInterval(timer);
+		timer = null;
 		if (live && ["starting", "running"].includes(live.state)) timer = setInterval(tick, 1000);
 	}
 
@@ -144,15 +174,25 @@ const Desk = (() => {
 		const live = State.live;
 		if (!live) return;
 		$$(".step", desk).forEach((s, i) => {
+			const st = phaseState(live, PHASES[i].id);
+			if (s.dataset.state !== st) s.dataset.state = st;
 			const d = s.lastElementChild;
-			if (d && s.dataset.state === "running") d.textContent = duration(live, PHASES[i].id);
+			if (d && st === "running") d.textContent = duration(live, PHASES[i].id);
 		});
+		const title = $("h3", desk);
+		if (title && title.textContent.startsWith("Pipeline")) title.textContent = `Pipeline · ${live.state}`;
 		const old = $(".cool", desk), next = cooldown(live);
 		if (old && next) {
 			const tmp = el("div", null, next).firstElementChild;
 			old.querySelector("b").textContent = tmp.querySelector("b").textContent;
 			old.querySelector("circle + circle").style.strokeDasharray = tmp.querySelector("circle + circle").style.strokeDasharray;
 		} else if (old && !next) old.remove();
+		else if (!old && next) {
+			const note = $(".note", desk);
+			const node = el("div", null, next).firstElementChild;
+			if (note) note.before(node);
+			else desk.append(node);
+		}
 	}
 
 	return { render };

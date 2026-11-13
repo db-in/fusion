@@ -21,6 +21,7 @@ const Panels = (() => {
 		{ k: "Memory", c: "--pink", id: "XCTMemoryMetric", text: "Peak physical memory of the test process during the measured block, and the physical delta. Peak is cumulative for the process, so read it as a ceiling." },
 		{ k: "Storage", c: "--gold", id: "XCTStorageMetric", text: "Logical disk writes in kB during the block. Non-zero values point at persistence or cache traffic inside a hot path." }
 	];
+	const summaryState = { sort: "ratio", dir: -1, suite: "" };
 
 	function hoverable(container, describe) {
 		container.onmousemove = e => {
@@ -34,6 +35,97 @@ const Panels = (() => {
 			const t = e.target.closest("[data-key]");
 			if (t) { Tip.hide(); Bus.emit("select", { key: t.dataset.key, open: true }); }
 		};
+	}
+
+	function loopNs(item, run) {
+		const row = item.runs.get(run);
+		const per = row?.time;
+		if (!Number.isFinite(per)) return null;
+		const ops = row.ops > 0 ? row.ops : 1;
+		return per * ops;
+	}
+
+	function summary() {
+		const base = Model.baselineRun;
+		const run = State.run;
+		const hint = $("#summary-hint");
+		if (hint) {
+			hint.textContent = run === base
+				? "Showing the baseline against itself. Pick another run to see Original → Final."
+				: `Baseline (${shortRun(base)}) → ${shortRun(run)}. Times are one measured loop (ops × wall time/op).`;
+		}
+		const suites = Model.suites(State.platform);
+		if (summaryState.suite && !suites.includes(summaryState.suite)) summaryState.suite = "";
+		const rows = Model.list(State.platform).map(i => {
+			const original = loopNs(i, base);
+			const final = loopNs(i, run);
+			const ops = i.runs.get(run)?.ops || i.runs.get(base)?.ops || null;
+			const ratio = Number.isFinite(original) && Number.isFinite(final) && final > 0 ? original / final : null;
+			const label = i.info?.feature || i.info?.measures || i.name;
+			const change = fmtSpeedup(original, final);
+			const cls = !Number.isFinite(ratio) || (ratio >= 0.95 && ratio <= 1.05) || change === "unchanged" ? "flat"
+				: change.includes("faster") || change === "cached" ? "good"
+				: change.includes("slower") ? "bad" : "flat";
+			return { i, label, suite: i.suite, ops, original, final, ratio, change, cls };
+		}).filter(r => (Number.isFinite(r.original) || Number.isFinite(r.final)) && (!summaryState.suite || r.suite === summaryState.suite));
+		const dir = summaryState.dir;
+		const key = summaryState.sort;
+		rows.sort((a, b) => {
+			const av = key === "label" ? a.label : key === "original" ? (a.original ?? -1) : key === "final" ? (a.final ?? -1) : (a.ratio ?? -1);
+			const bv = key === "label" ? b.label : key === "original" ? (b.original ?? -1) : key === "final" ? (b.final ?? -1) : (b.ratio ?? -1);
+			if (typeof av === "string") return av.localeCompare(bv) * dir;
+			return (av - bv) * dir || a.label.localeCompare(b.label);
+		});
+		const box = $("#summary");
+		const mark = col => summaryState.sort === col ? (summaryState.dir > 0 ? " ↑" : " ↓") : "";
+		const tags = `<div class="summary-tags"><button type="button" class="summary-tag${!summaryState.suite ? " on" : ""}" data-suite="">All</button>${suites.map(s => {
+			const info = suiteInfo(s);
+			return `<button type="button" class="summary-tag${summaryState.suite === s ? " on" : ""}" data-suite="${esc(s)}" style="--tag:${suiteColor(s)}">${esc(info.label)}</button>`;
+		}).join("")}</div>`;
+		if (!rows.length) {
+			box.innerHTML = `${tags}<p class="summary-empty">No timed results for ${esc(State.platform)}${summaryState.suite ? ` · ${esc(suiteInfo(summaryState.suite).label)}` : ""} yet.</p>`;
+		} else {
+			box.innerHTML = `${tags}<table class="summary-table"><thead><tr>
+				<th data-sort="label">Path${mark("label")}</th>
+				<th data-sort="original">Original${mark("original")}</th>
+				<th data-sort="final">Final${mark("final")}</th>
+				<th data-sort="ratio">Change${mark("ratio")}</th>
+			</tr></thead><tbody>${rows.map(r => {
+				const opsNote = r.ops ? `${r.ops.toLocaleString("en-US")} ops / iteration` : "";
+				const suite = suiteInfo(r.suite).label;
+				return `<tr data-key="${esc(r.i.key)}"><td class="path">${esc(r.label)}<small>${esc(suite)}${opsNote ? ` · ${esc(opsNote)}` : ""}</small></td><td class="num">${esc(fmtSec(r.original))}</td><td class="num">${esc(fmtSec(r.final))}</td><td class="change ${r.cls}">${esc(r.change)}</td></tr>`;
+			}).join("")}</tbody></table>`;
+		}
+		box.onclick = e => {
+			const tag = e.target.closest("[data-suite]");
+			if (tag) {
+				summaryState.suite = tag.dataset.suite || "";
+				summary();
+				return;
+			}
+			const th = e.target.closest("th[data-sort]");
+			if (th) {
+				const col = th.dataset.sort;
+				if (summaryState.sort === col) summaryState.dir *= -1;
+				else {
+					summaryState.sort = col;
+					summaryState.dir = col === "label" ? 1 : -1;
+				}
+				summary();
+				return;
+			}
+			const row = e.target.closest("tr[data-key]");
+			if (row) { Tip.hide(); Bus.emit("select", { key: row.dataset.key, open: true }); }
+		};
+		box.onmousemove = e => {
+			const t = e.target.closest("tr[data-key]");
+			if (!t) return Tip.hide();
+			const item = Model.items.get(t.dataset.key);
+			if (!item) return Tip.hide();
+			const s = Model.stat(item, "time");
+			Tip.show(`<b>${esc(item.name)}</b><br>${esc(item.info?.measures || "")}<br>${esc(fmtNs(s.base))} → ${esc(fmtNs(s.current))} / op`, e.clientX, e.clientY);
+		};
+		box.onmouseleave = () => Tip.hide();
 	}
 
 	function range() {
@@ -157,6 +249,7 @@ const Panels = (() => {
 	}
 
 	function render() {
+		summary();
 		range();
 		donuts();
 		parity();

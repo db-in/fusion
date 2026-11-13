@@ -371,8 +371,13 @@ const Stage = (() => {
 		const stats = list.map(i => ({ i, s: Model.stat(i) }));
 		const count = st => stats.filter(x => x.s.status === st).length;
 		const suites = Model.suites(State.platform);
-		$("#legend").innerHTML = suites.map(s => `<div class="row" style="color:${suiteColor(s)}"><i class="sw"></i><span style="color:var(--ink-2)">${esc(suiteInfo(s).label)}</span><b>${list.filter(i => i.suite === s).length}</b></div>`).join("")
+		const legend = $("#legend");
+		const legendHtml = suites.map(s => `<div class="row" style="color:${suiteColor(s)}"><i class="sw"></i><span style="color:var(--ink-2)">${esc(suiteInfo(s).label)}</span><b>${list.filter(i => i.suite === s).length}</b></div>`).join("")
 			+ `<hr><div class="row" style="color:var(--ok)"><i class="sw"></i><span style="color:var(--ink-2)">Faster than baseline</span></div><div class="row" style="color:var(--bad)"><i class="sw"></i><span style="color:var(--ink-2)">Slower than baseline</span></div><div class="row" style="color:var(--ink-3)"><span style="color:var(--ink-3);font-size:11px">Size grows with cost, log scale</span></div>`;
+		if (legend.dataset.html !== legendHtml) {
+			legend.innerHTML = legendHtml;
+			legend.dataset.html = legendHtml;
+		}
 		const measured = stats.filter(x => x.s.status !== "none");
 		const med = median(measured.map(x => x.s.delta));
 		const kpis = $("#kpis");
