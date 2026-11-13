@@ -36,8 +36,9 @@ const Live = (() => {
 		}
 		const total = (snap.expected?.macOS || 0) + (snap.expected?.iOS || 0);
 		const cooling = ACTIVE.includes(snap.state) && /^cooldown/.test(snap.phase || "");
+		const building = ACTIVE.includes(snap.state) && /^build-/.test(snap.phase || "");
 		const detail = ACTIVE.includes(snap.state) ? `${phaseLabel(snap)} · ${ago(Date.now() - snap.startedAt).replace(" ago", "")}` : `${shortRun(snap.run)} · ${ago(Date.now() - snap.updatedAt)}`;
-		return { state: cooling ? "cooldown" : snap.state, detail, done: measuredCount(snap.run), total };
+		return { state: building ? "building" : cooling ? "cooldown" : snap.state, detail, done: measuredCount(snap.run), total };
 	}
 
 	function schedule() {

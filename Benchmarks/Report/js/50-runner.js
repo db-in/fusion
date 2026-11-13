@@ -87,6 +87,17 @@ const Desk = (() => {
 		return clock((end - p.startedAt) / 1000);
 	}
 
+	function isBuild(id) {
+		return /^build-/.test(id || "");
+	}
+
+	function buildingBanner(live) {
+		if (!live || !["starting", "running"].includes(live.state) || !isBuild(live.phase)) return "";
+		const step = PHASES.find(p => p.id === live.phase);
+		const elapsed = duration(live, live.phase) || "0:00";
+		return `<div class="building" data-phase="${esc(live.phase)}"><div class="building-bar" aria-hidden="true"></div><div class="building-copy"><b>Building</b><small>${esc(step?.label || live.phase)} · ${esc(elapsed)}</small></div><span class="building-spin" aria-hidden="true"></span></div>`;
+	}
+
 	function cooldown(live) {
 		if (!live || !live.cooldownEndsAt || !/^cooldown/.test(live.phase || "")) return "";
 		const left = (live.cooldownEndsAt - Date.now()) / 1000;
@@ -124,11 +135,13 @@ const Desk = (() => {
 		const env = live?.env && Object.keys(live.env).length ? live.env : Model.meta.get(State.run) || Model.meta.get(Model.baselineRun);
 		const steps = PHASES.map((p, i) => {
 			const st = phaseState(live, p.id);
-			return `<div class="step" data-state="${st}" style="animation-delay:${i * 30}ms"><i></i><span>${esc(p.label)}<br><small>${esc(p.hint)}</small></span><small>${live ? esc(duration(live, p.id)) : ""}</small></div>`;
+			const build = isBuild(p.id) && st === "running";
+			return `<div class="step${build ? " building-step" : ""}" data-state="${st}" data-id="${esc(p.id)}" style="animation-delay:${i * 30}ms"><i></i><span>${esc(p.label)}<br><small>${esc(p.hint)}</small></span><small>${live ? esc(duration(live, p.id)) : ""}</small>${build ? `<div class="step-progress" aria-hidden="true"><span></span></div>` : ""}</div>`;
 		}).join("");
 		return `
 			${machine(env, live?.run || State.run)}
 			<div><h3>Pipeline${live ? ` · ${esc(live.state)}` : " · completed run"}</h3><div class="pipeline">${steps}</div></div>
+			${buildingBanner(live)}
 			${cooldown(live)}
 			${live?.error ? `<div class="error">${esc(live.error)}</div>` : ""}
 			${runner(live?.runner || Model.meta.get(State.run)?.runner || null)}
@@ -160,7 +173,7 @@ const Desk = (() => {
 		const first = !last;
 		last = key;
 		desk.innerHTML = markup(live);
-		if (!first) $$(".step, .gate .bar span, .cool", desk).forEach(n => { n.style.animation = "none"; });
+		if (!first) $$(".step, .gate .bar span, .cool, .building", desk).forEach(n => { n.style.animation = "none"; });
 		arm(live);
 	}
 
@@ -173,14 +186,27 @@ const Desk = (() => {
 	function tick() {
 		const live = State.live;
 		if (!live) return;
-		$$(".step", desk).forEach((s, i) => {
-			const st = phaseState(live, PHASES[i].id);
+		$$(".step", desk).forEach(s => {
+			const id = s.dataset.id;
+			if (!id) return;
+			const st = phaseState(live, id);
 			if (s.dataset.state !== st) s.dataset.state = st;
-			const d = s.lastElementChild;
-			if (d && st === "running") d.textContent = duration(live, PHASES[i].id);
+			const d = s.querySelector(":scope > small:last-of-type");
+			if (d && st === "running") d.textContent = duration(live, id);
 		});
 		const title = $("h3", desk);
 		if (title && title.textContent.startsWith("Pipeline")) title.textContent = `Pipeline · ${live.state}`;
+		const oldBuild = $(".building", desk), nextBuild = buildingBanner(live);
+		if (oldBuild && nextBuild) {
+			const tmp = el("div", null, nextBuild).firstElementChild;
+			oldBuild.querySelector("small").textContent = tmp.querySelector("small").textContent;
+		} else if (oldBuild && !nextBuild) oldBuild.remove();
+		else if (!oldBuild && nextBuild) {
+			const pipe = $(".pipeline", desk)?.parentElement;
+			const node = el("div", null, nextBuild).firstElementChild;
+			if (pipe) pipe.after(node);
+			else desk.prepend(node);
+		}
 		const old = $(".cool", desk), next = cooldown(live);
 		if (old && next) {
 			const tmp = el("div", null, next).firstElementChild;

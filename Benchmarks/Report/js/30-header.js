@@ -4,7 +4,7 @@ const Header = (() => {
 	const pickerLabel = $("#picker-label");
 	const bar = $("#livebar");
 	const ring = $("#live-ring-fg");
-	const STATE_TEXT = { idle: "Report", starting: "Starting", running: "Live", cooldown: "Cooling", done: "Done", failed: "Failed", cancelled: "Cancelled", replay: "Replay" };
+	const STATE_TEXT = { idle: "Report", starting: "Starting", running: "Live", building: "Building", cooldown: "Cooling", done: "Done", failed: "Failed", cancelled: "Cancelled", replay: "Replay" };
 	let lastPlatforms = "", lastMetrics = "";
 
 	function segment(container, options, selected, onPick, cacheKey) {
@@ -62,7 +62,7 @@ const Header = (() => {
 		$("#live-run").textContent = info.detail || "—";
 		const pct = info.total ? Math.min(100, (info.done / info.total) * 100) : info.state === "done" ? 100 : 0;
 		ring.style.strokeDasharray = `${pct} 100`;
-		ring.style.stroke = info.state === "failed" ? "var(--bad)" : info.state === "cancelled" ? "var(--warn)" : "var(--ok)";
+		ring.style.stroke = info.state === "failed" ? "var(--bad)" : info.state === "cancelled" ? "var(--warn)" : info.state === "building" ? "var(--accent)" : "var(--ok)";
 		$("#live-count").textContent = info.total ? `${info.done}/${info.total}` : "—";
 	}
 
