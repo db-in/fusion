@@ -1,0 +1,39 @@
+{
+  "configurations" : [
+    {
+      "id" : "6F1C2B7A-3D4E-4F5A-9B8C-1D2E3F4A5B6C",
+      "name" : "Benchmarks",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "mainThreadCheckerEnabled" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Fusion.xcodeproj",
+      "identifier" : "60A8595A2A06BB2500D3B283",
+      "name" : "Sample iOS"
+    },
+    "testTimeoutsEnabled" : false
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "selectedTests" : [
+        "CorePerformanceTests",
+        "HotPathPerformanceTests",
+        "ImagePipelinePerformanceTests",
+        "StoragePerformanceTests",
+        "UIPerformanceTests"
+      ],
+      "target" : {
+        "containerPath" : "container:Fusion.xcodeproj",
+        "identifier" : "600A7C7F2A0038C1003B0093",
+        "name" : "FusionTests"
+      }
+    }
+  ],
+  "version" : 1
+}

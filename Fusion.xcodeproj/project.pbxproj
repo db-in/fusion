@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
+		60BNCH292A37384F00C96629 /* Benchmarks */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 60BNCH2C2A37384F00C96629 /* Build configuration list for PBXAggregateTarget "Benchmarks" */;
+			buildPhases = (
+				60BNCH2D2A37387500C96629 /* Run Benchmarks */,
+			);
+			dependencies = (
+			);
+			name = Benchmarks;
+			productName = Benchmarks;
+		};
 		60CFD2892A37384F00C96629 /* Publishing */ = {
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 60CFD28C2A37384F00C96629 /* Build configuration list for PBXAggregateTarget "Publishing" */;
@@ -396,6 +407,9 @@
 					60A8597A2A06BB2500D3B283 = {
 						CreatedOnToolsVersion = 14.2;
 					};
+					60BNCH292A37384F00C96629 = {
+						CreatedOnToolsVersion = 15.0;
+					};
 					60CC2E972A50C5CB00E43713 = {
 						CreatedOnToolsVersion = 15.0;
 					};
@@ -435,6 +449,7 @@
 				60CC2EB02A50C61A00E43713 /* Sample visionOS */,
 				60CFD2892A37384F00C96629 /* Publishing */,
 				60DOCS292A37384F00C96629 /* Documentation */,
+				60BNCH292A37384F00C96629 /* Benchmarks */,
 			);
 		};
 /* End PBXProject section */
@@ -485,6 +500,26 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		60BNCH2D2A37387500C96629 /* Run Benchmarks */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Benchmarks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export FUSION_RUNNER=xcode\n\"${PROJECT_DIR}/Scripts/benchmark.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		60CFD28D2A37387500C96629 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -987,6 +1022,28 @@
 			};
 			name = Release;
 		};
+		60BNCH2A2A37384F00C96629 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = H5QKC5ZBYV;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		60BNCH2B2A37384F00C96629 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = H5QKC5ZBYV;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		60CC2EA92A50C5CC00E43713 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1203,6 +1260,15 @@
 			buildConfigurations = (
 				60A859952A06BB2600D3B283 /* Debug */,
 				60A859962A06BB2600D3B283 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		60BNCH2C2A37384F00C96629 /* Build configuration list for PBXAggregateTarget "Benchmarks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				60BNCH2A2A37384F00C96629 /* Debug */,
+				60BNCH2B2A37384F00C96629 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

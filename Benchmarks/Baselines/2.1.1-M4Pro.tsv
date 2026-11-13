@@ -1,0 +1,587 @@
+platform	suite	test	metric	average	stddev_percent	samples
+macOS	CorePerformanceTests	testAnyCodableKeyPathMap	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testAnyCodableKeyPathMap	Clock Monotonic Time, s	0.0149876	6.953	0.017063, 0.014529, 0.014607, 0.014318, 0.014421
+macOS	CorePerformanceTests	testAnyCodableKeyPathMap	CPU Time, s	0.0160712	5.077	0.017683, 0.015647, 0.015863, 0.015467, 0.015696
+macOS	CorePerformanceTests	testAnyCodableKeyPathMap	Memory Physical, kB	45.8752	41.650	81.920000, 32.768000, 32.768000, 32.768000, 49.152000
+macOS	CorePerformanceTests	testAnyCodableKeyPathMap	CPU Instructions Retired, kI	283943.453	0.534	286975.996000, 283207.028000, 283178.843000, 283165.976000, 283189.422000
+macOS	CorePerformanceTests	testAnyCodableKeyPathMap	Memory Peak Physical, kB	11040.3792	0.673	10928.968000, 10994.504000, 11043.656000, 11092.808000, 11141.960000
+macOS	CorePerformanceTests	testAnyCodableKeyPathMap	CPU Cycles, kC	64550.5134	4.838	70698.478000, 62971.613000, 63627.577000, 62031.841000, 63423.058000
+macOS	CorePerformanceTests	testBase64Encode	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testBase64Encode	Clock Monotonic Time, s	0.0001458	1.473	0.000147, 0.000142, 0.000148, 0.000146, 0.000146
+macOS	CorePerformanceTests	testBase64Encode	CPU Time, s	0.0004264	1.940	0.000435, 0.000418, 0.000438, 0.000422, 0.000419
+macOS	CorePerformanceTests	testBase64Encode	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testBase64Encode	CPU Instructions Retired, kI	6704.2684	0.758	6760.093000, 6679.444000, 6687.644000, 6763.429000, 6630.732000
+macOS	CorePerformanceTests	testBase64Encode	Memory Peak Physical, kB	13212.9216	0.061	13222.752000, 13222.752000, 13206.368000, 13206.368000, 13206.368000
+macOS	CorePerformanceTests	testBase64Encode	CPU Cycles, kC	1702.8328	1.949	1735.538000, 1667.538000, 1749.764000, 1682.726000, 1678.598000
+macOS	CorePerformanceTests	testContainsCharacters	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testContainsCharacters	Clock Monotonic Time, s	0.0009212	1.761	0.000945, 0.000915, 0.000921, 0.000896, 0.000929
+macOS	CorePerformanceTests	testContainsCharacters	CPU Time, s	0.0012156	1.477	0.001243, 0.001191, 0.001202, 0.001217, 0.001225
+macOS	CorePerformanceTests	testContainsCharacters	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testContainsCharacters	CPU Instructions Retired, kI	25853.2976	0.171	25793.602000, 25816.088000, 25897.578000, 25906.590000, 25852.630000
+macOS	CorePerformanceTests	testContainsCharacters	Memory Peak Physical, kB	13271.904	0.000	13271.904000, 13271.904000, 13271.904000, 13271.904000, 13271.904000
+macOS	CorePerformanceTests	testContainsCharacters	CPU Cycles, kC	4848.2906	1.463	4953.061000, 4750.652000, 4792.336000, 4859.821000, 4885.583000
+macOS	CorePerformanceTests	testEaseCalculate	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testEaseCalculate	Clock Monotonic Time, s	1.22e-05	7.695	0.000011, 0.000013, 0.000013, 0.000011, 0.000013
+macOS	CorePerformanceTests	testEaseCalculate	CPU Time, s	0.0002968	4.050	0.000288, 0.000290, 0.000320, 0.000290, 0.000296
+macOS	CorePerformanceTests	testEaseCalculate	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testEaseCalculate	CPU Instructions Retired, kI	3340.4718	0.526	3355.689000, 3319.273000, 3366.244000, 3329.205000, 3331.948000
+macOS	CorePerformanceTests	testEaseCalculate	Memory Peak Physical, kB	13288.288	0.000	13288.288000, 13288.288000, 13288.288000, 13288.288000, 13288.288000
+macOS	CorePerformanceTests	testEaseCalculate	CPU Cycles, kC	1173.0354	2.994	1147.621000, 1161.202000, 1240.204000, 1143.546000, 1172.604000
+macOS	CorePerformanceTests	testFilteredByTextOf1000	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testFilteredByTextOf1000	Clock Monotonic Time, s	0.2198598	3.916	0.212652, 0.236609, 0.214422, 0.218032, 0.217584
+macOS	CorePerformanceTests	testFilteredByTextOf1000	CPU Time, s	0.2169842	2.335	0.212016, 0.226469, 0.213339, 0.216386, 0.216711
+macOS	CorePerformanceTests	testFilteredByTextOf1000	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testFilteredByTextOf1000	CPU Instructions Retired, kI	4285697.22	0.039	4284166.063000, 4288881.075000, 4285108.652000, 4285823.907000, 4284506.395000
+macOS	CorePerformanceTests	testFilteredByTextOf1000	Memory Peak Physical, kB	13370.208	0.000	13370.208000, 13370.208000, 13370.208000, 13370.208000, 13370.208000
+macOS	CorePerformanceTests	testFilteredByTextOf1000	CPU Cycles, kC	867733.685	1.430	855785.285000, 889493.363000, 855898.110000, 866359.471000, 871132.194000
+macOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	Clock Monotonic Time, s	0.000134	0.857	0.000133, 0.000134, 0.000133, 0.000136, 0.000134
+macOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	CPU Time, s	0.0004284	5.387	0.000445, 0.000465, 0.000415, 0.000415, 0.000402
+macOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	CPU Instructions Retired, kI	6164.8532	0.484	6215.072000, 6137.836000, 6161.591000, 6132.600000, 6177.167000
+macOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	Memory Peak Physical, kB	13452.128	0.000	13452.128000, 13452.128000, 13452.128000, 13452.128000, 13452.128000
+macOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	CPU Cycles, kC	1708.2298	5.387	1774.274000, 1854.342000, 1654.031000, 1653.979000, 1604.523000
+macOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	Disk Logical Writes, kB	830.6688	1.958	856.064000, 843.776000, 819.200000, 819.200000, 815.104000
+macOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	Clock Monotonic Time, s	0.011494	6.072	0.012168, 0.012226, 0.011735, 0.010545, 0.010796
+macOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	CPU Time, s	0.011194	4.898	0.011723, 0.011707, 0.011446, 0.010375, 0.010719
+macOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	Memory Physical, kB	3.2768	200.000	0.000000, 0.000000, 16.384000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	CPU Instructions Retired, kI	128454.311	0.209	128162.543000, 128935.475000, 128245.566000, 128482.526000, 128445.444000
+macOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	Memory Peak Physical, kB	13756.8944	0.121	13730.680000, 13747.064000, 13763.448000, 13763.448000, 13779.832000
+macOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	CPU Cycles, kC	44617.7806	4.857	46671.047000, 46555.321000, 45763.362000, 41339.739000, 42759.434000
+macOS	CorePerformanceTests	testHMACSHA256	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testHMACSHA256	Clock Monotonic Time, s	0.0377096	0.517	0.037746, 0.037549, 0.038075, 0.037595, 0.037583
+macOS	CorePerformanceTests	testHMACSHA256	CPU Time, s	0.0378678	0.330	0.037838, 0.037758, 0.038101, 0.037876, 0.037766
+macOS	CorePerformanceTests	testHMACSHA256	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testHMACSHA256	CPU Instructions Retired, kI	874362.124	0.010	874376.101000, 874249.774000, 874509.930000, 874283.360000, 874391.457000
+macOS	CorePerformanceTests	testHMACSHA256	Memory Peak Physical, kB	13861.752	0.000	13861.752000, 13861.752000, 13861.752000, 13861.752000, 13861.752000
+macOS	CorePerformanceTests	testHMACSHA256	CPU Cycles, kC	152028.199	0.234	151676.102000, 151887.114000, 152694.335000, 152063.858000, 151819.585000
+macOS	CorePerformanceTests	testInMemoryCacheGetOrSet	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testInMemoryCacheGetOrSet	Clock Monotonic Time, s	0.0001476	0.974	0.000145, 0.000147, 0.000150, 0.000149, 0.000147
+macOS	CorePerformanceTests	testInMemoryCacheGetOrSet	CPU Time, s	0.0004258	2.101	0.000429, 0.000438, 0.000430, 0.000417, 0.000415
+macOS	CorePerformanceTests	testInMemoryCacheGetOrSet	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testInMemoryCacheGetOrSet	CPU Instructions Retired, kI	6709.5946	0.063	6710.220000, 6704.304000, 6716.478000, 6706.163000, 6710.808000
+macOS	CorePerformanceTests	testInMemoryCacheGetOrSet	Memory Peak Physical, kB	13878.136	0.000	13878.136000, 13878.136000, 13878.136000, 13878.136000, 13878.136000
+macOS	CorePerformanceTests	testInMemoryCacheGetOrSet	CPU Cycles, kC	1696.7844	2.153	1710.291000, 1748.719000, 1714.574000, 1657.472000, 1652.866000
+macOS	CorePerformanceTests	testJSONDecode	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testJSONDecode	Clock Monotonic Time, s	0.1064572	3.056	0.102920, 0.108078, 0.103076, 0.106626, 0.111586
+macOS	CorePerformanceTests	testJSONDecode	CPU Time, s	0.1045236	1.535	0.102858, 0.105863, 0.102928, 0.104086, 0.106883
+macOS	CorePerformanceTests	testJSONDecode	Memory Physical, kB	3.2768	200.000	0.000000, 16.384000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testJSONDecode	CPU Instructions Retired, kI	1842586.18	0.029	1842187.197000, 1842853.296000, 1841946.378000, 1842500.559000, 1843443.457000
+macOS	CorePerformanceTests	testJSONDecode	Memory Peak Physical, kB	14284.4592	0.046	14271.352000, 14287.736000, 14287.736000, 14287.736000, 14287.736000
+macOS	CorePerformanceTests	testJSONDecode	CPU Cycles, kC	418667.386	1.247	413079.532000, 422062.898000, 414150.598000, 416991.788000, 427052.115000
+macOS	CorePerformanceTests	testJSONDecodeArrayOf500	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testJSONDecodeArrayOf500	Clock Monotonic Time, s	0.6370428	31.835	0.502257, 0.560778, 0.568599, 0.514190, 1.039390
+macOS	CorePerformanceTests	testJSONDecodeArrayOf500	CPU Time, s	0.5288224	5.762	0.497576, 0.523328, 0.533887, 0.505240, 0.584081
+macOS	CorePerformanceTests	testJSONDecodeArrayOf500	Memory Physical, kB	-88.4736	-228.191	0.000000, -491.520000, 0.000000, 16.384000, 32.768000
+macOS	CorePerformanceTests	testJSONDecodeArrayOf500	CPU Instructions Retired, kI	9073698.06	0.088	9063301.270000, 9074362.987000, 9082091.606000, 9066005.788000, 9082728.663000
+macOS	CorePerformanceTests	testJSONDecodeArrayOf500	Memory Peak Physical, kB	15644.3312	1.482	15844.216000, 15844.216000, 15352.696000, 15369.080000, 15811.448000
+macOS	CorePerformanceTests	testJSONDecodeArrayOf500	CPU Cycles, kC	2092671.72	4.002	1998965.628000, 2078774.128000, 2124280.705000, 2025291.905000, 2236046.226000
+macOS	CorePerformanceTests	testJSONEncode	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testJSONEncode	Clock Monotonic Time, s	0.0062862	4.944	0.006042, 0.006828, 0.005947, 0.006392, 0.006222
+macOS	CorePerformanceTests	testJSONEncode	CPU Time, s	0.0066018	6.711	0.006435, 0.007441, 0.006269, 0.006633, 0.006231
+macOS	CorePerformanceTests	testJSONEncode	Memory Physical, kB	3.2768	200.000	0.000000, 16.384000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testJSONEncode	CPU Instructions Retired, kI	120259.87	0.124	120129.971000, 120194.127000, 120105.224000, 120389.187000, 120480.839000
+macOS	CorePerformanceTests	testJSONEncode	Memory Peak Physical, kB	15526.3664	0.143	15483.768000, 15532.920000, 15532.920000, 15532.920000, 15549.304000
+macOS	CorePerformanceTests	testJSONEncode	CPU Cycles, kC	25477.4416	3.089	25204.909000, 26930.204000, 24807.860000, 25629.790000, 24814.445000
+macOS	CorePerformanceTests	testKeychainWriteAndRead	Disk Logical Writes, kB	119103.646	0.712	119499.320000, 118204.984000, 117967.416000, 119953.976000, 119892.536000
+macOS	CorePerformanceTests	testKeychainWriteAndRead	Clock Monotonic Time, s	1.0150276	8.213	1.138037, 0.913088, 0.938988, 1.073622, 1.011403
+macOS	CorePerformanceTests	testKeychainWriteAndRead	CPU Time, s	0.4608416	4.455	0.491159, 0.432833, 0.444654, 0.472540, 0.463022
+macOS	CorePerformanceTests	testKeychainWriteAndRead	Memory Physical, kB	-1880.8832	-81.151	-475.136000, -4276.224000, -2326.528000, 0.000000, -2326.528000
+macOS	CorePerformanceTests	testKeychainWriteAndRead	CPU Instructions Retired, kI	7267602.19	1.243	7339285.155000, 7155001.833000, 7169335.669000, 7379898.908000, 7294489.390000
+macOS	CorePerformanceTests	testKeychainWriteAndRead	Memory Peak Physical, kB	21634.3216	14.301	25510.776000, 25035.640000, 20759.416000, 18432.888000, 18432.888000
+macOS	CorePerformanceTests	testKeychainWriteAndRead	CPU Cycles, kC	1822370.59	4.213	1935884.741000, 1716421.249000, 1764352.157000, 1866562.404000, 1828632.381000
+macOS	CorePerformanceTests	testRegexReplacing	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testRegexReplacing	Clock Monotonic Time, s	0.0036796	4.194	0.003818, 0.003472, 0.003849, 0.003522, 0.003737
+macOS	CorePerformanceTests	testRegexReplacing	CPU Time, s	0.0042122	3.579	0.004391, 0.004046, 0.004385, 0.004060, 0.004179
+macOS	CorePerformanceTests	testRegexReplacing	Memory Physical, kB	9.8304	133.333	0.000000, 32.768000, 0.000000, 0.000000, 16.384000
+macOS	CorePerformanceTests	testRegexReplacing	CPU Instructions Retired, kI	88126.5508	0.115	88302.009000, 88055.633000, 88134.461000, 88003.011000, 88137.640000
+macOS	CorePerformanceTests	testRegexReplacing	Memory Peak Physical, kB	16964.8816	0.131	16925.560000, 16958.328000, 16974.712000, 16974.712000, 16991.096000
+macOS	CorePerformanceTests	testRegexReplacing	CPU Cycles, kC	16744.6068	2.275	17290.443000, 16245.802000, 17052.444000, 16464.380000, 16669.965000
+macOS	CorePerformanceTests	testSendToTenSubscribers	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testSendToTenSubscribers	Clock Monotonic Time, s	0.0065122	2.765	0.006545, 0.006635, 0.006179, 0.006700, 0.006502
+macOS	CorePerformanceTests	testSendToTenSubscribers	CPU Time, s	0.006732	1.834	0.006709, 0.006864, 0.006530, 0.006859, 0.006698
+macOS	CorePerformanceTests	testSendToTenSubscribers	Memory Physical, kB	5128.192	0.350	5111.808000, 5128.192000, 5111.808000, 5160.960000, 5128.192000
+macOS	CorePerformanceTests	testSendToTenSubscribers	CPU Instructions Retired, kI	152486.024	0.180	152706.304000, 152853.407000, 152075.049000, 152456.577000, 152338.781000
+macOS	CorePerformanceTests	testSendToTenSubscribers	Memory Peak Physical, kB	37333.4704	19.463	27067.256000, 32195.448000, 37307.256000, 42484.600000, 47612.792000
+macOS	CorePerformanceTests	testSendToTenSubscribers	CPU Cycles, kC	26654.5318	1.187	26726.239000, 27080.596000, 26141.706000, 26821.057000, 26503.061000
+macOS	CorePerformanceTests	testSHA256OfOneKilobyte	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testSHA256OfOneKilobyte	Clock Monotonic Time, s	0.001189	1.782	0.001176, 0.001186, 0.001180, 0.001230, 0.001173
+macOS	CorePerformanceTests	testSHA256OfOneKilobyte	CPU Time, s	0.001496	3.436	0.001528, 0.001456, 0.001464, 0.001582, 0.001450
+macOS	CorePerformanceTests	testSHA256OfOneKilobyte	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testSHA256OfOneKilobyte	CPU Instructions Retired, kI	14790.3426	0.298	14867.021000, 14782.350000, 14732.937000, 14798.761000, 14770.644000
+macOS	CorePerformanceTests	testSHA256OfOneKilobyte	Memory Peak Physical, kB	40141.688	0.000	40141.688000, 40141.688000, 40141.688000, 40141.688000, 40141.688000
+macOS	CorePerformanceTests	testSHA256OfOneKilobyte	CPU Cycles, kC	5897.4294	1.011	5925.236000, 5841.045000, 5853.761000, 6001.745000, 5865.360000
+macOS	CorePerformanceTests	testStateStorageSetAndRead	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testStateStorageSetAndRead	Clock Monotonic Time, s	0.005743	3.873	0.005518, 0.005437, 0.005999, 0.005881, 0.005880
+macOS	CorePerformanceTests	testStateStorageSetAndRead	CPU Time, s	0.0059376	2.981	0.005754, 0.005722, 0.006189, 0.005978, 0.006045
+macOS	CorePerformanceTests	testStateStorageSetAndRead	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testStateStorageSetAndRead	CPU Instructions Retired, kI	109823.579	0.092	109870.241000, 109766.058000, 109999.313000, 109757.652000, 109724.631000
+macOS	CorePerformanceTests	testStateStorageSetAndRead	Memory Peak Physical, kB	40158.072	0.000	40158.072000, 40158.072000, 40158.072000, 40158.072000, 40158.072000
+macOS	CorePerformanceTests	testStateStorageSetAndRead	CPU Cycles, kC	23811.2428	1.834	23278.036000, 23429.947000, 24519.850000, 23918.564000, 23909.817000
+macOS	CorePerformanceTests	testThreadSafeMutate	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testThreadSafeMutate	Clock Monotonic Time, s	1.46e-05	5.756	0.000015, 0.000015, 0.000013, 0.000015, 0.000015
+macOS	CorePerformanceTests	testThreadSafeMutate	CPU Time, s	0.0003208	14.505	0.000413, 0.000298, 0.000301, 0.000305, 0.000287
+macOS	CorePerformanceTests	testThreadSafeMutate	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testThreadSafeMutate	CPU Instructions Retired, kI	3431.085	1.021	3496.802000, 3393.590000, 3431.075000, 3419.405000, 3414.553000
+macOS	CorePerformanceTests	testThreadSafeMutate	Memory Peak Physical, kB	40174.456	0.000	40174.456000, 40174.456000, 40174.456000, 40174.456000, 40174.456000
+macOS	CorePerformanceTests	testThreadSafeMutate	CPU Cycles, kC	1171.539	5.618	1300.595000, 1128.739000, 1151.787000, 1155.155000, 1121.419000
+macOS	CorePerformanceTests	testThreadSafeRead	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testThreadSafeRead	Clock Monotonic Time, s	1.24e-05	9.959	0.000013, 0.000015, 0.000012, 0.000011, 0.000011
+macOS	CorePerformanceTests	testThreadSafeRead	CPU Time, s	0.0003152	13.023	0.000396, 0.000281, 0.000301, 0.000298, 0.000300
+macOS	CorePerformanceTests	testThreadSafeRead	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testThreadSafeRead	CPU Instructions Retired, kI	3388.2544	2.296	3534.606000, 3344.422000, 3372.773000, 3306.678000, 3382.793000
+macOS	CorePerformanceTests	testThreadSafeRead	Memory Peak Physical, kB	40174.456	0.000	40174.456000, 40174.456000, 40174.456000, 40174.456000, 40174.456000
+macOS	CorePerformanceTests	testThreadSafeRead	CPU Cycles, kC	1178.6678	6.362	1316.085000, 1097.313000, 1136.009000, 1153.175000, 1190.757000
+macOS	CorePerformanceTests	testUniqueOf1000	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testUniqueOf1000	Clock Monotonic Time, s	0.020733	3.442	0.021095, 0.020251, 0.021902, 0.019843, 0.020574
+macOS	CorePerformanceTests	testUniqueOf1000	CPU Time, s	0.0203584	1.774	0.020610, 0.020306, 0.020747, 0.019702, 0.020427
+macOS	CorePerformanceTests	testUniqueOf1000	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	CorePerformanceTests	testUniqueOf1000	CPU Instructions Retired, kI	527606.263	0.056	527837.078000, 527523.116000, 528038.964000, 527221.935000, 527410.222000
+macOS	CorePerformanceTests	testUniqueOf1000	Memory Peak Physical, kB	40174.456	0.000	40174.456000, 40174.456000, 40174.456000, 40174.456000, 40174.456000
+macOS	CorePerformanceTests	testUniqueOf1000	CPU Cycles, kC	81569.2412	1.515	82283.206000, 81265.037000, 83008.658000, 79368.700000, 81920.605000
+macOS	HotPathPerformanceTests	testAbsentKeyReads	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testAbsentKeyReads	Clock Monotonic Time, s	0.00589	4.481	0.006278, 0.005863, 0.006088, 0.005586, 0.005635
+macOS	HotPathPerformanceTests	testAbsentKeyReads	CPU Time, s	0.006071	3.309	0.006411, 0.005954, 0.006189, 0.005900, 0.005901
+macOS	HotPathPerformanceTests	testAbsentKeyReads	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testAbsentKeyReads	CPU Instructions Retired, kI	105650.189	0.160	105916.529000, 105617.175000, 105623.594000, 105389.685000, 105703.963000
+macOS	HotPathPerformanceTests	testAbsentKeyReads	Memory Peak Physical, kB	40174.456	0.000	40174.456000, 40174.456000, 40174.456000, 40174.456000, 40174.456000
+macOS	HotPathPerformanceTests	testAbsentKeyReads	CPU Cycles, kC	24156.9902	2.746	25355.374000, 23763.996000, 24355.362000, 23473.713000, 23836.506000
+macOS	HotPathPerformanceTests	testAppGroupURL	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testAppGroupURL	Clock Monotonic Time, s	9.02e-05	1.281	0.000089, 0.000092, 0.000089, 0.000090, 0.000091
+macOS	HotPathPerformanceTests	testAppGroupURL	CPU Time, s	0.0003872	8.888	0.000370, 0.000371, 0.000456, 0.000368, 0.000371
+macOS	HotPathPerformanceTests	testAppGroupURL	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testAppGroupURL	CPU Instructions Retired, kI	5340.542	1.228	5237.467000, 5343.826000, 5422.915000, 5304.899000, 5393.603000
+macOS	HotPathPerformanceTests	testAppGroupURL	Memory Peak Physical, kB	40174.456	0.000	40174.456000, 40174.456000, 40174.456000, 40174.456000, 40174.456000
+macOS	HotPathPerformanceTests	testAppGroupURL	CPU Cycles, kC	1507.4274	4.268	1474.506000, 1477.955000, 1635.821000, 1468.026000, 1480.829000
+macOS	HotPathPerformanceTests	testColorHex	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testColorHex	Clock Monotonic Time, s	0.001194	6.608	0.001158, 0.001127, 0.001172, 0.001349, 0.001164
+macOS	HotPathPerformanceTests	testColorHex	CPU Time, s	0.0014784	4.595	0.001444, 0.001420, 0.001469, 0.001611, 0.001448
+macOS	HotPathPerformanceTests	testColorHex	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testColorHex	CPU Instructions Retired, kI	29662.9456	0.264	29602.179000, 29620.646000, 29661.549000, 29814.584000, 29615.770000
+macOS	HotPathPerformanceTests	testColorHex	Memory Peak Physical, kB	40223.608	0.000	40223.608000, 40223.608000, 40223.608000, 40223.608000, 40223.608000
+macOS	HotPathPerformanceTests	testColorHex	CPU Cycles, kC	5886.341	2.734	5847.576000, 5720.757000, 5866.604000, 6192.075000, 5804.693000
+macOS	HotPathPerformanceTests	testConvertedDigitsToLocale	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testConvertedDigitsToLocale	Clock Monotonic Time, s	0.064314	0.582	0.063889, 0.064215, 0.064995, 0.064365, 0.064106
+macOS	HotPathPerformanceTests	testConvertedDigitsToLocale	CPU Time, s	0.0637106	0.721	0.063404, 0.063345, 0.064599, 0.063521, 0.063684
+macOS	HotPathPerformanceTests	testConvertedDigitsToLocale	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testConvertedDigitsToLocale	CPU Instructions Retired, kI	877474.554	0.014	877282.606000, 877538.269000, 877643.719000, 877494.943000, 877413.235000
+macOS	HotPathPerformanceTests	testConvertedDigitsToLocale	Memory Peak Physical, kB	40567.672	0.000	40567.672000, 40567.672000, 40567.672000, 40567.672000, 40567.672000
+macOS	HotPathPerformanceTests	testConvertedDigitsToLocale	CPU Cycles, kC	252839.865	0.547	251450.514000, 251795.425000, 255267.995000, 252272.265000, 253413.126000
+macOS	HotPathPerformanceTests	testDateToStringWithFormat	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testDateToStringWithFormat	Clock Monotonic Time, s	0.0024264	4.573	0.002342, 0.002331, 0.002629, 0.002371, 0.002459
+macOS	HotPathPerformanceTests	testDateToStringWithFormat	CPU Time, s	0.0027652	3.127	0.002787, 0.002648, 0.002904, 0.002706, 0.002781
+macOS	HotPathPerformanceTests	testDateToStringWithFormat	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testDateToStringWithFormat	CPU Instructions Retired, kI	56346.827	0.128	56383.147000, 56240.980000, 56458.851000, 56315.395000, 56335.762000
+macOS	HotPathPerformanceTests	testDateToStringWithFormat	Memory Peak Physical, kB	40665.976	0.000	40665.976000, 40665.976000, 40665.976000, 40665.976000, 40665.976000
+macOS	HotPathPerformanceTests	testDateToStringWithFormat	CPU Cycles, kC	11019.4662	2.652	11035.584000, 10618.701000, 11516.142000, 10882.291000, 11044.613000
+macOS	HotPathPerformanceTests	testFileStorageWrites	Disk Logical Writes, kB	439.0912	16.492	569.344000, 425.984000, 393.216000, 356.352000, 450.560000
+macOS	HotPathPerformanceTests	testFileStorageWrites	Clock Monotonic Time, s	0.0064984	2.705	0.006522, 0.006294, 0.006318, 0.006594, 0.006764
+macOS	HotPathPerformanceTests	testFileStorageWrites	CPU Time, s	0.0120788	4.397	0.012883, 0.012177, 0.011614, 0.011390, 0.012330
+macOS	HotPathPerformanceTests	testFileStorageWrites	Memory Physical, kB	62.2592	38.676	16.384000, 65.536000, 65.536000, 81.920000, 81.920000
+macOS	HotPathPerformanceTests	testFileStorageWrites	CPU Instructions Retired, kI	191193.279	5.083	206789.548000, 188596.044000, 186928.280000, 177716.112000, 195936.410000
+macOS	HotPathPerformanceTests	testFileStorageWrites	Memory Peak Physical, kB	40852.7536	0.267	40698.744000, 40780.664000, 40846.200000, 40928.120000, 41010.040000
+macOS	HotPathPerformanceTests	testFileStorageWrites	CPU Cycles, kC	48058.2456	4.088	51050.676000, 48448.249000, 46318.936000, 45531.092000, 48942.275000
+macOS	HotPathPerformanceTests	testLocalized	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testLocalized	Clock Monotonic Time, s	0.0017712	8.123	0.001716, 0.002054, 0.001740, 0.001665, 0.001681
+macOS	HotPathPerformanceTests	testLocalized	CPU Time, s	0.0020756	5.846	0.002046, 0.002292, 0.002111, 0.001971, 0.001958
+macOS	HotPathPerformanceTests	testLocalized	Memory Physical, kB	6.5536	200.000	0.000000, 32.768000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testLocalized	CPU Instructions Retired, kI	37620.197	0.266	37602.069000, 37806.617000, 37623.869000, 37531.017000, 37537.413000
+macOS	HotPathPerformanceTests	testLocalized	Memory Peak Physical, kB	48720.3984	0.027	48694.184000, 48726.952000, 48726.952000, 48726.952000, 48726.952000
+macOS	HotPathPerformanceTests	testLocalized	CPU Cycles, kC	8199.6026	4.406	8180.617000, 8877.091000, 8157.576000, 7918.893000, 7863.836000
+macOS	HotPathPerformanceTests	testNumberToString	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testNumberToString	Clock Monotonic Time, s	0.0013434	6.724	0.001259, 0.001253, 0.001493, 0.001393, 0.001319
+macOS	HotPathPerformanceTests	testNumberToString	CPU Time, s	0.0017116	10.814	0.001563, 0.001540, 0.002057, 0.001709, 0.001689
+macOS	HotPathPerformanceTests	testNumberToString	Memory Physical, kB	-3.2768	-200.000	-16.384000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testNumberToString	CPU Instructions Retired, kI	29991.7454	0.385	29912.242000, 29922.897000, 30220.676000, 29951.213000, 29951.699000
+macOS	HotPathPerformanceTests	testNumberToString	Memory Peak Physical, kB	48812.1488	0.013	48825.256000, 48808.872000, 48808.872000, 48808.872000, 48808.872000
+macOS	HotPathPerformanceTests	testNumberToString	CPU Cycles, kC	6654.0414	6.941	6294.122000, 6129.030000, 7458.325000, 6619.162000, 6769.568000
+macOS	HotPathPerformanceTests	testPreferredLocale	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testPreferredLocale	Clock Monotonic Time, s	0.0016554	11.169	0.001560, 0.001587, 0.001493, 0.002016, 0.001621
+macOS	HotPathPerformanceTests	testPreferredLocale	CPU Time, s	0.00197	7.880	0.001857, 0.001869, 0.001892, 0.002272, 0.001960
+macOS	HotPathPerformanceTests	testPreferredLocale	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testPreferredLocale	CPU Instructions Retired, kI	36085.3078	0.292	36021.650000, 36038.217000, 36048.283000, 36294.892000, 36023.497000
+macOS	HotPathPerformanceTests	testPreferredLocale	Memory Peak Physical, kB	48808.872	0.000	48808.872000, 48808.872000, 48808.872000, 48808.872000, 48808.872000
+macOS	HotPathPerformanceTests	testPreferredLocale	CPU Cycles, kC	7680.6856	4.986	7385.777000, 7473.375000, 7489.041000, 8431.254000, 7623.981000
+macOS	HotPathPerformanceTests	testPresentKeyColdReads	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testPresentKeyColdReads	Clock Monotonic Time, s	0.0333846	2.462	0.033304, 0.032530, 0.033433, 0.032768, 0.034888
+macOS	HotPathPerformanceTests	testPresentKeyColdReads	CPU Time, s	0.033309	2.116	0.033253, 0.032581, 0.033375, 0.032749, 0.034587
+macOS	HotPathPerformanceTests	testPresentKeyColdReads	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testPresentKeyColdReads	CPU Instructions Retired, kI	478819.982	0.123	478736.027000, 478381.544000, 478892.322000, 478202.498000, 479887.517000
+macOS	HotPathPerformanceTests	testPresentKeyColdReads	Memory Peak Physical, kB	50512.808	0.000	50512.808000, 50512.808000, 50512.808000, 50512.808000, 50512.808000
+macOS	HotPathPerformanceTests	testPresentKeyColdReads	CPU Cycles, kC	133182.378	1.463	132896.193000, 130517.277000, 133984.161000, 132152.941000, 136361.317000
+macOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	Clock Monotonic Time, s	9.2e-06	3.395	0.000009, 0.000010, 0.000009, 0.000009, 0.000009
+macOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	CPU Time, s	0.0003286	16.218	0.000300, 0.000300, 0.000285, 0.000432, 0.000326
+macOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	CPU Instructions Retired, kI	3444.5338	0.947	3449.568000, 3500.670000, 3448.476000, 3410.432000, 3413.523000
+macOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	Memory Peak Physical, kB	50512.808	0.000	50512.808000, 50512.808000, 50512.808000, 50512.808000, 50512.808000
+macOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	CPU Cycles, kC	1261.95	9.582	1198.715000, 1194.592000, 1137.790000, 1480.741000, 1297.912000
+macOS	HotPathPerformanceTests	testTimeUnits	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testTimeUnits	Clock Monotonic Time, s	0.0463308	2.180	0.045772, 0.045334, 0.045463, 0.047311, 0.047774
+macOS	HotPathPerformanceTests	testTimeUnits	CPU Time, s	0.0461746	1.536	0.045892, 0.045398, 0.045542, 0.047001, 0.047040
+macOS	HotPathPerformanceTests	testTimeUnits	Memory Physical, kB	3.2768	200.000	16.384000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testTimeUnits	CPU Instructions Retired, kI	809551.341	0.056	809297.407000, 809100.848000, 809172.929000, 809947.301000, 810238.218000
+macOS	HotPathPerformanceTests	testTimeUnits	Memory Peak Physical, kB	50660.264	0.000	50660.264000, 50660.264000, 50660.264000, 50660.264000, 50660.264000
+macOS	HotPathPerformanceTests	testTimeUnits	CPU Cycles, kC	186938.12	1.078	185363.866000, 185004.112000, 185527.440000, 189427.950000, 189367.232000
+macOS	HotPathPerformanceTests	testUTCDateFormatting	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testUTCDateFormatting	Clock Monotonic Time, s	0.002003	10.340	0.001890, 0.002166, 0.001827, 0.001805, 0.002327
+macOS	HotPathPerformanceTests	testUTCDateFormatting	CPU Time, s	0.002279	5.260	0.002223, 0.002382, 0.002194, 0.002139, 0.002457
+macOS	HotPathPerformanceTests	testUTCDateFormatting	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testUTCDateFormatting	CPU Instructions Retired, kI	46483.5892	0.281	46397.136000, 46411.391000, 46401.452000, 46468.243000, 46739.724000
+macOS	HotPathPerformanceTests	testUTCDateFormatting	Memory Peak Physical, kB	50660.264	0.000	50660.264000, 50660.264000, 50660.264000, 50660.264000, 50660.264000
+macOS	HotPathPerformanceTests	testUTCDateFormatting	CPU Cycles, kC	9037.0824	4.024	8833.340000, 9355.120000, 8819.735000, 8605.832000, 9571.385000
+macOS	HotPathPerformanceTests	testUTCDateParsing	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testUTCDateParsing	Clock Monotonic Time, s	0.0999688	1.765	0.100514, 0.101745, 0.099136, 0.096953, 0.101496
+macOS	HotPathPerformanceTests	testUTCDateParsing	CPU Time, s	0.0989066	1.396	0.099194, 0.100285, 0.098217, 0.096603, 0.100234
+macOS	HotPathPerformanceTests	testUTCDateParsing	Memory Physical, kB	-52.4288	-200.000	0.000000, 0.000000, -262.144000, 0.000000, 0.000000
+macOS	HotPathPerformanceTests	testUTCDateParsing	CPU Instructions Retired, kI	1777165.6	0.040	1777596.971000, 1777778.946000, 1776577.553000, 1776075.981000, 1777798.539000
+macOS	HotPathPerformanceTests	testUTCDateParsing	Memory Peak Physical, kB	50588.1744	0.254	50693.032000, 50693.032000, 50693.032000, 50430.888000, 50430.888000
+macOS	HotPathPerformanceTests	testUTCDateParsing	CPU Cycles, kC	398761.003	0.997	398638.986000, 402381.506000, 396546.310000, 392635.698000, 403602.516000
+iOS	CorePerformanceTests	testAnyCodableKeyPathMap	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testAnyCodableKeyPathMap	Clock Monotonic Time, s	0.0172584	13.717	0.015772, 0.015193, 0.018785, 0.015342, 0.021200
+iOS	CorePerformanceTests	testAnyCodableKeyPathMap	CPU Time, s	0.021322	9.047	0.018539, 0.022253, 0.021639, 0.020002, 0.024177
+iOS	CorePerformanceTests	testAnyCodableKeyPathMap	Memory Physical, kB	13.1072	122.474	16.384000, -16.384000, 16.384000, 32.768000, 16.384000
+iOS	CorePerformanceTests	testAnyCodableKeyPathMap	CPU Instructions Retired, kI	260317.617	1.115	265116.712000, 262181.342000, 257393.636000, 258228.916000, 258667.480000
+iOS	CorePerformanceTests	testAnyCodableKeyPathMap	Memory Peak Physical, kB	20747.8208	0.092	20760.928000, 20744.544000, 20711.776000, 20760.928000, 20760.928000
+iOS	CorePerformanceTests	testAnyCodableKeyPathMap	CPU Cycles, kC	80735.0652	6.109	73931.932000, 88656.643000, 78268.797000, 79732.281000, 83085.673000
+iOS	CorePerformanceTests	testBase64Encode	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testBase64Encode	Clock Monotonic Time, s	0.0001318	7.268	0.000148, 0.000131, 0.000135, 0.000121, 0.000124
+iOS	CorePerformanceTests	testBase64Encode	CPU Time, s	0.000541	15.442	0.000657, 0.000565, 0.000450, 0.000441, 0.000592
+iOS	CorePerformanceTests	testBase64Encode	Memory Physical, kB	3.2768	200.000	0.000000, 0.000000, 0.000000, 16.384000, 0.000000
+iOS	CorePerformanceTests	testBase64Encode	CPU Instructions Retired, kI	6573.7406	4.933	6475.677000, 7214.272000, 6379.404000, 6461.330000, 6338.020000
+iOS	CorePerformanceTests	testBase64Encode	Memory Peak Physical, kB	21816.0816	0.037	21809.528000, 21809.528000, 21809.528000, 21825.912000, 21825.912000
+iOS	CorePerformanceTests	testBase64Encode	CPU Cycles, kC	2156.5614	15.442	2618.737000, 2252.401000, 1793.655000, 1758.222000, 2359.792000
+iOS	CorePerformanceTests	testContainsCharacters	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testContainsCharacters	Clock Monotonic Time, s	0.000895	1.135	0.000897, 0.000901, 0.000880, 0.000909, 0.000888
+iOS	CorePerformanceTests	testContainsCharacters	CPU Time, s	0.0012248	4.910	0.001223, 0.001196, 0.001169, 0.001196, 0.001340
+iOS	CorePerformanceTests	testContainsCharacters	Memory Physical, kB	6.5536	200.000	0.000000, 0.000000, 0.000000, 32.768000, 0.000000
+iOS	CorePerformanceTests	testContainsCharacters	CPU Instructions Retired, kI	23783.7854	0.204	23781.030000, 23775.243000, 23784.380000, 23712.981000, 23865.293000
+iOS	CorePerformanceTests	testContainsCharacters	Memory Peak Physical, kB	21822.6352	0.074	21809.528000, 21809.528000, 21809.528000, 21842.296000, 21842.296000
+iOS	CorePerformanceTests	testContainsCharacters	CPU Cycles, kC	4885.1738	4.914	4877.221000, 4770.058000, 4662.141000, 4770.859000, 5345.590000
+iOS	CorePerformanceTests	testEaseCalculate	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testEaseCalculate	Clock Monotonic Time, s	1.7e-05	6.977	0.000016, 0.000017, 0.000017, 0.000016, 0.000019
+iOS	CorePerformanceTests	testEaseCalculate	CPU Time, s	0.0003812	29.621	0.000413, 0.000587, 0.000307, 0.000272, 0.000327
+iOS	CorePerformanceTests	testEaseCalculate	Memory Physical, kB	3.2768	200.000	0.000000, 0.000000, 0.000000, 0.000000, 16.384000
+iOS	CorePerformanceTests	testEaseCalculate	CPU Instructions Retired, kI	3995.72	14.835	3651.001000, 5144.502000, 3559.930000, 3637.391000, 3985.776000
+iOS	CorePerformanceTests	testEaseCalculate	Memory Peak Physical, kB	21852.1264	0.060	21842.296000, 21842.296000, 21842.296000, 21858.680000, 21875.064000
+iOS	CorePerformanceTests	testEaseCalculate	CPU Cycles, kC	1491.1988	26.676	1645.357000, 2196.106000, 1225.825000, 1085.062000, 1303.644000
+iOS	CorePerformanceTests	testFilteredByTextOf1000	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testFilteredByTextOf1000	Clock Monotonic Time, s	0.2634796	12.528	0.243720, 0.303444, 0.231836, 0.234605, 0.303793
+iOS	CorePerformanceTests	testFilteredByTextOf1000	CPU Time, s	0.2524568	9.560	0.243135, 0.247564, 0.233167, 0.238646, 0.299772
+iOS	CorePerformanceTests	testFilteredByTextOf1000	Memory Physical, kB	350.6176	137.976	524.288000, 0.000000, 0.000000, 0.000000, 1228.800000
+iOS	CorePerformanceTests	testFilteredByTextOf1000	CPU Instructions Retired, kI	4351155.56	0.377	4347119.435000, 4382374.823000, 4333790.173000, 4348065.302000, 4344428.081000
+iOS	CorePerformanceTests	testFilteredByTextOf1000	Memory Peak Physical, kB	24365.432	2.085	24119.672000, 24103.288000, 24103.288000, 24119.672000, 25381.240000
+iOS	CorePerformanceTests	testFilteredByTextOf1000	CPU Cycles, kC	971468.053	5.483	944845.590000, 972124.937000, 924973.358000, 941780.203000, 1073616.179000
+iOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	Clock Monotonic Time, s	0.0001966	24.922	0.000292, 0.000195, 0.000167, 0.000166, 0.000163
+iOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	CPU Time, s	0.0008158	31.002	0.001168, 0.000660, 0.000772, 0.001020, 0.000459
+iOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	Memory Physical, kB	6.5536	122.474	0.000000, 0.000000, 16.384000, 0.000000, 16.384000
+iOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	CPU Instructions Retired, kI	6458.1072	14.738	8162.424000, 6521.639000, 5716.035000, 6466.643000, 5423.795000
+iOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	Memory Peak Physical, kB	25250.168	0.041	25233.784000, 25250.168000, 25250.168000, 25250.168000, 25266.552000
+iOS	CorePerformanceTests	testFlushPendingWritesWhenIdle	CPU Cycles, kC	2864.6246	26.789	4019.092000, 2539.227000, 2542.838000, 3408.989000, 1812.977000
+iOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	Disk Logical Writes, kB	831.488	0.985	815.104000, 835.584000, 835.584000, 835.584000, 835.584000
+iOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	Clock Monotonic Time, s	0.016405	6.771	0.014558, 0.017576, 0.015727, 0.017020, 0.017144
+iOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	CPU Time, s	0.0171056	12.194	0.014245, 0.017133, 0.015390, 0.019005, 0.019755
+iOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	CPU Instructions Retired, kI	148846.922	7.524	134974.931000, 142755.480000, 144752.376000, 154114.927000, 167636.897000
+iOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	Memory Peak Physical, kB	25276.3824	0.032	25266.552000, 25266.552000, 25282.936000, 25282.936000, 25282.936000
+iOS	CorePerformanceTests	testFlushPendingWritesWith50TrackedFileKeys	CPU Cycles, kC	66819.1076	11.183	56229.415000, 66852.487000, 61372.501000, 72662.842000, 76978.293000
+iOS	CorePerformanceTests	testHMACSHA256	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testHMACSHA256	Clock Monotonic Time, s	0.0500072	30.573	0.076035, 0.058523, 0.036154, 0.042190, 0.037134
+iOS	CorePerformanceTests	testHMACSHA256	CPU Time, s	0.0512772	27.961	0.075745, 0.059018, 0.036594, 0.042768, 0.042261
+iOS	CorePerformanceTests	testHMACSHA256	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testHMACSHA256	CPU Instructions Retired, kI	766116.971	1.420	760977.168000, 761258.220000, 760050.960000, 760445.406000, 787853.099000
+iOS	CorePerformanceTests	testHMACSHA256	Memory Peak Physical, kB	25299.32	0.000	25299.320000, 25299.320000, 25299.320000, 25299.320000, 25299.320000
+iOS	CorePerformanceTests	testHMACSHA256	CPU Cycles, kC	170862.594	14.388	212992.940000, 182089.591000, 143382.550000, 153988.780000, 161859.110000
+iOS	CorePerformanceTests	testInMemoryCacheGetOrSet	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testInMemoryCacheGetOrSet	Clock Monotonic Time, s	0.0001468	4.456	0.000159, 0.000148, 0.000145, 0.000142, 0.000140
+iOS	CorePerformanceTests	testInMemoryCacheGetOrSet	CPU Time, s	0.0006148	9.297	0.000704, 0.000585, 0.000638, 0.000532, 0.000615
+iOS	CorePerformanceTests	testInMemoryCacheGetOrSet	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testInMemoryCacheGetOrSet	CPU Instructions Retired, kI	6494.9008	8.649	7483.454000, 6306.323000, 5744.817000, 6493.786000, 6446.124000
+iOS	CorePerformanceTests	testInMemoryCacheGetOrSet	Memory Peak Physical, kB	25332.088	0.000	25332.088000, 25332.088000, 25332.088000, 25332.088000, 25332.088000
+iOS	CorePerformanceTests	testInMemoryCacheGetOrSet	CPU Cycles, kC	2322.4258	11.009	2770.655000, 2332.064000, 2116.670000, 2035.580000, 2357.160000
+iOS	CorePerformanceTests	testJSONDecode	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testJSONDecode	Clock Monotonic Time, s	0.136866	9.270	0.143004, 0.150712, 0.146933, 0.125201, 0.118480
+iOS	CorePerformanceTests	testJSONDecode	CPU Time, s	0.1348916	7.781	0.138736, 0.145327, 0.145144, 0.125874, 0.119377
+iOS	CorePerformanceTests	testJSONDecode	Memory Physical, kB	19.6608	97.183	0.000000, 49.152000, 32.768000, 16.384000, 0.000000
+iOS	CorePerformanceTests	testJSONDecode	CPU Instructions Retired, kI	1719834.2	0.382	1714239.253000, 1715638.180000, 1731114.339000, 1723508.352000, 1714670.876000
+iOS	CorePerformanceTests	testJSONDecode	Memory Peak Physical, kB	25495.928	0.147	25430.392000, 25479.544000, 25528.696000, 25512.312000, 25528.696000
+iOS	CorePerformanceTests	testJSONDecode	CPU Cycles, kC	525619.004	6.316	536097.831000, 551138.392000, 565317.501000, 500182.103000, 475359.193000
+iOS	CorePerformanceTests	testJSONDecodeArrayOf500	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testJSONDecodeArrayOf500	Clock Monotonic Time, s	0.6052918	3.919	0.605557, 0.594601, 0.590218, 0.585274, 0.650809
+iOS	CorePerformanceTests	testJSONDecodeArrayOf500	CPU Time, s	0.5946624	2.259	0.598519, 0.590081, 0.583860, 0.581942, 0.618910
+iOS	CorePerformanceTests	testJSONDecodeArrayOf500	Memory Physical, kB	-22.9376	-351.672	-180.224000, 0.000000, 0.000000, 16.384000, 49.152000
+iOS	CorePerformanceTests	testJSONDecodeArrayOf500	CPU Instructions Retired, kI	8396738.86	0.055	8398395.212000, 8394607.713000, 8393191.569000, 8392410.594000, 8405089.234000
+iOS	CorePerformanceTests	testJSONDecodeArrayOf500	Memory Peak Physical, kB	25505.7584	0.283	25643.384000, 25463.160000, 25446.776000, 25463.160000, 25512.312000
+iOS	CorePerformanceTests	testJSONDecodeArrayOf500	CPU Cycles, kC	2350766.35	2.377	2363404.883000, 2331136.965000, 2312870.507000, 2293760.370000, 2452659.043000
+iOS	CorePerformanceTests	testJSONEncode	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testJSONEncode	Clock Monotonic Time, s	0.0057282	0.713	0.005717, 0.005690, 0.005699, 0.005730, 0.005805
+iOS	CorePerformanceTests	testJSONEncode	CPU Time, s	0.0062834	1.581	0.006283, 0.006191, 0.006189, 0.006292, 0.006462
+iOS	CorePerformanceTests	testJSONEncode	Memory Physical, kB	3.2768	489.898	-16.384000, 0.000000, 32.768000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testJSONEncode	CPU Instructions Retired, kI	104658.809	0.233	104905.609000, 104567.041000, 104275.783000, 104607.843000, 104937.771000
+iOS	CorePerformanceTests	testJSONEncode	Memory Peak Physical, kB	25436.9456	0.052	25430.392000, 25414.008000, 25446.776000, 25446.776000, 25446.776000
+iOS	CorePerformanceTests	testJSONEncode	CPU Cycles, kC	25023.9518	1.347	25054.644000, 24690.207000, 24681.195000, 25092.375000, 25601.338000
+iOS	CorePerformanceTests	testKeychainWriteAndRead	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testKeychainWriteAndRead	Clock Monotonic Time, s	0.2310004	13.334	0.247307, 0.223172, 0.280127, 0.215314, 0.189082
+iOS	CorePerformanceTests	testKeychainWriteAndRead	CPU Time, s	0.0191068	7.970	0.021260, 0.020018, 0.018811, 0.018774, 0.016671
+iOS	CorePerformanceTests	testKeychainWriteAndRead	Memory Physical, kB	13.1072	145.774	0.000000, 49.152000, 0.000000, 16.384000, 0.000000
+iOS	CorePerformanceTests	testKeychainWriteAndRead	CPU Instructions Retired, kI	74425.1528	0.804	74788.053000, 75166.218000, 73610.281000, 73831.032000, 74730.180000
+iOS	CorePerformanceTests	testKeychainWriteAndRead	Memory Peak Physical, kB	25450.0528	0.085	25414.008000, 25446.776000, 25446.776000, 25479.544000, 25463.160000
+iOS	CorePerformanceTests	testKeychainWriteAndRead	CPU Cycles, kC	75073.2532	7.550	82852.997000, 78857.244000, 73584.324000, 74086.919000, 65984.782000
+iOS	CorePerformanceTests	testRegexReplacing	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testRegexReplacing	Clock Monotonic Time, s	0.0033688	2.068	0.003291, 0.003335, 0.003407, 0.003486, 0.003325
+iOS	CorePerformanceTests	testRegexReplacing	CPU Time, s	0.0043128	5.719	0.004077, 0.004182, 0.004773, 0.004179, 0.004353
+iOS	CorePerformanceTests	testRegexReplacing	CPU Instructions Retired, kI	81358.274	0.800	81278.261000, 81367.986000, 81618.742000, 80256.622000, 82269.759000
+iOS	CorePerformanceTests	testRegexReplacing	Memory Peak Physical, kB	25548.3568	0.048	25561.464000, 25528.696000, 25545.080000, 25545.080000, 25561.464000
+iOS	CorePerformanceTests	testRegexReplacing	CPU Cycles, kC	17178.2856	5.513	16259.562000, 16674.720000, 18935.901000, 16663.282000, 17357.963000
+iOS	CorePerformanceTests	testSendToTenSubscribers	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testSendToTenSubscribers	Clock Monotonic Time, s	0.0068154	8.351	0.006396, 0.007075, 0.006484, 0.007818, 0.006304
+iOS	CorePerformanceTests	testSendToTenSubscribers	CPU Time, s	0.0074934	7.408	0.006998, 0.007847, 0.007286, 0.008398, 0.006938
+iOS	CorePerformanceTests	testSendToTenSubscribers	Memory Physical, kB	5144.576	0.201	5144.576000, 5144.576000, 5160.960000, 5128.192000, 5144.576000
+iOS	CorePerformanceTests	testSendToTenSubscribers	CPU Instructions Retired, kI	131575.918	0.433	131148.929000, 132161.995000, 132305.890000, 130842.944000, 131419.834000
+iOS	CorePerformanceTests	testSendToTenSubscribers	Memory Peak Physical, kB	45749.8288	15.903	35457.400000, 40601.976000, 45762.936000, 50891.128000, 56035.704000
+iOS	CorePerformanceTests	testSendToTenSubscribers	CPU Cycles, kC	28662.8	2.705	27904.616000, 29434.466000, 28726.574000, 29580.039000, 27668.305000
+iOS	CorePerformanceTests	testSHA256OfOneKilobyte	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testSHA256OfOneKilobyte	Clock Monotonic Time, s	0.0011652	1.350	0.001153, 0.001191, 0.001146, 0.001167, 0.001169
+iOS	CorePerformanceTests	testSHA256OfOneKilobyte	CPU Time, s	0.001709	6.429	0.001763, 0.001768, 0.001511, 0.001826, 0.001677
+iOS	CorePerformanceTests	testSHA256OfOneKilobyte	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testSHA256OfOneKilobyte	CPU Instructions Retired, kI	14757.1014	4.153	15656.109000, 14187.482000, 13979.786000, 14838.520000, 15123.610000
+iOS	CorePerformanceTests	testSHA256OfOneKilobyte	Memory Peak Physical, kB	25761.3488	0.025	25758.072000, 25758.072000, 25774.456000, 25758.072000, 25758.072000
+iOS	CorePerformanceTests	testSHA256OfOneKilobyte	CPU Cycles, kC	6747.479	5.696	7029.361000, 6931.263000, 6025.798000, 7064.738000, 6686.235000
+iOS	CorePerformanceTests	testStateStorageSetAndRead	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testStateStorageSetAndRead	Clock Monotonic Time, s	0.0056396	1.677	0.005559, 0.005761, 0.005680, 0.005695, 0.005503
+iOS	CorePerformanceTests	testStateStorageSetAndRead	CPU Time, s	0.0062092	0.509	0.006151, 0.006226, 0.006238, 0.006200, 0.006231
+iOS	CorePerformanceTests	testStateStorageSetAndRead	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testStateStorageSetAndRead	CPU Instructions Retired, kI	106935.223	0.436	107406.826000, 107291.929000, 107049.328000, 106839.549000, 106088.485000
+iOS	CorePerformanceTests	testStateStorageSetAndRead	Memory Peak Physical, kB	25758.072	0.000	25758.072000, 25758.072000, 25758.072000, 25758.072000, 25758.072000
+iOS	CorePerformanceTests	testStateStorageSetAndRead	CPU Cycles, kC	24631.1452	0.808	24530.341000, 24800.065000, 24874.980000, 24635.221000, 24315.119000
+iOS	CorePerformanceTests	testThreadSafeMutate	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testThreadSafeMutate	Clock Monotonic Time, s	1.28e-05	1.722	0.000013, 0.000013, 0.000012, 0.000013, 0.000013
+iOS	CorePerformanceTests	testThreadSafeMutate	CPU Time, s	0.000404	28.095	0.000356, 0.000274, 0.000442, 0.000604, 0.000344
+iOS	CorePerformanceTests	testThreadSafeMutate	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testThreadSafeMutate	CPU Instructions Retired, kI	3824.7028	11.348	3540.702000, 3548.758000, 4684.800000, 3663.743000, 3685.511000
+iOS	CorePerformanceTests	testThreadSafeMutate	Memory Peak Physical, kB	25758.072	0.000	25758.072000, 25758.072000, 25758.072000, 25758.072000, 25758.072000
+iOS	CorePerformanceTests	testThreadSafeMutate	CPU Cycles, kC	1543.3336	21.938	1420.159000, 1092.043000, 1764.262000, 2068.688000, 1371.516000
+iOS	CorePerformanceTests	testThreadSafeRead	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testThreadSafeRead	Clock Monotonic Time, s	1.3e-05	13.110	0.000016, 0.000013, 0.000013, 0.000012, 0.000011
+iOS	CorePerformanceTests	testThreadSafeRead	CPU Time, s	0.0003754	20.115	0.000308, 0.000333, 0.000361, 0.000353, 0.000522
+iOS	CorePerformanceTests	testThreadSafeRead	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testThreadSafeRead	CPU Instructions Retired, kI	3501.9084	4.521	3378.576000, 3421.548000, 3368.082000, 3790.629000, 3550.707000
+iOS	CorePerformanceTests	testThreadSafeRead	Memory Peak Physical, kB	25758.072	0.000	25758.072000, 25758.072000, 25758.072000, 25758.072000, 25758.072000
+iOS	CorePerformanceTests	testThreadSafeRead	CPU Cycles, kC	1444.6446	15.076	1211.614000, 1315.576000, 1438.653000, 1406.861000, 1850.519000
+iOS	CorePerformanceTests	testUniqueOf1000	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testUniqueOf1000	Clock Monotonic Time, s	0.0161172	4.140	0.015624, 0.017385, 0.015518, 0.016035, 0.016024
+iOS	CorePerformanceTests	testUniqueOf1000	CPU Time, s	0.0167756	4.603	0.016127, 0.018244, 0.016161, 0.016731, 0.016615
+iOS	CorePerformanceTests	testUniqueOf1000	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	CorePerformanceTests	testUniqueOf1000	CPU Instructions Retired, kI	367228.915	0.143	367484.167000, 367359.677000, 366379.968000, 367946.265000, 366974.496000
+iOS	CorePerformanceTests	testUniqueOf1000	Memory Peak Physical, kB	25777.7328	0.025	25774.456000, 25774.456000, 25790.840000, 25774.456000, 25774.456000
+iOS	CorePerformanceTests	testUniqueOf1000	CPU Cycles, kC	66036.8368	2.695	64312.738000, 68969.546000, 64074.207000, 66663.729000, 66163.964000
+iOS	HotPathPerformanceTests	testAbsentKeyReads	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testAbsentKeyReads	Clock Monotonic Time, s	0.0171832	13.958	0.013793, 0.015121, 0.019895, 0.017578, 0.019529
+iOS	HotPathPerformanceTests	testAbsentKeyReads	CPU Time, s	0.0177618	13.448	0.014327, 0.015685, 0.020389, 0.018382, 0.020026
+iOS	HotPathPerformanceTests	testAbsentKeyReads	Memory Physical, kB	6.5536	122.474	0.000000, 0.000000, 16.384000, 0.000000, 16.384000
+iOS	HotPathPerformanceTests	testAbsentKeyReads	CPU Instructions Retired, kI	266250.436	3.041	255478.665000, 257442.546000, 273675.563000, 270736.158000, 273919.250000
+iOS	HotPathPerformanceTests	testAbsentKeyReads	Memory Peak Physical, kB	25771.1792	0.048	25758.072000, 25758.072000, 25774.456000, 25774.456000, 25790.840000
+iOS	HotPathPerformanceTests	testAbsentKeyReads	CPU Cycles, kC	70691.301	13.490	57133.244000, 62342.011000, 81304.120000, 72821.607000, 79855.523000
+iOS	HotPathPerformanceTests	testAppGroupURL	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testAppGroupURL	Clock Monotonic Time, s	8.18e-05	2.489	0.000083, 0.000079, 0.000080, 0.000082, 0.000085
+iOS	HotPathPerformanceTests	testAppGroupURL	CPU Time, s	0.0004394	8.460	0.000370, 0.000451, 0.000472, 0.000468, 0.000436
+iOS	HotPathPerformanceTests	testAppGroupURL	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testAppGroupURL	CPU Instructions Retired, kI	4940.7536	5.964	4372.480000, 5221.219000, 5093.404000, 5014.980000, 5001.685000
+iOS	HotPathPerformanceTests	testAppGroupURL	Memory Peak Physical, kB	25790.84	0.000	25790.840000, 25790.840000, 25790.840000, 25790.840000, 25790.840000
+iOS	HotPathPerformanceTests	testAppGroupURL	CPU Cycles, kC	1745.3276	8.294	1474.579000, 1797.404000, 1861.508000, 1867.302000, 1725.845000
+iOS	HotPathPerformanceTests	testColorHex	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testColorHex	Clock Monotonic Time, s	0.0012806	15.889	0.001140, 0.001074, 0.001421, 0.001156, 0.001612
+iOS	HotPathPerformanceTests	testColorHex	CPU Time, s	0.0017716	12.815	0.001633, 0.001556, 0.001980, 0.001582, 0.002107
+iOS	HotPathPerformanceTests	testColorHex	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testColorHex	CPU Instructions Retired, kI	26951.079	0.326	26901.752000, 26940.685000, 26972.576000, 26838.247000, 27102.135000
+iOS	HotPathPerformanceTests	testColorHex	Memory Peak Physical, kB	25800.6704	0.051	25823.608000, 25807.224000, 25790.840000, 25790.840000, 25790.840000
+iOS	HotPathPerformanceTests	testColorHex	CPU Cycles, kC	6729.8322	7.271	6513.611000, 6204.216000, 7216.020000, 6307.667000, 7407.647000
+iOS	HotPathPerformanceTests	testConvertedDigitsToLocale	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testConvertedDigitsToLocale	Clock Monotonic Time, s	0.0606958	10.928	0.072220, 0.063512, 0.056163, 0.053489, 0.058095
+iOS	HotPathPerformanceTests	testConvertedDigitsToLocale	CPU Time, s	0.0613064	8.665	0.069645, 0.064706, 0.057321, 0.054778, 0.060082
+iOS	HotPathPerformanceTests	testConvertedDigitsToLocale	Memory Physical, kB	3.2768	200.000	16.384000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testConvertedDigitsToLocale	CPU Instructions Retired, kI	743242.572	0.336	745817.090000, 746532.129000, 741192.297000, 740262.585000, 742408.761000
+iOS	HotPathPerformanceTests	testConvertedDigitsToLocale	Memory Peak Physical, kB	25876.0368	0.025	25889.144000, 25872.760000, 25872.760000, 25872.760000, 25872.760000
+iOS	HotPathPerformanceTests	testConvertedDigitsToLocale	CPU Cycles, kC	233357.7	5.406	253468.400000, 241059.668000, 223474.357000, 218333.045000, 230453.028000
+iOS	HotPathPerformanceTests	testDateToStringWithFormat	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testDateToStringWithFormat	Clock Monotonic Time, s	0.0027254	17.223	0.002583, 0.002427, 0.002502, 0.003658, 0.002457
+iOS	HotPathPerformanceTests	testDateToStringWithFormat	CPU Time, s	0.0033102	16.624	0.003129, 0.002822, 0.003210, 0.004379, 0.003011
+iOS	HotPathPerformanceTests	testDateToStringWithFormat	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testDateToStringWithFormat	CPU Instructions Retired, kI	51218.6164	1.044	51282.825000, 50322.287000, 51454.434000, 51957.262000, 51076.274000
+iOS	HotPathPerformanceTests	testDateToStringWithFormat	Memory Peak Physical, kB	25921.912	0.000	25921.912000, 25921.912000, 25921.912000, 25921.912000, 25921.912000
+iOS	HotPathPerformanceTests	testDateToStringWithFormat	CPU Cycles, kC	12627.0048	10.611	12247.710000, 11255.396000, 12442.525000, 15182.746000, 12006.647000
+iOS	HotPathPerformanceTests	testFileStorageWrites	Disk Logical Writes, kB	17.2032	124.540	36.864000, 49.152000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testFileStorageWrites	Clock Monotonic Time, s	0.006825	4.109	0.007349, 0.006551, 0.006657, 0.006862, 0.006706
+iOS	HotPathPerformanceTests	testFileStorageWrites	CPU Time, s	0.0081308	9.721	0.009439, 0.008515, 0.007325, 0.008021, 0.007354
+iOS	HotPathPerformanceTests	testFileStorageWrites	Memory Physical, kB	-3.2768	-489.898	0.000000, 16.384000, -32.768000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testFileStorageWrites	CPU Instructions Retired, kI	121370.464	3.621	125981.714000, 127450.858000, 117626.896000, 118197.643000, 117595.210000
+iOS	HotPathPerformanceTests	testFileStorageWrites	Memory Peak Physical, kB	25885.8672	0.062	25872.760000, 25905.528000, 25905.528000, 25872.760000, 25872.760000
+iOS	HotPathPerformanceTests	testFileStorageWrites	CPU Cycles, kC	31887.2602	8.511	36029.781000, 33926.297000, 29210.407000, 31184.086000, 29085.730000
+iOS	HotPathPerformanceTests	testLocalized	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testLocalized	Clock Monotonic Time, s	0.0022122	1.039	0.002219, 0.002228, 0.002192, 0.002242, 0.002180
+iOS	HotPathPerformanceTests	testLocalized	CPU Time, s	0.0026656	2.296	0.002729, 0.002733, 0.002603, 0.002676, 0.002587
+iOS	HotPathPerformanceTests	testLocalized	Memory Physical, kB	9.8304	133.333	0.000000, 0.000000, 16.384000, 0.000000, 32.768000
+iOS	HotPathPerformanceTests	testLocalized	CPU Instructions Retired, kI	45242.0586	0.292	45284.307000, 45398.486000, 45330.998000, 45175.763000, 45020.739000
+iOS	HotPathPerformanceTests	testLocalized	Memory Peak Physical, kB	30322.6784	0.065	30312.848000, 30312.848000, 30312.848000, 30312.848000, 30362.000000
+iOS	HotPathPerformanceTests	testLocalized	CPU Cycles, kC	10630.573	2.298	10884.166000, 10897.470000, 10379.754000, 10674.010000, 10317.465000
+iOS	HotPathPerformanceTests	testNumberToString	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testNumberToString	Clock Monotonic Time, s	0.001243	2.458	0.001256, 0.001258, 0.001228, 0.001281, 0.001192
+iOS	HotPathPerformanceTests	testNumberToString	CPU Time, s	0.0017356	6.692	0.001947, 0.001653, 0.001743, 0.001724, 0.001611
+iOS	HotPathPerformanceTests	testNumberToString	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testNumberToString	CPU Instructions Retired, kI	26808.9328	1.054	27317.836000, 26629.522000, 26533.146000, 26906.385000, 26657.775000
+iOS	HotPathPerformanceTests	testNumberToString	Memory Peak Physical, kB	30312.848	0.000	30312.848000, 30312.848000, 30312.848000, 30312.848000, 30312.848000
+iOS	HotPathPerformanceTests	testNumberToString	CPU Cycles, kC	6893.8924	5.998	7627.157000, 6591.734000, 6952.041000, 6875.900000, 6422.630000
+iOS	HotPathPerformanceTests	testPreferredLocale	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testPreferredLocale	Clock Monotonic Time, s	0.002181	5.362	0.002115, 0.002413, 0.002130, 0.002100, 0.002147
+iOS	HotPathPerformanceTests	testPreferredLocale	CPU Time, s	0.0028096	5.572	0.002602, 0.003006, 0.002650, 0.002913, 0.002877
+iOS	HotPathPerformanceTests	testPreferredLocale	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testPreferredLocale	CPU Instructions Retired, kI	43641.1384	0.751	43405.507000, 44013.877000, 43309.622000, 43411.796000, 44064.890000
+iOS	HotPathPerformanceTests	testPreferredLocale	Memory Peak Physical, kB	30312.848	0.000	30312.848000, 30312.848000, 30312.848000, 30312.848000, 30312.848000
+iOS	HotPathPerformanceTests	testPreferredLocale	CPU Cycles, kC	10880.9914	3.679	10375.966000, 11347.179000, 10434.337000, 11047.955000, 11199.520000
+iOS	HotPathPerformanceTests	testPresentKeyColdReads	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testPresentKeyColdReads	Clock Monotonic Time, s	0.0769894	9.052	0.082186, 0.067087, 0.086038, 0.071177, 0.078459
+iOS	HotPathPerformanceTests	testPresentKeyColdReads	CPU Time, s	0.0765476	8.296	0.081360, 0.067357, 0.084311, 0.071111, 0.078599
+iOS	HotPathPerformanceTests	testPresentKeyColdReads	Memory Physical, kB	32.768	126.491	0.000000, 0.000000, 98.304000, 65.536000, 0.000000
+iOS	HotPathPerformanceTests	testPresentKeyColdReads	CPU Instructions Retired, kI	880718.846	1.789	894967.614000, 860182.507000, 895710.775000, 863064.138000, 889669.194000
+iOS	HotPathPerformanceTests	testPresentKeyColdReads	Memory Peak Physical, kB	30538.9472	0.231	30476.688000, 30443.920000, 30542.224000, 30624.144000, 30607.760000
+iOS	HotPathPerformanceTests	testPresentKeyColdReads	CPU Cycles, kC	305220.722	8.287	324350.827000, 268607.323000, 336155.780000, 283577.656000, 313412.023000
+iOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	Clock Monotonic Time, s	1.12e-05	5.560	0.000012, 0.000010, 0.000012, 0.000011, 0.000011
+iOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	CPU Time, s	0.0003662	19.533	0.000369, 0.000262, 0.000466, 0.000318, 0.000416
+iOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	CPU Instructions Retired, kI	3619.8666	3.876	3793.035000, 3398.916000, 3618.408000, 3548.615000, 3740.359000
+iOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	Memory Peak Physical, kB	30607.76	0.000	30607.760000, 30607.760000, 30607.760000, 30607.760000, 30607.760000
+iOS	HotPathPerformanceTests	testSilentLoggerWithoutSaving	CPU Cycles, kC	1460.4216	19.536	1469.497000, 1046.700000, 1858.188000, 1266.974000, 1660.749000
+iOS	HotPathPerformanceTests	testTimeUnits	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testTimeUnits	Clock Monotonic Time, s	0.0467592	0.753	0.047153, 0.046987, 0.046480, 0.046217, 0.046959
+iOS	HotPathPerformanceTests	testTimeUnits	CPU Time, s	0.047353	0.801	0.047863, 0.047551, 0.047054, 0.046798, 0.047499
+iOS	HotPathPerformanceTests	testTimeUnits	Memory Physical, kB	124.5184	85.920	0.000000, 229.376000, 16.384000, 114.688000, 262.144000
+iOS	HotPathPerformanceTests	testTimeUnits	CPU Instructions Retired, kI	737787.164	0.016	737849.817000, 737576.630000, 737922.484000, 737815.415000, 737771.474000
+iOS	HotPathPerformanceTests	testTimeUnits	Memory Peak Physical, kB	30981.3152	0.654	30689.680000, 30919.056000, 30935.440000, 31050.128000, 31312.272000
+iOS	HotPathPerformanceTests	testTimeUnits	CPU Cycles, kC	188729.412	0.747	190570.415000, 189420.788000, 187642.335000, 186619.956000, 189393.568000
+iOS	HotPathPerformanceTests	testUTCDateFormatting	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testUTCDateFormatting	Clock Monotonic Time, s	0.0018106	1.344	0.001856, 0.001807, 0.001811, 0.001785, 0.001794
+iOS	HotPathPerformanceTests	testUTCDateFormatting	CPU Time, s	0.0023618	3.390	0.002499, 0.002368, 0.002255, 0.002368, 0.002319
+iOS	HotPathPerformanceTests	testUTCDateFormatting	CPU Instructions Retired, kI	43160.1124	0.249	43163.582000, 43159.431000, 43139.956000, 43337.833000, 42999.760000
+iOS	HotPathPerformanceTests	testUTCDateFormatting	Memory Peak Physical, kB	31318.8256	0.026	31312.272000, 31328.656000, 31328.656000, 31312.272000, 31312.272000
+iOS	HotPathPerformanceTests	testUTCDateFormatting	CPU Cycles, kC	9391.5714	2.915	9828.083000, 9444.797000, 8994.533000, 9443.537000, 9246.907000
+iOS	HotPathPerformanceTests	testUTCDateParsing	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	HotPathPerformanceTests	testUTCDateParsing	Clock Monotonic Time, s	0.12881	6.479	0.126823, 0.143864, 0.130307, 0.123695, 0.119361
+iOS	HotPathPerformanceTests	testUTCDateParsing	CPU Time, s	0.1251378	5.098	0.124363, 0.135990, 0.126853, 0.121758, 0.116725
+iOS	HotPathPerformanceTests	testUTCDateParsing	Memory Physical, kB	108.1344	100.321	32.768000, 311.296000, 32.768000, 131.072000, 32.768000
+iOS	HotPathPerformanceTests	testUTCDateParsing	CPU Instructions Retired, kI	1666368.61	0.061	1665711.865000, 1667940.278000, 1667169.608000, 1665697.067000, 1665324.228000
+iOS	HotPathPerformanceTests	testUTCDateParsing	Memory Peak Physical, kB	31702.2112	0.606	31361.424000, 31672.720000, 31705.488000, 31885.712000, 31885.712000
+iOS	HotPathPerformanceTests	testUTCDateParsing	CPU Cycles, kC	495635.979	4.356	495935.751000, 529697.854000, 504742.733000, 482351.924000, 465451.631000
+iOS	ImagePipelinePerformanceTests	testCorruptCachedImageLoad	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testCorruptCachedImageLoad	Clock Monotonic Time, s	0.0040982	47.467	0.003050, 0.003165, 0.003132, 0.003156, 0.007988
+iOS	ImagePipelinePerformanceTests	testCorruptCachedImageLoad	CPU Time, s	0.0047564	43.560	0.003576, 0.003909, 0.003649, 0.003754, 0.008894
+iOS	ImagePipelinePerformanceTests	testCorruptCachedImageLoad	Memory Physical, kB	49.152	0.000	49.152000, 49.152000, 49.152000, 49.152000, 49.152000
+iOS	ImagePipelinePerformanceTests	testCorruptCachedImageLoad	CPU Instructions Retired, kI	50232.3642	0.799	50027.315000, 50985.289000, 49854.489000, 50007.197000, 50287.531000
+iOS	ImagePipelinePerformanceTests	testCorruptCachedImageLoad	Memory Peak Physical, kB	32793.3856	0.213	32704.912000, 32737.680000, 32786.832000, 32835.984000, 32901.520000
+iOS	ImagePipelinePerformanceTests	testCorruptCachedImageLoad	CPU Cycles, kC	16674.919	22.503	14258.548000, 15590.637000, 14551.574000, 14846.615000, 24127.221000
+iOS	ImagePipelinePerformanceTests	testDecodeDownsampled1024To128	Disk Logical Writes, kB	86.016	143.901	331.776000, 20.480000, 0.000000, 32.768000, 45.056000
+iOS	ImagePipelinePerformanceTests	testDecodeDownsampled1024To128	Clock Monotonic Time, s	0.0558908	0.789	0.055712, 0.056559, 0.055411, 0.056249, 0.055523
+iOS	ImagePipelinePerformanceTests	testDecodeDownsampled1024To128	CPU Time, s	0.1236812	2.974	0.127890, 0.122241, 0.117440, 0.126617, 0.124218
+iOS	ImagePipelinePerformanceTests	testDecodeDownsampled1024To128	Memory Physical, kB	39.3216	100.692	-16.384000, 98.304000, 16.384000, 32.768000, 65.536000
+iOS	ImagePipelinePerformanceTests	testDecodeDownsampled1024To128	CPU Instructions Retired, kI	1329609.9	1.430	1367373.515000, 1318311.488000, 1317350.892000, 1323731.713000, 1321281.893000
+iOS	ImagePipelinePerformanceTests	testDecodeDownsampled1024To128	Memory Peak Physical, kB	40395.5616	0.184	40274.320000, 40372.624000, 40405.392000, 40421.776000, 40503.696000
+iOS	ImagePipelinePerformanceTests	testDecodeDownsampled1024To128	CPU Cycles, kC	451317.739	2.677	470849.305000, 444453.377000, 434867.117000, 456619.096000, 449799.798000
+iOS	ImagePipelinePerformanceTests	testDecodeFullSize1024	Disk Logical Writes, kB	51.6096	200.000	0.000000, 258.048000, 0.000000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testDecodeFullSize1024	Clock Monotonic Time, s	0.0284452	3.095	0.028376, 0.028276, 0.029440, 0.026934, 0.029200
+iOS	ImagePipelinePerformanceTests	testDecodeFullSize1024	CPU Time, s	0.040369	5.943	0.039394, 0.044732, 0.039832, 0.037454, 0.040433
+iOS	ImagePipelinePerformanceTests	testDecodeFullSize1024	Memory Physical, kB	6.5536	200.000	16.384000, -16.384000, 16.384000, 0.000000, 16.384000
+iOS	ImagePipelinePerformanceTests	testDecodeFullSize1024	CPU Instructions Retired, kI	520812.93	3.483	509112.247000, 556733.419000, 512150.176000, 509690.792000, 516378.014000
+iOS	ImagePipelinePerformanceTests	testDecodeFullSize1024	Memory Peak Physical, kB	121620.952	0.009	121620.952000, 121604.568000, 121620.952000, 121620.952000, 121637.336000
+iOS	ImagePipelinePerformanceTests	testDecodeFullSize1024	CPU Cycles, kC	160606.874	6.022	157097.594000, 178382.978000, 157046.213000, 149361.589000, 161145.995000
+iOS	ImagePipelinePerformanceTests	testFlushCacheWith20Images	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testFlushCacheWith20Images	Clock Monotonic Time, s	2.28e-05	28.420	0.000015, 0.000025, 0.000015, 0.000028, 0.000031
+iOS	ImagePipelinePerformanceTests	testFlushCacheWith20Images	CPU Time, s	0.000501	18.189	0.000574, 0.000563, 0.000368, 0.000586, 0.000414
+iOS	ImagePipelinePerformanceTests	testFlushCacheWith20Images	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testFlushCacheWith20Images	CPU Instructions Retired, kI	3692.9708	17.850	5007.502000, 3433.299000, 3405.786000, 3304.326000, 3313.941000
+iOS	ImagePipelinePerformanceTests	testFlushCacheWith20Images	Memory Peak Physical, kB	33468.4064	0.024	33474.960000, 33458.576000, 33458.576000, 33474.960000, 33474.960000
+iOS	ImagePipelinePerformanceTests	testFlushCacheWith20Images	CPU Cycles, kC	1881.8752	15.487	2287.310000, 1998.620000, 1460.675000, 2010.562000, 1652.209000
+iOS	ImagePipelinePerformanceTests	testMemoryCacheHit	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testMemoryCacheHit	Clock Monotonic Time, s	0.0002084	2.475	0.000218, 0.000207, 0.000208, 0.000202, 0.000207
+iOS	ImagePipelinePerformanceTests	testMemoryCacheHit	CPU Time, s	0.0006786	12.125	0.000589, 0.000627, 0.000621, 0.000783, 0.000773
+iOS	ImagePipelinePerformanceTests	testMemoryCacheHit	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testMemoryCacheHit	CPU Instructions Retired, kI	7285.4382	2.615	7410.316000, 7281.941000, 6998.640000, 7181.233000, 7555.061000
+iOS	ImagePipelinePerformanceTests	testMemoryCacheHit	Memory Peak Physical, kB	33524.112	0.000	33524.112000, 33524.112000, 33524.112000, 33524.112000, 33524.112000
+iOS	ImagePipelinePerformanceTests	testMemoryCacheHit	CPU Cycles, kC	2519.548	7.101	2294.849000, 2500.442000, 2357.256000, 2708.550000, 2736.643000
+iOS	ImagePipelinePerformanceTests	testMemoryCacheMiss	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testMemoryCacheMiss	Clock Monotonic Time, s	0.0002832	8.399	0.000271, 0.000272, 0.000273, 0.000269, 0.000331
+iOS	ImagePipelinePerformanceTests	testMemoryCacheMiss	CPU Time, s	0.0011358	15.828	0.001301, 0.001177, 0.000874, 0.000987, 0.001340
+iOS	ImagePipelinePerformanceTests	testMemoryCacheMiss	Memory Physical, kB	6.5536	122.474	0.000000, 16.384000, 16.384000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testMemoryCacheMiss	CPU Instructions Retired, kI	12519.0054	4.486	13343.735000, 11936.058000, 11928.812000, 12965.202000, 12421.220000
+iOS	ImagePipelinePerformanceTests	testMemoryCacheMiss	Memory Peak Physical, kB	33524.112	0.000	33524.112000, 33524.112000, 33524.112000, 33524.112000, 33524.112000
+iOS	ImagePipelinePerformanceTests	testMemoryCacheMiss	CPU Cycles, kC	4282.4214	12.026	4815.298000, 4417.356000, 3484.698000, 3911.998000, 4782.757000
+iOS	ImagePipelinePerformanceTests	testURLCacheAppGroupAccess	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testURLCacheAppGroupAccess	Clock Monotonic Time, s	0.0022952	1.363	0.002285, 0.002290, 0.002254, 0.002296, 0.002351
+iOS	ImagePipelinePerformanceTests	testURLCacheAppGroupAccess	CPU Time, s	0.0027916	5.512	0.002731, 0.002716, 0.002586, 0.003027, 0.002898
+iOS	ImagePipelinePerformanceTests	testURLCacheAppGroupAccess	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testURLCacheAppGroupAccess	CPU Instructions Retired, kI	52384.6466	0.150	52445.397000, 52424.478000, 52231.558000, 52393.092000, 52428.708000
+iOS	ImagePipelinePerformanceTests	testURLCacheAppGroupAccess	Memory Peak Physical, kB	33524.112	0.000	33524.112000, 33524.112000, 33524.112000, 33524.112000, 33524.112000
+iOS	ImagePipelinePerformanceTests	testURLCacheAppGroupAccess	CPU Cycles, kC	10995.6094	4.073	10891.971000, 10807.687000, 10306.930000, 11518.316000, 11453.143000
+iOS	ImagePipelinePerformanceTests	testURLCacheLoadAndDecode	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	ImagePipelinePerformanceTests	testURLCacheLoadAndDecode	Clock Monotonic Time, s	0.0647986	58.347	0.064322, 0.035511, 0.137718, 0.047748, 0.038694
+iOS	ImagePipelinePerformanceTests	testURLCacheLoadAndDecode	CPU Time, s	0.077846	47.236	0.044427, 0.039584, 0.141879, 0.086686, 0.076654
+iOS	ImagePipelinePerformanceTests	testURLCacheLoadAndDecode	Memory Physical, kB	-16.384	-352.136	-131.072000, 16.384000, 0.000000, 16.384000, 16.384000
+iOS	ImagePipelinePerformanceTests	testURLCacheLoadAndDecode	CPU Instructions Retired, kI	828942.164	47.366	426627.532000, 424355.513000, 1485869.195000, 939049.223000, 868809.358000
+iOS	ImagePipelinePerformanceTests	testURLCacheLoadAndDecode	Memory Peak Physical, kB	37020.4576	0.060	37030.288000, 36981.136000, 37013.904000, 37030.288000, 37046.672000
+iOS	ImagePipelinePerformanceTests	testURLCacheLoadAndDecode	CPU Cycles, kC	309010.619	47.197	176743.377000, 157766.256000, 563858.969000, 341003.326000, 305681.165000
+iOS	UIPerformanceTests	testColorDarker	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testColorDarker	Clock Monotonic Time, s	0.0005454	3.625	0.000538, 0.000528, 0.000535, 0.000542, 0.000584
+iOS	UIPerformanceTests	testColorDarker	CPU Time, s	0.0010604	12.150	0.000954, 0.000901, 0.001027, 0.001202, 0.001218
+iOS	UIPerformanceTests	testColorDarker	Memory Physical, kB	3.2768	200.000	0.000000, 0.000000, 0.000000, 0.000000, 16.384000
+iOS	UIPerformanceTests	testColorDarker	CPU Instructions Retired, kI	14708.3808	4.569	14134.160000, 14131.583000, 14339.364000, 15858.481000, 15078.316000
+iOS	UIPerformanceTests	testColorDarker	Memory Peak Physical, kB	35106.8064	0.023	35113.360000, 35096.976000, 35113.360000, 35096.976000, 35113.360000
+iOS	UIPerformanceTests	testColorDarker	CPU Cycles, kC	4143.4228	11.076	3803.825000, 3590.916000, 3963.529000, 4792.453000, 4566.391000
+iOS	UIPerformanceTests	testColorInterpolation	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testColorInterpolation	Clock Monotonic Time, s	0.011208	0.750	0.011186, 0.011342, 0.011247, 0.011176, 0.011089
+iOS	UIPerformanceTests	testColorInterpolation	CPU Time, s	0.0123648	0.805	0.012408, 0.012499, 0.012408, 0.012296, 0.012213
+iOS	UIPerformanceTests	testColorInterpolation	Memory Physical, kB	-3.2768	-200.000	-16.384000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testColorInterpolation	CPU Instructions Retired, kI	225033.188	0.060	225119.029000, 225016.071000, 224960.055000, 224839.149000, 225231.634000
+iOS	UIPerformanceTests	testColorInterpolation	Memory Peak Physical, kB	35152.6816	0.023	35162.512000, 35146.128000, 35162.512000, 35146.128000, 35146.128000
+iOS	UIPerformanceTests	testColorInterpolation	CPU Cycles, kC	49308.0726	0.805	49478.767000, 49843.077000, 49481.071000, 49035.603000, 48701.845000
+iOS	UIPerformanceTests	testResizedImage128To64	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testResizedImage128To64	Clock Monotonic Time, s	0.02253	6.650	0.022350, 0.021648, 0.021957, 0.021256, 0.025439
+iOS	UIPerformanceTests	testResizedImage128To64	CPU Time, s	0.0240538	5.609	0.023728, 0.023180, 0.023610, 0.023047, 0.026704
+iOS	UIPerformanceTests	testResizedImage128To64	Memory Physical, kB	13.1072	200.000	0.000000, 0.000000, 0.000000, 0.000000, 65.536000
+iOS	UIPerformanceTests	testResizedImage128To64	CPU Instructions Retired, kI	436920.813	0.168	436861.977000, 436516.616000, 437109.828000, 435953.489000, 438162.153000
+iOS	UIPerformanceTests	testResizedImage128To64	Memory Peak Physical, kB	41942.2352	0.063	41929.128000, 41929.128000, 41929.128000, 41929.128000, 41994.664000
+iOS	UIPerformanceTests	testResizedImage128To64	CPU Cycles, kC	95917.6688	5.612	94624.477000, 92436.784000, 94153.617000, 91885.688000, 106487.778000
+iOS	UIPerformanceTests	testSizeThatFits	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testSizeThatFits	Clock Monotonic Time, s	0.0088978	1.816	0.008897, 0.008702, 0.008735, 0.009052, 0.009103
+iOS	UIPerformanceTests	testSizeThatFits	CPU Time, s	0.00952	2.133	0.009532, 0.009215, 0.009380, 0.009743, 0.009730
+iOS	UIPerformanceTests	testSizeThatFits	Memory Physical, kB	3.2768	200.000	0.000000, 0.000000, 0.000000, 16.384000, 0.000000
+iOS	UIPerformanceTests	testSizeThatFits	CPU Instructions Retired, kI	150813.825	0.107	151062.468000, 150914.019000, 150751.727000, 150749.600000, 150591.312000
+iOS	UIPerformanceTests	testSizeThatFits	Memory Peak Physical, kB	35250.9856	0.023	35244.432000, 35244.432000, 35244.432000, 35260.816000, 35260.816000
+iOS	UIPerformanceTests	testSizeThatFits	CPU Cycles, kC	37963.3642	2.133	38011.888000, 36747.546000, 37405.936000, 38852.155000, 38799.296000
+iOS	UIPerformanceTests	testSolidImage32	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testSolidImage32	Clock Monotonic Time, s	0.0021376	8.575	0.002402, 0.002298, 0.001988, 0.002079, 0.001921
+iOS	UIPerformanceTests	testSolidImage32	CPU Time, s	0.0026816	6.398	0.002978, 0.002762, 0.002564, 0.002604, 0.002500
+iOS	UIPerformanceTests	testSolidImage32	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testSolidImage32	CPU Instructions Retired, kI	26280.014	0.308	26374.318000, 26256.999000, 26193.570000, 26199.147000, 26376.036000
+iOS	UIPerformanceTests	testSolidImage32	Memory Peak Physical, kB	35260.816	0.000	35260.816000, 35260.816000, 35260.816000, 35260.816000, 35260.816000
+iOS	UIPerformanceTests	testSolidImage32	CPU Cycles, kC	10692.851	6.398	11875.328000, 11012.648000, 10223.169000, 10383.843000, 9969.267000
+iOS	UIPerformanceTests	testStyledText	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testStyledText	Clock Monotonic Time, s	0.0027464	1.574	0.002756, 0.002682, 0.002805, 0.002716, 0.002773
+iOS	UIPerformanceTests	testStyledText	CPU Time, s	0.0033754	1.064	0.003347, 0.003435, 0.003398, 0.003357, 0.003340
+iOS	UIPerformanceTests	testStyledText	Memory Physical, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testStyledText	CPU Instructions Retired, kI	59763.436	1.002	59344.252000, 60821.966000, 59280.726000, 60038.876000, 59331.360000
+iOS	UIPerformanceTests	testStyledText	Memory Peak Physical, kB	35244.432	0.000	35244.432000, 35244.432000, 35244.432000, 35244.432000, 35244.432000
+iOS	UIPerformanceTests	testStyledText	CPU Cycles, kC	13461.2872	1.062	13350.096000, 13697.624000, 13551.947000, 13388.093000, 13318.676000
+iOS	UIPerformanceTests	testTextBoundingSize	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testTextBoundingSize	Clock Monotonic Time, s	0.007457	1.712	0.007345, 0.007395, 0.007625, 0.007596, 0.007324
+iOS	UIPerformanceTests	testTextBoundingSize	CPU Time, s	0.0079934	1.840	0.007925, 0.008071, 0.008123, 0.008112, 0.007736
+iOS	UIPerformanceTests	testTextBoundingSize	Memory Physical, kB	36.0448	178.145	0.000000, 0.000000, 16.384000, 163.840000, 0.000000
+iOS	UIPerformanceTests	testTextBoundingSize	CPU Instructions Retired, kI	121247.96	0.448	121589.271000, 121786.212000, 121685.192000, 120658.628000, 120520.498000
+iOS	UIPerformanceTests	testTextBoundingSize	Memory Peak Physical, kB	35332.9056	0.252	35244.432000, 35260.816000, 35277.200000, 35441.040000, 35441.040000
+iOS	UIPerformanceTests	testTextBoundingSize	CPU Cycles, kC	31835.973	1.744	31601.509000, 32184.688000, 32329.874000, 32216.081000, 30847.713000
+iOS	UIPerformanceTests	testTintedImage128	Disk Logical Writes, kB	0	0.000	0.000000, 0.000000, 0.000000, 0.000000, 0.000000
+iOS	UIPerformanceTests	testTintedImage128	Clock Monotonic Time, s	0.125497	1.139	0.126855, 0.123668, 0.125742, 0.124038, 0.127182
+iOS	UIPerformanceTests	testTintedImage128	CPU Time, s	0.1282156	1.072	0.129443, 0.126363, 0.128802, 0.126792, 0.129678
+iOS	UIPerformanceTests	testTintedImage128	Memory Physical, kB	3.2768	200.000	0.000000, 0.000000, 0.000000, 16.384000, 0.000000
+iOS	UIPerformanceTests	testTintedImage128	CPU Instructions Retired, kI	3258824.63	0.048	3257873.686000, 3260188.896000, 3257174.013000, 3257729.400000, 3261157.171000
+iOS	UIPerformanceTests	testTintedImage128	Memory Peak Physical, kB	42754.9536	0.019	42748.400000, 42748.400000, 42748.400000, 42764.784000, 42764.784000
+iOS	UIPerformanceTests	testTintedImage128	CPU Cycles, kC	510834.76	1.015	514230.811000, 503794.472000, 513462.337000, 505599.925000, 517086.257000

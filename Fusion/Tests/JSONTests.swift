@@ -151,12 +151,12 @@ extension FusionSuite {
 		}
 		
 		@Test
-		func move_SourceFileExists_CopiesFileToDestination() {
-			let fromPath = FileManager.default.temporaryDirectory
-			let toPath = FileManager.default.appGroup
-			
-			FileManager.default.removeAllItems(at: fromPath)
-			FileManager.default.removeAllItems(at: toPath)
+		func move_SourceFileExists_CopiesFileToDestination() throws {
+			let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+			let fromPath = root.appendingPathComponent("from", isDirectory: true)
+			let toPath = root.appendingPathComponent("to", isDirectory: true)
+			defer { try? FileManager.default.removeItem(at: root) }
+			try FileManager.default.createDirectory(at: fromPath, withIntermediateDirectories: true)
 			
 			["item"].writeFile(at: fromPath.appendingPathComponent("file"))
 			FileManager.default.move(from: fromPath, to: toPath)
@@ -168,8 +168,10 @@ extension FusionSuite {
 		}
 		
 		@Test
-		func removeAllItems_DirectoryContainsItems_RemovesAllItems() {
-			let url = FileManager.default.temporaryDirectory
+		func removeAllItems_DirectoryContainsItems_RemovesAllItems() throws {
+			let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+			defer { try? FileManager.default.removeItem(at: url) }
+			try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
 			let file = url.appendingPathComponent("file")
 			["item"].writeFile(at: file)
 			#expect(Array<String>.loadFile(at: file) != nil)

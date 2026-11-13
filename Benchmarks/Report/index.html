@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Fusion Benchmarks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+__STYLES__
+</style>
+</head>
+<body>
+<div class="app">
+	<header class="top glass">
+		<div class="brand">
+			<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="5"/><circle cx="16" cy="16" r="11" fill="none"/><circle cx="27" cy="16" r="2.4"/><circle cx="8.2" cy="8.2" r="1.8"/></svg>
+			<div>
+				<b>Fusion</b>
+				<small>Benchmarks</small>
+			</div>
+		</div>
+		<button class="picker" id="picker" type="button" aria-haspopup="dialog" title="Pick a test (/ or T)">
+			<span class="picker-dot"></span>
+			<span class="picker-label" id="picker-label">All tests</span>
+			<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5"/></svg>
+		</button>
+		<div class="seg" id="platforms" role="tablist" aria-label="Platform"></div>
+		<div class="seg" id="metrics" role="tablist" aria-label="Metric"></div>
+		<div class="livebar" id="livebar" data-state="idle">
+			<span class="live-dot"></span>
+			<span class="live-text">
+				<b id="live-state">Report</b>
+				<small id="live-run">—</small>
+			</span>
+			<svg class="live-ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15"/><circle id="live-ring-fg" cx="18" cy="18" r="15" pathLength="100"/></svg>
+			<span class="live-count" id="live-count">—</span>
+			<button class="replay" id="replay" type="button" title="Replay the selected run">
+				<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3v10l9-5z"/></svg>
+				Replay
+			</button>
+		</div>
+		<button class="theme" id="theme" type="button" aria-label="Toggle theme">
+			<svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+			<svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.4 8.4 0 0 1 9.4 4a8.4 8.4 0 1 0 10.6 10.6z"/></svg>
+		</button>
+	</header>
+
+	<div class="ticker glass" id="ticker">
+		<button class="ticker-tag" id="ticker-tag" type="button">Highlights</button>
+		<div class="ticker-track"><div class="ticker-belt" id="ticker-belt"></div></div>
+	</div>
+	<div class="ticker-pop glass" id="ticker-pop" hidden></div>
+
+	<main class="main">
+		<aside class="rail glass" id="rail" aria-label="Runs"></aside>
+		<section class="stage" id="stage">
+			<canvas id="orbit"></canvas>
+			<div class="stage-title">
+				<b id="stage-title">Orbit</b>
+				<small id="stage-sub">Hover a node to inspect it. Click to open the deep dive.</small>
+			</div>
+			<div class="overlay legend glass" id="legend"></div>
+			<div class="overlay kpis glass" id="kpis"></div>
+			<div class="lens" id="lens" hidden>
+				<svg class="lens-ring" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="99"/><g id="lens-ticks"></g><path class="cross" d="M100 28v16M100 156v16M28 100h16M156 100h16"/></svg>
+				<div class="lens-body" id="lens-body"></div>
+			</div>
+		</section>
+		<aside class="desk glass" id="desk" aria-label="Runner"></aside>
+	</main>
+
+	<section class="panels">
+		<article class="panel glass span-2" id="panel-range">
+			<header><h2>Range strip</h2><p>Where each test sits against its baseline. Band spans best to worst, the tick is the baseline, the dot is the selected run.</p></header>
+			<div class="range" id="range"></div>
+		</article>
+		<article class="panel glass" id="panel-donuts">
+			<header><h2>Suite health</h2><p>Share of tests faster, flat or slower than the baseline.</p></header>
+			<div class="donuts" id="donuts"></div>
+		</article>
+		<article class="panel glass" id="panel-parity">
+			<header><h2>Platform parity</h2><p>macOS vs iOS for the same test, log-log. Above the diagonal means iOS costs more.</p></header>
+			<div class="parity" id="parity"></div>
+		</article>
+		<article class="panel glass span-2" id="panel-heat">
+			<header><h2 id="heat-title">Cost heatmap</h2><p id="heat-hint">Every metric for every test.</p></header>
+			<div class="heat" id="heat"></div>
+		</article>
+		<article class="panel glass span-2" id="panel-method">
+			<header><h2>Methodology</h2><p>What each XCTest metric means, and how to read it.</p></header>
+			<div class="method" id="method"></div>
+		</article>
+		<article class="panel glass" id="panel-log">
+			<header><h2>tail -f benchmark.log</h2><p id="log-hint">Events from the runner, newest first.</p></header>
+			<div class="log" id="log"></div>
+		</article>
+	</section>
+
+	<footer class="foot">
+		<span>Generated by <code>Scripts/benchmark.sh</code></span>
+		<span id="foot-meta"></span>
+	</footer>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="grid-pop glass" id="grid" role="dialog" aria-label="Pick a test" hidden>
+	<div class="grid-head">
+		<input id="grid-filter" type="search" placeholder="Filter tests, features or suites" autocomplete="off">
+		<button class="chip" id="grid-all" type="button">All tests</button>
+		<kbd>Esc</kbd>
+	</div>
+	<div class="grid-body" id="grid-body"></div>
+</div>
+<aside class="drawer glass" id="drawer" aria-label="Test details" hidden></aside>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+__SCRIPTS__
+</script>
+</body>
+</html>

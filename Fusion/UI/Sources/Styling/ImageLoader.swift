@@ -185,7 +185,7 @@ public extension UIImage {
 	/// Removes all the current cached images.
 	/// - Parameter storage: An alternative storage used to cache.
 	static func flushCache(storage: URL? = nil) {
-		URLCache.flushAppGroup()
+		URLCache.appGroup.removeAllCachedResponses()
 		storage?.flushImageCache()
 		ImagePipeline.shared.removeAll()
 	}

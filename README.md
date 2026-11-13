@@ -2,246 +2,230 @@
 
 [![Fusion](logo.png)]()
 
-![Version](https://img.shields.io/badge/swift-5-red.svg)
-[![Swift Package Manager Compatible](https://img.shields.io/endpoint?url=https://swiftpackageindex.com/api/packages/db-in/Fusion/badge?type=platforms)](https://github.com/apple/swift-package-manager)
-[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Fusion.svg)](https://img.shields.io/cocoapods/v/Fusion.svg)
-[![Platform](https://img.shields.io/cocoapods/p/Fusion.svg)](https://github.com/db-in/fusion)
+![Swift](https://img.shields.io/badge/Swift-5-red.svg)
+[![Platforms](https://img.shields.io/endpoint?url=https://swiftpackageindex.com/api/packages/db-in/Fusion/badge?type=platforms)](https://github.com/db-in/fusion)
+[![CocoaPods](https://img.shields.io/cocoapods/v/Fusion.svg)](https://cocoapods.org/pods/Fusion)
 [![iOS Pipeline](https://github.com/db-in/fusion/actions/workflows/ios.yml/badge.svg)](https://github.com/db-in/fusion/actions/workflows/ios.yml)
-[![codebeat badge](https://codebeat.co/badges/36b686b3-92d6-4b93-ac7c-37f959ed8f3b)](https://codebeat.co/projects/github-com-db-in-fusion-master)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Description
+**The production toolkit Apple apps actually ship with.**
 
-**Fusion** is a comprehensive Swift framework that provides essential utilities and tools for iOS, macOS, tvOS, and watchOS development. It offers a modular architecture with two main components: **FusionCore** for fundamental functionality and **FusionUI** for user interface enhancements.
+Fusion is a single Swift framework for iOS, macOS, tvOS, and watchOS. It gives you typed storage with live bindings, an image pipeline that respects memory, REST that stays Codable end-to-end, tween animations that survive backgrounding, and UI helpers that remove the glue code every app rewrites.
 
-## Features
+It is not a kitchen-sink SDK. Every API exists because a real product needed it, and the hot paths are measured in nanoseconds.
 
-### ⚙️ Core Module (FusionCore)
+---
 
-**Storage & Data Management**
-- [x] **Keychain Integration** - Secure storage for sensitive data
-- [x] **Multiple Storage Backends** - UserDefaults, FileManager, and in-memory storage
-- [x] **Data Binding** - Reactive data management with automatic updates
-- [x] **In-Memory Caching** - High-performance temporary data storage
-- [x] **Thread-Safe Operations** - Concurrent access protection
+## Why it exists
 
-**Networking & Communication**
-- [x] **REST API Client** - Complete HTTP client with authentication
-- [x] **Request/Response Handling** - Type-safe networking with Codable support
-- [x] **Cookie Management** - HTTP cookie handling and persistence
-- [x] **Encryption Utilities** - Data encryption and security helpers
-- [x] **Request Logging** - Comprehensive network request logging
+Building an Apple app means solving the same problems again: persist state safely, refresh the UI when it changes, load images without melting the heap, animate without dropping frames, talk to an API without boilerplate.
 
-**Utilities & Helpers**
-- [x] **Timer Control** - High-performance timer management with background handling
-- [x] **Async Operations** - Advanced asynchronous operation management
-- [x] **Text Processing** - Rich text manipulation and styling
-- [x] **Mathematical Functions** - Extended math utilities and trigonometry
-- [x] **Localization Support** - Multi-language text handling
-- [x] **Local Notifications** - User notification management
+Fusion is that layer, already battle-tested:
 
-### 📱 UI Module (FusionUI)
+| What you need | What Fusion gives you |
+|---|---|
+| Persist app state across launches, widgets, and processes | Typed `DataManageable` over memory, files, UserDefaults, or Keychain — with optional async writes and `flushPendingWrites()` when another process must read |
+| React when a value changes | Bindings via closure, Combine, or `AsyncStream` — same key, same semantics |
+| Show remote images without thrashing memory | `ImagePipeline` with coalesced downloads, URL cache, and thumbnail decode |
+| Animate UIKit properties | `Tween` with easing, repetition, and background-safe timing |
+| Call a JSON API | `RESTBuilder` + standard date codecs + optional authenticator |
+| Ship across Apple platforms | One library: iOS 17 · macOS 14 · tvOS 17 · watchOS 10 |
 
-**Animation & Effects**
-- [x] **Tween Animations** - Smooth property animations with easing functions
-- [x] **Easing Functions** - Multiple animation curves (linear, ease-in, ease-out, etc.)
-- [x] **View Transitions** - Custom view transition effects
+---
 
-**User Interface Controls**
-- [x] **User Flow Management** - Navigation and presentation flow control
-- [x] **Control Actions** - Unified action handling for UI controls
-- [x] **View Hierarchy Utilities** - Advanced view manipulation and traversal
-- [x] **Haptic Feedback** - Tactile feedback integration
-- [x] **Scroll View Extensions** - Enhanced scroll view functionality
+## Performance that is proven, not claimed
 
-**Styling & Theming**
-- [x] **Color Management** - Advanced color utilities and theming
-- [x] **Font Handling** - Dynamic font management and styling
-- [x] **Gradient Views** - Custom gradient view components
-- [x] **Image Processing** - Image loading, caching, and manipulation
-- [x] **SwiftUI Integration** - SwiftUI modifiers and style extensions
-- [x] **Geometric Shapes** - Custom shape drawing utilities
+Fusion ships a one-tap benchmark suite. Numbers below are from the committed baseline on Apple M4 Pro (Release).
 
-## Requirements
+| Hot path | Cost |
+|---|---:|
+| `ThreadSafe` read / mutate | **6–7 ns** |
+| Silent logger call | **5 ns** |
+| Image memory-cache hit | **~100 ns** |
+| Idle `flushPendingWrites()` | **~134 ns** |
+| `InMemoryCache.getOrSet` | **~74 ns** |
+| Number → localized string | **~670 ns** |
+| File storage write | **~3 µs** |
+| Present-key cold read from disk | **~17 µs** |
+| Downsampled 1024→128 image decode | **~2.8 ms**, ~⅓ the peak memory of a full decode |
 
-- iOS 15.0+
-- macOS 12.0+
-- tvOS 15.0+
-- watchOS 9.0+
-- Swift 5.0+
-- Xcode 13.0+
+Run it yourself:
 
-## Usage Examples
+- Double-click **`Run Benchmarks.command`**, or
+- In Xcode: scheme **Benchmarks** → **⌘B**
 
-### Storage & Keychain
+Results open in [`Benchmarks/report.html`](Benchmarks/report.html) (**Baseline · Best · Worst · Current**). History: [`Benchmarks/HISTORY.md`](Benchmarks/HISTORY.md). How to run: [Benchmarks/README.md](Benchmarks/README.md).
+
+---
+
+## What’s inside
+
+### Storage & reactivity
+
+Define a store once. Read and write with types. Bind anywhere.
 
 ```swift
 import Fusion
 
-// Secure keychain storage
-let keychain = Keychain()
-keychain["userToken"] = "abc123".data(using: .utf8)
-let token = keychain["userToken"]
+enum AppStorage: DataManageable {
+    typealias Storage = FileManager   // or StateStorage, UserDefaults, Keychain
 
-// Multiple storage backends
-UserDefaults.shared.set("value", forKey: "key")
-FileManager.shared.set(model, forKey: "model.json")
-StateStorage.shared.set(temporaryData, forKey: "temp")
+    enum Key: String, CaseIterable {
+        case session
+        case profile
+    }
+
+    @Stored(AppStorage.self, key: .session)
+    static var session: Session?
+}
+
+AppStorage.session = Session(token: "…")
+let token = AppStorage.session?.token
+
+let observer = NSObject()
+AppStorage.bind(key: .session, cancellable: observer) { (session: Session?) in
+    // fired on every write and removal
+}
+
+for await session in AppStorage.stream(key: .session) as AsyncStream<Session?> {
+    // same source of truth, async form
+}
+
+AppStorage.flushPendingWrites()   // before a widget / extension reads the same files
+```
+
+Keychain stays a one-liner for secrets:
+
+```swift
+let keychain = Keychain()
+keychain["refreshToken"] = Data("…".utf8)
+let data = keychain["refreshToken"]
+```
+
+### Image loading
+
+Coalesced network requests, memory cache, disk via `URLCache.appGroup`, and downsampling so a 4K asset never becomes a 4K bitmap in RAM.
+
+```swift
+// UIKit
+UIImage.loadOrDownload(url: url) { image, fromCache in
+    imageView.image = image
+}
+
+// SwiftUI — cache-aware async image
+AsyncImageCached(url) { image in
+    image.resizable().scaledToFill()
+} placeholder: {
+    ProgressView()
+}
+
+UIImage.flushCache()   // memory + URL cache, cleanly
 ```
 
 ### Networking
 
-```swift
-import Fusion
+Typed requests, shared JSON date strategy, async or completion-based.
 
-// REST API requests
-let request = RESTBuilder<UserModel>(url: "https://api.example.com/users", method: .get)
-request.execute { result, response in
-    switch result {
-    case .success(let user):
-        print("User: \(user)")
-    case .failure(let error):
-        print("Error: \(error)")
-    }
+```swift
+let users = RESTBuilder<[User]>(url: "https://api.example.com/users")
+let (list, _) = try await users.execute()
+
+let create = RESTBuilder<User>(url: "https://api.example.com/users", method: .post)
+create.execute(body: NewUser(name: "Ada")) { result in
+    // Result<User, Error>
 }
-
-// With authentication
-let authRequest = RESTBuilder<UserModel>(url: "https://api.example.com/profile", method: .get)
-    .authenticated()
-    .headers(["Custom-Header": "value"])
 ```
 
-### Animations
+### Animation
+
+Property tweens with real easing curves, mirrors, and background-safe clocks.
+
+```swift
+Tween(
+    card,
+    duration: 0.45,
+    options: .init(ease: .smoothOut),
+    toValues: [
+        \.alpha: 1,
+        \.center.y: 240
+    ]
+)
+```
+
+### UI & flow
+
+Navigation without the ceremony: storyboard or factory-based flows, push/modal, hooks for login and deep links.
+
+```swift
+let login = UserFlow("Login", bundle: .main)
+login.startAsModal(withNavigation: true)
+
+let profile = UserFlow { _ in ProfileViewController() }
+profile.startAsPush()
+```
+
+Also included: color/font utilities, text styling, haptics, scroll helpers, SwiftUI↔UIKit bridges, localization with preferred-locale caches, encryption helpers, and a structured logger.
+
+---
+
+## Install
+
+**Swift Package Manager** (recommended)
+
+```swift
+.package(url: "https://github.com/db-in/fusion.git", from: "2.1.1")
+```
+
+In Xcode: *File → Add Package Dependencies…* → `https://github.com/db-in/fusion.git`
 
 ```swift
 import Fusion
-
-// Tween animations
-let view = UIView()
-let tween = Tween(view, duration: 1.0)
-    .to(\.alpha, 0.0)
-    .to(\.transform, CGAffineTransform(scaleX: 0.5, y: 0.5))
-    .ease(.easeInOut)
-    .onComplete { print("Animation finished") }
-    .start()
 ```
 
-### User Flow Management
-
-```swift
-import Fusion
-
-// Define user flows
-let loginFlow = UserFlow("Login", bundle: .main)
-let profileFlow = UserFlow { _ in ProfileViewController() }
-
-// Present flows
-loginFlow.startAsModal(withNavigation: true)
-profileFlow.startAsPush()
-
-// With hooks
-let flow = UserFlow("Main", bundle: .main, hooks: [
-    UserFlowHook(.userDidLogin, style: .push)
-])
-```
-
-### Text Styling
-
-```swift
-import Fusion
-
-// Rich text styling
-let text = "Hello World"
-    .styled([.foregroundColor: UIColor.blue])
-    .styled([.font: UIFont.boldSystemFont(ofSize: 18)], onText: "World")
-
-// HTML styling
-let htmlText = "This is <b>bold</b> and <i>italic</i>"
-    .styledHTML([
-        "b": [.font: UIFont.boldSystemFont(ofSize: 16)],
-        "i": [.obliqueness: 0.3]
-    ])
-```
-
-## Installation
-
-### Using [Swift Package Manager](https://swift.org/package-manager) (Recommended)
-
-Add the following to your `Package.swift` file:
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/db-in/fusion.git", from: "1.3.5")
-]
-```
-
-Or add it through Xcode:
-1. File → Add Package Dependencies
-2. Enter: `https://github.com/db-in/fusion.git`
-3. Select version 1.3.5 or later
-
-### Using [CocoaPods](https://cocoapods.org)
-
-Add to your `Podfile`:
+**CocoaPods**
 
 ```ruby
-# Full framework
-pod 'Fusion'
-
-# Or install specific modules
-pod 'Fusion/Core'  # Core functionality only
-pod 'Fusion/UI'    # UI components (includes Core)
+pod 'Fusion'           # everything
+pod 'Fusion/Core'      # storage, networking, utilities
+pod 'Fusion/UI'        # UI + Core
 ```
 
-Then run:
-```bash
-pod install
-```
-
-### Using [Carthage](https://github.com/Carthage/Carthage)
-
-Add to your `Cartfile`:
+**Carthage**
 
 ```
-github "db-in/fusion" ~> 1.3.5
+github "db-in/fusion" ~> 2.1.1
 ```
 
-Then run:
-```bash
-carthage update
-```
+### Requirements
 
-## Module Structure
+| | |
+|---|---|
+| iOS | 17.0+ |
+| macOS | 14.0+ |
+| tvOS | 17.0+ |
+| watchOS | 10.0+ |
+| Swift | 5.0+ |
+| Xcode | 15.0+ |
 
-Fusion is organized into modular components:
+---
 
-- **FusionCore**: Essential utilities, networking, storage, and data management
-- **FusionUI**: User interface components, animations, and styling utilities
-- **Fusion**: Complete framework (includes both Core and UI)
+## Documentation & samples
 
-You can import specific modules based on your needs:
+- [API documentation](https://db-in.github.io/fusion/)
+- Sample apps in this repo for iOS, macOS, tvOS, watchOS, and visionOS
+- [Benchmarks](Benchmarks/README.md) — methodology, history, and live HTML report
 
-```swift
-import FusionCore  // Core functionality only
-import FusionUI    // UI components (automatically includes Core)
-import Fusion      // Complete framework
-```
-
-## Documentation
-
-- [API Documentation](https://db-in.github.io/fusion/)
-- [GitHub Repository](https://github.com/db-in/fusion)
-- [Issues & Bug Reports](https://github.com/db-in/fusion/issues)
+---
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Issues and pull requests are welcome. If you touch a hot path, run the **Benchmarks** scheme and keep `Benchmarks/report.html` honest.
 
 ## License
 
-Fusion is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
+MIT. See [LICENSE](LICENSE).
 
 ## Author
 
-**Diney Bomfim**
-- GitHub: [@dineybomfim](https://github.com/dineybomfim)
+**Diney Bomfim** — [@dineybomfim](https://github.com/dineybomfim)

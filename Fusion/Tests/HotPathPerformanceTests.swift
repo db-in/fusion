@@ -10,20 +10,11 @@ import SwiftUI
 
 // MARK: - Type -
 
-final class HotPathPerformanceTests : XCTestCase {
+final class HotPathPerformanceTests : PerformanceTestCase {
 	
-	private let iterations = 2_000
 	private let english = Locale(identifier: "en_US")
 	private let arabic = Locale(identifier: "ar_SA")
 	private let reference = Date(timeIntervalSince1970: 1_700_000_000)
-	
-	private func measureLoop(_ work: (Int) -> Void) {
-		measure(metrics: [XCTClockMetric()]) {
-			for index in 0..<iterations {
-				work(index)
-			}
-		}
-	}
 	
 	func testNumberToString() {
 		measureLoop { _ = (Double($0) + 0.1234).toString(decimals: 2, locale: english, roundingMode: .halfUp) }
