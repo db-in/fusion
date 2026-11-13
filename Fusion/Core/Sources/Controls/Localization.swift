@@ -50,8 +50,6 @@ public extension Bundle {
 	
 	private static let hintsStorage = ThreadSafe<[Bundle]>(wrappedValue: [])
 	
-	private static let hintsGenerationStorage = ThreadSafe<Int>(wrappedValue: 0)
-	
 	/// Hints are the first bundles to be scanned for loading contents. Including (but not limited to) languages, images, url, etc.
 	static var hints: [Bundle] {
 		get { hintsStorage.wrappedValue }
@@ -78,10 +76,9 @@ public extension Bundle {
 		flushLocalizedStrings()
 	}
 	
-	internal static var hintsGeneration: Int { hintsGenerationStorage.wrappedValue }
+	internal static var localizedGeneration: Int { localizedCache.wrappedValue.generation }
 	
 	internal static func flushLocalizedStrings() {
-		hintsGenerationStorage.mutate { $0 &+= 1 }
 		localizedCache.mutate {
 			$0.generation &+= 1
 			$0.values.removeAll(keepingCapacity: true)
@@ -136,13 +133,13 @@ public extension Bundle {
 	/// convention, utilizing `nocache` to avoid strong caching.
 	/// - SeeAlso: [Apple Loading String Resources Documentation](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/LoadingResources/Strings/Strings.html#//apple_ref/doc/uid/10000051i-CH6-97055-CJBFDJGF)
 	static func localizedString(language: String, key: String, table: String?) -> String? {
+		guard table?.contains("nocache") != true else { return lookUpLocalizedString(language: language, key: key, table: table) }
 		_ = localeObserver
 		let cacheKey = LocalizedKey(language: language, key: key, table: table)
 		let lookup = localizedCache.mutate { ($0.values[cacheKey], $0.generation) }
 		if let cached = lookup.0 { return cached }
 		
-		let value = cachedLanguages.wrappedValue[language]?.firstMap({ $0.localizedString(forKey: key, table: table) })
-		let resolved = value ?? allAvailable.firstMap({ $0.localizedString(language: language, key: key, table: table) })
+		let resolved = lookUpLocalizedString(language: language, key: key, table: table)
 		
 		localizedCache.mutate {
 			guard $0.generation == lookup.1 else { return }
@@ -150,6 +147,11 @@ public extension Bundle {
 			$0.values[cacheKey] = .some(resolved)
 		}
 		return resolved
+	}
+	
+	private static func lookUpLocalizedString(language: String, key: String, table: String?) -> String? {
+		let value = cachedLanguages.wrappedValue[language]?.firstMap({ $0.localizedString(forKey: key, table: table) })
+		return value ?? allAvailable.firstMap({ $0.localizedString(language: language, key: key, table: table) })
 	}
 	
 	/// Registers a bundle in ``hints`` so it is scanned first when resolving localized resources.

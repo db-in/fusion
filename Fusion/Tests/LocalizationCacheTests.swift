@@ -15,7 +15,7 @@ private struct RuntimeBundle {
 	
 	var bundle: Bundle? { Bundle(path: root.path) }
 	
-	init(table: String = "Runtime\(UUID().uuidString.prefix(8)).nocache") {
+	init(table: String = "Runtime\(UUID().uuidString.prefix(8))") {
 		self.root = FileManager.default.temporaryDirectory.appendingPathComponent("LocalizationCache-\(UUID().uuidString)")
 		self.table = table
 	}
@@ -69,18 +69,16 @@ extension FusionSuite {
 		}
 		
 		@Test
-		func localized_AfterRuntimeUpdateAndFlush_ShouldReturnTheNewString() throws {
-			let runtime = RuntimeBundle()
+		func localized_WithANocacheTable_ShouldReadRuntimeUpdatesWithoutAFlush() throws {
+			let runtime = RuntimeBundle(table: "Runtime\(UUID().uuidString.prefix(8)).nocache")
 			try runtime.write(["greeting": "Hello"], language: "en")
 			
 			try withHint(runtime) {
 				#expect("greeting".localized(for: "en", table: runtime.table) == "Hello")
 				
-				try runtime.write(["greeting": "Hi there"], language: "en")
-				#expect("greeting".localized(for: "en", table: runtime.table) == "Hello")
-				
-				Bundle.flushCachedLanguages()
+				try runtime.write(["greeting": "Hi there", "late": "Late"], language: "en")
 				#expect("greeting".localized(for: "en", table: runtime.table) == "Hi there")
+				#expect("late".localized(for: "en", table: runtime.table) == "Late")
 			}
 		}
 		
@@ -155,7 +153,7 @@ extension FusionSuite {
 			defer { String.localizableTable = previousTable }
 			
 			try withHint(runtime) {
-				String.localizableTable = "Missing.nocache"
+				String.localizableTable = "Missing\(UUID().uuidString.prefix(8))"
 				#expect("table_key".localized(for: "en") == "table_key")
 				String.localizableTable = runtime.table
 				#expect("table_key".localized(for: "en") == "From table")
@@ -164,16 +162,13 @@ extension FusionSuite {
 		}
 		
 		@Test
-		func localized_WhenTheSystemLocaleChanges_ShouldFlushTheCache() throws {
-			let runtime = RuntimeBundle()
-			try runtime.write(["locale_key": "Before"], language: "en")
+		func localized_WhenTheSystemLocaleChanges_ShouldFlushTheCache() {
+			_ = "locale_key".localized(for: "en")
+			let generation = Bundle.localizedGeneration
 			
-			try withHint(runtime) {
-				#expect("locale_key".localized(for: "en", table: runtime.table) == "Before")
-				try runtime.write(["locale_key": "After"], language: "en")
-				NotificationCenter.default.post(name: NSLocale.currentLocaleDidChangeNotification, object: nil)
-				#expect("locale_key".localized(for: "en", table: runtime.table) == "After")
-			}
+			NotificationCenter.default.post(name: NSLocale.currentLocaleDidChangeNotification, object: nil)
+			
+			#expect(Bundle.localizedGeneration != generation)
 		}
 		
 		@Test

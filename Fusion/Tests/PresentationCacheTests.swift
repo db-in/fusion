@@ -20,32 +20,23 @@ extension FusionSuite {
 	struct PresentationCacheTests {
 		
 		@Test
-		func catalog_WithAMiss_ShouldLoadOnceUntilTheHintsChange() {
-			let key = "catalog-\(UUID().uuidString)"
+		func getOrLoad_WithAMiss_ShouldLoadAgainNextTime() {
+			let key = "load-\(UUID().uuidString)"
 			let loads = ThreadSafe(wrappedValue: 0)
 			let load: () -> String? = { loads.mutate { $0 += 1 }; return nil }
 			
-			#expect(InMemoryCache.getOrLoadCatalog(key: key, load: load) == nil)
-			#expect(InMemoryCache.getOrLoadCatalog(key: key, load: load) == nil)
-			#expect(loads.wrappedValue == 1)
-			
-			Bundle.registering(.main)
-			#expect(InMemoryCache.getOrLoadCatalog(key: key, load: load) == nil)
+			#expect(InMemoryCache.getOrLoad(key: key, load: load) == nil)
+			#expect(InMemoryCache.getOrLoad(key: key, load: load) == nil)
 			#expect(loads.wrappedValue == 2)
-			InMemoryCache.flush(key: key)
 		}
 		
 		@Test
-		func catalog_WithAHit_ShouldKeepTheValue() {
-			let key = "catalog-\(UUID().uuidString)"
-			let loads = ThreadSafe(wrappedValue: 0)
-			let load: () -> String? = { loads.mutate { $0 += 1 }; return "found" }
+		func getOrLoad_WithAnotherCachedType_ShouldDropItWhenTheLoadMisses() {
+			let key = "load-\(UUID().uuidString)"
+			InMemoryCache.set(key: key, newValue: "text")
 			
-			#expect(InMemoryCache.getOrLoadCatalog(key: key, load: load) == "found")
-			Bundle.registering(.main)
-			#expect(InMemoryCache.getOrLoadCatalog(key: key, load: load) == "found")
-			#expect(loads.wrappedValue == 1)
-			InMemoryCache.flush(key: key)
+			#expect(InMemoryCache.getOrLoad(key: key) { nil as Int? } == nil)
+			#expect(InMemoryCache.getRaw(key: key) == nil)
 		}
 		
 #if canImport(SwiftUI)
@@ -61,21 +52,19 @@ extension FusionSuite {
 		
 #if canImport(UIKit) && !os(watchOS)
 		@Test
-		func anyColor_WithAMissingName_ShouldCacheTheMiss() {
+		func anyColor_WithAMissingName_ShouldNotCacheTheMiss() {
 			let name = "missing-\(UUID().uuidString)"
 			#expect(UIColor.anyColor(named: name) == .black)
-			#expect(InMemoryCache.getRaw(key: "UIColor-\(name)") is CatalogMiss)
+			#expect(InMemoryCache.getRaw(key: "UIColor-\(name)") == nil)
 			#expect(UIColor.anyColor(named: name) == .black)
-			InMemoryCache.flush(key: "UIColor-\(name)")
 		}
 		
 		@Test
-		func anyImage_WithAMissingName_ShouldCacheTheMiss() {
+		func anyImage_WithAMissingName_ShouldNotCacheTheMiss() {
 			let name = "missing-\(UUID().uuidString)"
 			#expect(UIImage.anyImage(named: name).size == .zero)
-			#expect(InMemoryCache.getRaw(key: "UIImage-\(name)") is CatalogMiss)
+			#expect(InMemoryCache.getRaw(key: "UIImage-\(name)") == nil)
 			#expect(UIImage.anyImageNonTrait(named: name).size == .zero)
-			InMemoryCache.flush(key: "UIImage-\(name)")
 		}
 		
 		@Test
@@ -86,6 +75,15 @@ extension FusionSuite {
 			#expect(first.pointSize == 17)
 			#expect(first !== UIFont.systemFont(ofSize: 18).monospacedDigit)
 			#expect(first !== font.bold.monospacedDigit)
+		}
+		
+		@Test
+		func monospacedDigit_WithTheSameNameAndSizeButAnotherDescriptor_ShouldKeepEachDescriptor() {
+			let font = UIFont.systemFont(ofSize: 17)
+			let styled = UIFont(descriptor: font.fontDescriptor.addingAttributes([.textStyle: UIFont.TextStyle.body]), size: 17)
+			
+			#expect(font.monospacedDigit !== styled.monospacedDigit)
+			#expect(styled.monospacedDigit.fontDescriptor.object(forKey: .textStyle) as? UIFont.TextStyle == .body)
 		}
 		
 		@Test

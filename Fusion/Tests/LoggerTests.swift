@@ -75,7 +75,7 @@ extension FusionSuite {
 			let original = Logger.maxFileSize
 			defer { Logger.maxFileSize = original }
 			
-			#expect(original == 25 * 1024 * 1024)
+			#expect(original == 15 * 1024 * 1024)
 			Logger.maxFileSize = 50 * 1024 * 1024
 			#expect(Logger.maxFileSize == 50 * 1024 * 1024)
 		}

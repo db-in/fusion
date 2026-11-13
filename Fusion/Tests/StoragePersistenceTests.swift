@@ -95,18 +95,46 @@ extension FusionSuite {
 		private var spy: SpyStorage { SpyStorage.spy }
 		
 		@Test
-		func value_WithAbsentKey_ShouldReadTheStorageOnlyOnce() {
+		func value_WithAbsentKey_ShouldSeeAValueWrittenLaterOutsideTheStore() {
 			let key = SpyKey.unique
 			let namespace = SpyStore.namespace(key)
 			
-			let first: String? = SpyStore.value(forKey: key)
-			let second: String? = SpyStore.value(forKey: key)
-			let third: Int? = SpyStore.value(forKey: key)
+			#expect(SpyStore.value(forKey: key) as String? == nil)
+			spy.values.mutate { $0[namespace] = "external" }
 			
-			#expect(first == nil)
-			#expect(second == nil)
-			#expect(third == nil)
-			#expect(spy.readCount(namespace) == 1)
+			#expect(SpyStore.value(forKey: key) == "external")
+		}
+		
+		@Test
+		func value_ReadWithAnotherType_ShouldNotHideTheStoredValue() {
+			let key = SpyKey.unique
+			
+			SpyStore.set("text", forKey: key)
+			#expect(SpyStore.value(forKey: key) as Int? == nil)
+			
+			#expect(SpyStore.value(forKey: key) == "text")
+		}
+		
+		@Test
+		func remove_ThenAnExternalWrite_ShouldReadTheNewValue() {
+			let key = SpyKey.unique
+			let namespace = SyncSpyStore.namespace(key)
+			
+			SyncSpyStore.set("value", forKey: key)
+			SyncSpyStore.remove(keys: [key])
+			spy.values.mutate { $0[namespace] = "external" }
+			
+			#expect(SyncSpyStore.value(forKey: key) == "external")
+		}
+		
+		@Test
+		func set_WithSynchronousPersistenceOptOut_ShouldWriteBeforeReturning() {
+			let key = SpyKey.unique
+			let namespace = SyncSpyStore.namespace(key)
+			
+			SyncSpyStore.set("value", forKey: key)
+			
+			#expect(spy.values.wrappedValue[namespace] as? String == "value")
 		}
 		
 		@Test
@@ -123,7 +151,7 @@ extension FusionSuite {
 		}
 		
 		@Test
-		func set_WithNilValue_ShouldReadNilWithoutTouchingTheStorage() {
+		func set_WithNilValue_ShouldReadNilAndRemoveFromStorage() {
 			let key = SpyKey.unique
 			let namespace = SpyStore.namespace(key)
 			
@@ -133,7 +161,6 @@ extension FusionSuite {
 			#expect(SpyStore.value(forKey: key) as String? == nil)
 			StoragePersistence.waitForPendingWrites()
 			#expect(spy.values.wrappedValue[namespace] == nil)
-			#expect(spy.readCount(namespace) == 0)
 		}
 		
 		@Test
@@ -201,7 +228,6 @@ extension FusionSuite {
 			#expect(SpyStore.value(forKey: key) as String? == nil)
 			StoragePersistence.waitForPendingWrites()
 			#expect(spy.values.wrappedValue[namespace] == nil)
-			#expect(spy.readCount(namespace) == 0)
 		}
 		
 		@Test
@@ -218,22 +244,13 @@ extension FusionSuite {
 		}
 		
 		@Test
-		func set_WithSynchronousPersistenceOptOut_ShouldWriteBeforeReturning() {
-			let key = SpyKey.unique
-			let namespace = SyncSpyStore.namespace(key)
-			
-			SyncSpyStore.set("sync", forKey: key)
-			
-			#expect(spy.values.wrappedValue[namespace] as? String == "sync")
-		}
-		
-		@Test
 		func persistsAsynchronously_ShouldDefaultToFalseForMemoryKeychainAndDefaults() {
 			#expect(SpyStore.persistsAsynchronously(forKey: .unique))
 			#expect(FileStore.persistsAsynchronously(forKey: .unique))
 			#expect(!AsyncMockStorage.persistsAsynchronously(forKey: .value))
 			#expect(!KeychainStore.persistsAsynchronously(forKey: .unique))
 			#expect(!DefaultsStore.persistsAsynchronously(forKey: .unique))
+			#expect(!SyncSpyStore.persistsAsynchronously(forKey: .unique))
 		}
 		
 		@Test

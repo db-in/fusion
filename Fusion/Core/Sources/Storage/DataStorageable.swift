@@ -54,6 +54,10 @@ extension DataStorageable {
 	func keys(prefix: String = "") -> [String] {
 		withKeys { $0.keys.filter { $0.hasPrefix(prefix) } }
 	}
+	
+	func isTracked(key: String) -> Bool {
+		withKeys { $0[key] == true }
+	}
 }
 
 // MARK: - Extension - UserDefaults DataStorageable

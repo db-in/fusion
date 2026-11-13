@@ -36,7 +36,7 @@ actor ImagePipeline {
 		return cache
 	}()
 	
-	private let badges = ThreadSafe<(generation: Int, images: [String : UIImage])>(wrappedValue: (0, [:]))
+	private let badges = ThreadSafe<[String : UIImage]>(wrappedValue: [:])
 	
 	private var inFlight: [String : Task<UIImage?, Never>] = [:]
 	
@@ -169,25 +169,12 @@ actor ImagePipeline {
 	}
 	
 	nonisolated func associateBadge(_ image: UIImage?, to url: String) {
-		badges.mutate {
-			$0.generation += 1
-			$0.images[url] = image
-		}
+		badges.mutate { $0[url] = image }
 	}
 	
 	nonisolated func resolve(_ image: UIImage, url: String, allowsBadge: Bool) -> UIImage {
-		guard allowsBadge else { return image }
-		let snapshot = badges.wrappedValue
-		guard let badge = snapshot.images[url] else { return image }
-		let key = "\(memoryKeyPrefix(for: image, url: url))#badge-\(snapshot.generation)" as NSString
-		if let badged = memory.object(forKey: key) { return badged }
-		let badged = image.addBadge(badge)
-		memory.setObject(badged, forKey: key, cost: badged.memoryCost)
-		return badged
-	}
-	
-	nonisolated private func memoryKeyPrefix(for image: UIImage, url: String) -> String {
-		"\(url)#\(Int(image.size.width * image.scale))x\(Int(image.size.height * image.scale))"
+		guard allowsBadge, let badge = badges.wrappedValue[url] else { return image }
+		return image.addBadge(badge)
 	}
 	
 	nonisolated func cachedImage(url: String, maxPixelSize: CGFloat? = nil) -> UIImage? {

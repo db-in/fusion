@@ -5,13 +5,11 @@
 import Foundation
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
 #endif
 
 // MARK: - Definitions -
-
-struct AbsentValue {
-	static let marker = AbsentValue()
-}
 
 private struct PendingWrite {
 	let value: Any?
@@ -41,12 +39,17 @@ public enum StoragePersistence {
 			UIApplication.didEnterBackgroundNotification,
 			UIApplication.willTerminateNotification
 		]
+#elseif canImport(AppKit)
+		let names: [Notification.Name] = [
+			NSApplication.willResignActiveNotification,
+			NSApplication.willTerminateNotification
+		]
+#else
+		let names: [Notification.Name] = []
+#endif
 		return names.map {
 			NotificationCenter.default.addObserver(forName: $0, object: nil, queue: nil) { _ in flushPendingWrites() }
 		}
-#else
-		return []
-#endif
 	}()
 	
 	static var pendingCount: Int { state.wrappedValue.writes.count }
@@ -114,6 +117,8 @@ public enum StoragePersistence {
 	
 // MARK: - Exposed Methods
 	
+	/// Saves every pending asynchronous or throttled write of every storage before returning.
+	/// On iOS, tvOS, visionOS and macOS it runs automatically when the app resigns active, enters the background or terminates.
 	public static func flushPendingWrites() {
 		queue.sync {
 			let keys: [String] = state.mutate { state in

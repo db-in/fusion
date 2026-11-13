@@ -39,10 +39,10 @@ public extension UIFont {
 	
 	private static let monospacedDigitLimit: Int = 256
 	
-	private static let monospacedDigitCache = ThreadSafe<[String : UIFont]>(wrappedValue: [:])
+	private static let monospacedDigitCache = ThreadSafe<[UIFontDescriptor : UIFont]>(wrappedValue: [:])
 	
 	var monospacedDigit: UIFont {
-		let key = "\(fontName)-\(pointSize)-\(fontDescriptor.symbolicTraits.rawValue)"
+		let key = fontDescriptor
 		if let cached = Self.monospacedDigitCache.mutate({ $0[key] }) { return cached }
 		let font = UIFont(descriptor: fontDescriptor.monospacedDigit, size: 0)
 		Self.monospacedDigitCache.mutate {

@@ -128,6 +128,7 @@ public class Tween {
 	private var allValues: [String : [CGFloat]] = [:]
 	private var lastFrameTime: FPoint = 0
 	private var lastBackgroundTotal: FPoint = 0
+	private var isFinalFrameScheduled: Bool = false
 	private var isStopped: Bool = false
 	private let lock = NSRecursiveLock()
 	
@@ -279,6 +280,7 @@ public class Tween {
 		beginTime = 0.0
 		currentTime = 0.0
 		lastFrameTime = 0.0
+		isFinalFrameScheduled = false
 		idleTime = CFAbsoluteTimeGetCurrent()
 		lastBackgroundTotal = Self.driver.totalBackgroundTime
 	}
@@ -352,7 +354,7 @@ public class Tween {
 	}
 	
 	private func postUpdateValues() {
-		guard currentState != .starting && deltaTime == duration else { return }
+		guard currentState != .starting && deltaTime == duration && isFinalFrameScheduled else { return }
 		finishCycle()
 	}
 	
@@ -391,7 +393,7 @@ public class Tween {
 			currentTime = CFAbsoluteTimeGetCurrent() - idleTime
 			
 			let delay = currentCycle == 0 ? options.delay : options.repetitionDelay
-			guard delay <= currentTime else { return false }
+			guard delay <= currentTime, !isFinalFrameScheduled else { return false }
 			
 			let isFirstFrame = beginTime == 0.0
 			let isFinalFrame = !isFirstFrame && currentTime - beginTime >= duration
@@ -401,6 +403,7 @@ public class Tween {
 			
 			beginTime = (beginTime == 0.0) ? currentTime : beginTime
 			deltaTime = min(currentTime - beginTime, duration)
+			isFinalFrameScheduled = duration > 0 && deltaTime == duration
 			return true
 		}
 		

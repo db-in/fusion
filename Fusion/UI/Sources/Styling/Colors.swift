@@ -169,7 +169,7 @@ public extension UIColor {
 	///            If caching is enabled, the color is stored in an in-memory cache for faster future retrievals.
 	static func anyColor(named: String, allowCache: Bool = true, bundleHint: Bundle = .main, trait: UITraitCollection? = .current) -> UIColor {
 		guard allowCache else { return color(named: named, bundle: bundleHint, trait: trait) ?? .black }
-		return InMemoryCache.getOrLoadCatalog(key: "\(Self.self)-\(named)") { color(named: named, bundle: bundleHint, trait: trait) } ?? .black
+		return InMemoryCache.getOrSet(key: "\(Self.self)-\(named)", newValue: color(named: named, bundle: bundleHint, trait: trait)) ?? .black
 	}
 	
 	/// Returns a random color with a given alpha.
@@ -314,7 +314,7 @@ public extension Color {
 		return Color(uiColor: .anyColor(named: named, allowCache: allowCache, bundleHint: bundleHint))
 #else
 		guard allowCache else { return color(named: named, bundle: bundleHint) ?? .black }
-		return InMemoryCache.getOrLoadCatalog(key: "\(Self.self)-\(named)") { color(named: named, bundle: bundleHint) } ?? .black
+		return InMemoryCache.getOrSet(key: "\(Self.self)-\(named)", newValue: color(named: named, bundle: bundleHint)) ?? .black
 #endif
 	}
 }

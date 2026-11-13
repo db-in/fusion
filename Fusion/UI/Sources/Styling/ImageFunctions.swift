@@ -47,7 +47,7 @@ public extension UIImage {
 	/// - Returns: An image object, if available; otherwise, a system image or an empty image.
 	static func anyImageNonTrait(named: String, allowCache: Bool = true, bundleHint: Bundle = .main) -> UIImage {
 		guard allowCache else { return image(named: named, bundle: bundleHint) ?? .init() }
-		return InMemoryCache.getOrLoadCatalog(key: "\(Self.self)-\(named)") { image(named: named, bundle: bundleHint) } ?? .init()
+		return InMemoryCache.getOrSet(key: "\(Self.self)-\(named)", newValue: image(named: named, bundle: bundleHint)) ?? .init()
 	}
 }
 #endif
@@ -83,7 +83,7 @@ public extension UIImage {
 						  bundleHint: Bundle = .main,
 						  trait: UITraitCollection = .preferredLocaleDirection) -> UIImage {
 		 guard allowCache else { return image(named: named, bundle: bundleHint, trait: trait) ?? .init() }
-		 return InMemoryCache.getOrLoadCatalog(key: "\(Self.self)-\(named)") { image(named: named, bundle: bundleHint, trait: trait) } ?? .init()
+		 return InMemoryCache.getOrSet(key: "\(Self.self)-\(named)", newValue: image(named: named, bundle: bundleHint, trait: trait)) ?? .init()
 	 }
 	
 // MARK: - Exposed Methods

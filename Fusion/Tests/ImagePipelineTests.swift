@@ -194,22 +194,37 @@ extension FusionSuite {
 		}
 		
 		@Test
-		func associateBadge_ShouldDrawTheBadgeOnceAndRefreshWhenChanged() async throws {
+		func associateBadge_ShouldDrawTheBadgeAndRemoveItWhenDissociated() async throws {
 			let route = routeImage()
 			let badge = UIImage(data: Self.pngData(width: 8, height: 8, color: .systemBlue))
 			UIImage.associateBadge(badge, to: route.url)
 			defer { UIImage.associateBadge(nil, to: route.url) }
 			
 			let plain = try #require(await ImagePipeline.shared.image(url: route.url, allowsBadge: false))
-			let first = try #require(UIImage.loadCache(url: route.url))
-			let second = try #require(UIImage.loadCache(url: route.url))
+			let badged = try #require(UIImage.loadCache(url: route.url))
 			
-			#expect(first === second)
-			#expect(first !== plain)
-			#expect(first.size.width > plain.size.width)
+			#expect(badged !== plain)
+			#expect(badged.size.width > plain.size.width)
 			
 			UIImage.associateBadge(nil, to: route.url)
 			#expect(UIImage.loadCache(url: route.url) === plain)
+		}
+		
+		@Test
+		func associateBadge_WhenTheImageChangesWithTheSameSize_ShouldBadgeTheNewImage() throws {
+			let url = "https://badge.test/\(UUID().uuidString).png"
+			let badge = try #require(UIImage(data: Self.pngData(width: 8, height: 8, color: .systemBlue)))
+			let red = try #require(UIImage(data: Self.pngData(width: 32, height: 32, color: .systemRed)))
+			let green = try #require(UIImage(data: Self.pngData(width: 32, height: 32, color: .systemGreen)))
+			UIImage.associateBadge(badge, to: url)
+			defer { UIImage.associateBadge(nil, to: url) }
+			
+			ImagePipeline.shared.cache(red, url: url)
+			let first = try #require(ImagePipeline.shared.cached(url: url))
+			ImagePipeline.shared.cache(green, url: url)
+			let second = try #require(ImagePipeline.shared.cached(url: url))
+			
+			#expect(first.pngData() != second.pngData())
 		}
 		
 		@Test

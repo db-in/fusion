@@ -346,6 +346,19 @@ extension FusionSuite {
 		}
 		
 		@Test
+		func tween_WhenTheMainThreadLagsAtTheEndOfACycle_ShouldFinishTheCycleOnce() async {
+			let tween = Tween(duration: 0.05,
+							  options: .init(repetition: .loop, repetitionCount: 20),
+							  fromValues: ["value": 0],
+							  toValues: ["value": 1])
+			Thread.sleep(forTimeInterval: 0.3)
+			await Task.yield()
+			
+			#expect(tween.currentCycle <= 2)
+			tween.stopTween()
+		}
+		
+		@Test
 		func tween_WithDefaultFps_ShouldStillReachTheFinalValue() async {
 			let view = UIView()
 			let tween = Tween(view, duration: 0.1, toValues: [\.alpha : 0.25])

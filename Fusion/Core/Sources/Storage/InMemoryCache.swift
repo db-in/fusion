@@ -6,10 +6,6 @@ import Foundation
 
 // MARK: - Definitions -
 
-struct CatalogMiss {
-	let generation: Int
-}
-
 // MARK: - Type -
 
 /// In memory key/value cache that works as a lightening cache layer 2 over any other storage.
@@ -101,28 +97,8 @@ public struct InMemoryCache {
 	}
 	
 	static func getOrLoad<T>(key: String, load: () -> T?) -> T? {
-		if let cached = getRaw(key: key) {
-			if cached is AbsentValue { return nil }
-			if let value = cached as? T { return value }
-		}
-		
-		let loaded = load()
-		set(key: key, newValue: loaded.map { $0 as Any } ?? AbsentValue.marker)
-		return loaded
-	}
-	
-	static func getOrLoadCatalog<T>(key: String, load: () -> T?) -> T? {
-		let generation = Bundle.hintsGeneration
-		switch getRaw(key: key) {
-		case let value as T:
-			return value
-		case let miss as CatalogMiss where miss.generation == generation:
-			return nil
-		default:
-			let loaded = load()
-			set(key: key, newValue: loaded.map { $0 as Any } ?? CatalogMiss(generation: generation))
-			return loaded
-		}
+		if let value = getRaw(key: key) as? T { return value }
+		return set(key: key, newValue: load())
 	}
 	
 	/// Clears the existing cache for a given key.

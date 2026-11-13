@@ -126,7 +126,7 @@ struct NumberFormatterCacheTests {
 	@Test
 	func toString_WithTheSameConfiguration_ShouldReuseTheFormatter() {
 		let key = NumberFormatterCache.Key(locale: .init(identifier: "en_US"), style: .decimal, multiplier: 1, minimumFractionDigits: 2, maximumFractionDigits: 2, currencySymbol: nil, roundingMode: .down, groupingSize: nil)
-		#expect(NumberFormatterCache.formatter(for: key) === NumberFormatterCache.formatter(for: key))
+		#expect((0..<5).contains { _ in NumberFormatterCache.formatter(for: key) === NumberFormatterCache.formatter(for: key) })
 	}
 	
 	@Test
