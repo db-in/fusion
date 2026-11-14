@@ -639,6 +639,9 @@ public extension UIViewController {
 	func embededInNavigation(hiddenBar: Bool = false) -> UINavigationController {
 		let nav = self as? UINavigationController ?? UINavigationController(rootViewController: self)
 		nav.isNavigationBarHidden = hiddenBar
+		if UserFlow.Config.isSwipeBackEnabled {
+			nav.enableSwipeBack()
+		}
 		return nav
 	}
 	

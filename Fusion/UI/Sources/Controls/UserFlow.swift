@@ -23,6 +23,42 @@ fileprivate extension UINavigationController {
 	}
 }
 
+private final class SwipeBackGestureDelegate: NSObject, UIGestureRecognizerDelegate {
+	
+	weak var navigation: UINavigationController?
+	
+	init(navigation: UINavigationController) {
+		self.navigation = navigation
+	}
+	
+	func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+		guard let navigation else { return false }
+		return navigation.viewControllers.count > 1 && navigation.transitionCoordinator == nil
+	}
+}
+
+private struct SwipeBackKeys {
+	static var delegate: UInt8 = 0
+}
+
+public extension UINavigationController {
+	
+	/// Enables the interactive swipe back gesture, even when the navigation bar is hidden or the back button is customized.
+	/// It never replaces a delegate assigned by the navigation controller itself.
+	func enableSwipeBack() {
+		guard let gesture = interactivePopGestureRecognizer else { return }
+		guard !(gesture.delegate is SwipeBackGestureDelegate), gesture.delegate !== self else { return }
+		let swipeDelegate = SwipeBackGestureDelegate(navigation: self)
+		objc_setAssociatedObject(self, &SwipeBackKeys.delegate, swipeDelegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+		gesture.delegate = swipeDelegate
+	}
+	
+	fileprivate func enableSwipeBackIfNeeded() {
+		guard UserFlow.Config.isSwipeBackEnabled else { return }
+		enableSwipeBack()
+	}
+}
+
 public extension UIViewController {
 	
 	fileprivate var firstInNavigation: UIViewController { (self as? UINavigationController)?.viewControllers.first ?? self }
@@ -67,6 +103,8 @@ public enum PresentationStyle {
 				}
 			}
 			
+			navigation?.enableSwipeBackIfNeeded()
+			
 			if let existingController = navigation?.first(like: firstController) {
 				if existingController === navigation?.children.last {
 					navigation?.popViewController(animated: false)
@@ -78,13 +116,16 @@ public enum PresentationStyle {
 				navigation?.pushViewController(firstController, animated: true)
 			}
 		case .pushWithRepetition:
-			UIWindow.topNavigation?.pushViewController(controller.firstInNavigation, animated: true)
+			let navigation = UIWindow.topNavigation
+			navigation?.enableSwipeBackIfNeeded()
+			navigation?.pushViewController(controller.firstInNavigation, animated: true)
 		case .modal:
 			controller.embededInNavigation().presentOverWindow()
 		case .modalWithPush:
 			let currentTop = UIWindow.topViewController
 			let navigation = (currentTop as? UINavigationController) ?? currentTop?.navigationController
 			if currentTop?.isPresentingAsModal == true, let validNavigation = navigation {
+				validNavigation.enableSwipeBackIfNeeded()
 				validNavigation.pushViewController(controller, animated: true)
 			} else {
 				controller.embededInNavigation().presentOverWindow()
@@ -149,6 +190,13 @@ public typealias UserFlowMapping = (UserFlow) -> UIViewController?
 // MARK: - Type -
 
 public struct UserFlow: Hashable {
+	
+	public struct Config {
+		
+		/// When `true`, every navigation controller used by a ``UserFlow`` push or created by `embededInNavigation`
+		/// gets the interactive swipe back gesture, including hidden navigation bars. The default is `false`.
+		public static var isSwipeBackEnabled: Bool = false
+	}
 	
 // MARK: - Properties
 	
