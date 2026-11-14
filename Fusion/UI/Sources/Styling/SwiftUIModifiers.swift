@@ -7,11 +7,6 @@ import SwiftUI
 
 // MARK: - SwiftUI Extensions
 
-private struct PressActiveCountKey: PreferenceKey {
-	static var defaultValue: Int = 0
-	static func reduce(value: inout Int, nextValue: () -> Int) { value += nextValue() }
-}
-
 /// A shape that applies rounded corners to specific corners of a rectangle.
 /// This shape allows you to round only selected corners rather than all corners uniformly,
 /// providing more flexible corner radius customization for views.
@@ -39,16 +34,33 @@ public struct RoundedCorner: Shape {
 	}
 }
 
+private struct PressEffectStyle: ButtonStyle {
+	
+	var scale: CGFloat
+	var opacity: Double
+	var duration: Double
+	var onPress: (() -> Void)?
+	
+	func makeBody(configuration: Configuration) -> some View {
+		configuration.label
+			.scaleEffect(configuration.isPressed ? scale : 1.0)
+			.opacity(configuration.isPressed ? opacity : 1.0)
+			.animation(.easeOut(duration: duration), value: configuration.isPressed)
+			.onChange(of: configuration.isPressed) { _, pressed in
+				if pressed { onPress?() }
+			}
+	}
+}
+
 /// A view modifier that provides visual feedback when the user presses on a view.
 /// This modifier applies scale and opacity changes to simulate a press effect,
 /// commonly used for buttons and interactive elements.
+///
+/// Nested ``pressEffect`` controls use SwiftUI `Button` exclusivity so an inner
+/// control (for example an eye toggle) does not also trigger a parent card action.
 public struct PressEffect: ViewModifier {
 	
-	private let cancelOnDragBeyond: CGFloat = 12
-	@State private var isPressed: Bool = false
 	@State private var isFocused: Bool = false
-	@State private var didCancel: Bool = false
-	@State private var descendantPressCount: Int = 0
 	
 	/// The scale factor to apply when pressed. Default is 0.95.
 	var isEnabled: Bool
@@ -74,13 +86,13 @@ public struct PressEffect: ViewModifier {
 			content
 				.allowsHitTesting(false)
 		} else {
+#if os(tvOS)
 			content
 				.contentShape(Rectangle())
-#if os(tvOS)
 				.scaleEffect(isFocused ? scale : 1.0)
 				.opacity(isFocused ? opacity : 1.0)
 				.focusable(true)
-				.onChange(of: isFocused) { focused in
+				.onChange(of: isFocused) { _, focused in
 					if focused {
 						onPress?()
 					} else {
@@ -93,35 +105,11 @@ public struct PressEffect: ViewModifier {
 					}
 				}
 #else
-				.scaleEffect(isPressed ? scale : 1.0)
-				.opacity(isPressed ? opacity : 1.0)
-				.onLongPressGesture(minimumDuration: 0, maximumDistance: cancelOnDragBeyond, pressing: { pressing in
-					if pressing {
-						if !isPressed && descendantPressCount == 0 {
-							withAnimation(.easeOut(duration: duration)) { isPressed = true }
-							onPress?()
-						}
-					} else {
-						withAnimation(.easeOut(duration: duration)) { isPressed = false }
-					}
-				}, perform: {})
-				.simultaneousGesture(
-					TapGesture().onEnded {
-						if descendantPressCount == 0 { onRelease?() }
-					}
-				)
-				.background(Color.clear.preference(key: PressActiveCountKey.self, value: isPressed ? 1 : 0))
-				.onPreferenceChange(PressActiveCountKey.self) { total in
-					let selfContribution = isPressed ? 1 : 0
-					let childCount = max(0, total - selfContribution)
-					descendantPressCount = childCount
-					if childCount > 0 && isPressed {
-						withAnimation(.easeOut(duration: 0.001)) {
-							isPressed = false
-						}
-						didCancel = true
-					}
-				}
+			Button(action: { onRelease?() }) {
+				content
+					.contentShape(Rectangle())
+			}
+			.buttonStyle(PressEffectStyle(scale: scale, opacity: opacity, duration: duration, onPress: onPress))
 #endif
 		}
 	}
