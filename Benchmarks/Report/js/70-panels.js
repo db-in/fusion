@@ -12,6 +12,39 @@ const Tip = (() => {
 	};
 })();
 
+const TitleTips = (() => {
+	let active = null;
+
+	function adopt(el) {
+		const title = el.getAttribute("title");
+		if (title !== null) {
+			el.dataset.tip = title;
+			el.removeAttribute("title");
+		}
+		return el.dataset.tip || "";
+	}
+
+	function release() {
+		if (!active) return;
+		active = null;
+		Tip.hide();
+	}
+
+	document.addEventListener("mousemove", e => {
+		const el = e.target instanceof Element ? e.target.closest("[title], [data-tip]") : null;
+		if (!el) return release();
+		const text = adopt(el);
+		if (!text || el.closest("[data-tip-owner]")) return release();
+		active = el;
+		Tip.show(esc(text).replace(/\n/g, "<br>"), e.clientX, e.clientY);
+	}, { passive: true });
+	document.addEventListener("mouseleave", release);
+	document.addEventListener("mousedown", release, true);
+	window.addEventListener("scroll", release, { passive: true, capture: true });
+
+	return { release };
+})();
+
 const Panels = (() => {
 	const HEAT_METRICS = ["time", "cpu", "instructions", "cycles", "peak", "disk"];
 	const METHODS = [
@@ -24,6 +57,7 @@ const Panels = (() => {
 	const summaryState = { sort: "ratio", dir: -1, suite: "" };
 
 	function hoverable(container, describe) {
+		container.dataset.tipOwner = "1";
 		container.onmousemove = e => {
 			const t = e.target.closest("[data-key]");
 			if (!t) return Tip.hide();
@@ -96,6 +130,7 @@ const Panels = (() => {
 				return `<tr data-key="${esc(r.i.key)}"><td class="path">${esc(r.label)}<small>${esc(suite)}${opsNote ? ` · ${esc(opsNote)}` : ""}</small></td><td class="num">${esc(fmtSec(r.original))}</td><td class="num">${esc(fmtSec(r.final))}</td><td class="change ${r.cls}">${esc(r.change)}</td></tr>`;
 			}).join("")}</tbody></table>`;
 		}
+		box.dataset.tipOwner = "1";
 		box.onclick = e => {
 			const tag = e.target.closest("[data-suite]");
 			if (tag) {

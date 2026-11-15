@@ -25,9 +25,9 @@ const Grid = (() => {
 			if (!members.length) return "";
 			return `<div class="grid-suite"><i style="background:${suiteColor(s)};box-shadow:0 0 8px ${suiteColor(s)}"></i>${esc(suiteInfo(s).label)}<span>${members.length}</span></div><div class="tiles">${members.map(i => {
 				const st = Model.stat(i);
-				return `<button class="tile ${st.status}" type="button" data-key="${esc(i.key)}" aria-selected="${i.key === State.selected}" style="animation-delay:${Math.min(n++ * 14, 600)}ms">
+				return `<button class="tile ${st.status}" type="button" data-key="${esc(i.key)}" aria-selected="${i.key === State.selected}" style="animation-delay:${Math.min(n++ * 14, 600)}ms" title="${esc(i.name)} · ${esc(fmtDelta(st.delta))} vs baseline">
 					<b>${esc(i.name)}</b><small>${esc(i.info.feature)}</small>${spark(i)}
-					<span class="foot"><span class="val">${esc(fmt(st.current ?? st.base))}</span><span class="pill ${st.status}">${esc(fmtDelta(st.delta))}</span></span>
+					<span class="foot"><span class="val" title="${esc(METRICS[State.metric].long)}">${esc(fmt(st.current ?? st.base))}</span><span class="pill ${st.status}" title="Change vs baseline">${esc(fmtDelta(st.delta))}</span></span>
 				</button>`;
 			}).join("")}</div>`;
 		}).join("");

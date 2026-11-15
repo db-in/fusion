@@ -1,13 +1,14 @@
+<div align="center">
+
 # Fusion
 
 [![Fusion](logo.png)]()
 
-![Swift](https://img.shields.io/badge/Swift-5-red.svg)
-[![Platforms](https://img.shields.io/endpoint?url=https://swiftpackageindex.com/api/packages/db-in/Fusion/badge?type=platforms)](https://github.com/db-in/fusion)
-[![CocoaPods](https://img.shields.io/cocoapods/v/Fusion.svg)](https://cocoapods.org/pods/Fusion)
-[![iOS Pipeline](https://github.com/db-in/fusion/actions/workflows/ios.yml/badge.svg)](https://github.com/db-in/fusion/actions/workflows/ios.yml)
-[![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Swift](https://img.shields.io/badge/Swift-6-red.svg)
+![Platforms](https://img.shields.io/endpoint?url=https://swiftpackageindex.com/api/packages/db-in/Fusion/badge?type=platforms)
+![CocoaPods](https://img.shields.io/cocoapods/v/Fusion.svg)
+![iOS Pipeline](https://github.com/db-in/fusion/actions/workflows/ios.yml/badge.svg)
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
 **The production toolkit Apple apps actually ship with.**
 
@@ -15,9 +16,11 @@ Fusion is a single Swift framework for iOS, macOS, tvOS, and watchOS. It gives y
 
 It is not a kitchen-sink SDK. Every API exists because a real product needed it, and the hot paths are measured in nanoseconds.
 
+</div>
+
 ---
 
-## Why it exists
+## Context
 
 Building an Apple app means solving the same problems again: persist state safely, refresh the UI when it changes, load images without melting the heap, animate without dropping frames, talk to an API without boilerplate.
 
