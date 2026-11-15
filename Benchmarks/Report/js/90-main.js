@@ -103,6 +103,7 @@ const App = (() => {
 		defaults();
 		readHash();
 		Theme.init();
+		Settings.init();
 		ready = true;
 		Stage.start();
 		render(true);

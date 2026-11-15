@@ -9,6 +9,8 @@ const Stage = (() => {
 	const MAX_PARTICLES = 520;
 	let W = 1, H = 1, DPR = 1, cx = 0, cy = 0, rx = 1, ry = 1;
 	let hoverId = null, pinnedId = null, palette = {}, last = performance.now();
+	let spinOn = false, spinAngle = 0;
+	const SPIN_SPEED = (Math.PI * 2) / 120;
 
 	function readPalette() {
 		palette = { ink: cssVar("--ink"), ink2: cssVar("--ink-2"), ink3: cssVar("--ink-3"), line: cssVar("--line"), line2: cssVar("--line-2"), accent: cssVar("--accent"), ok: cssVar("--ok"), bad: cssVar("--bad"), bg: cssVar("--bg") };
@@ -108,15 +110,15 @@ const Stage = (() => {
 			const members = tests.filter(t => t.suite === s.suite).sort((a, b) => a.label.localeCompare(b.label));
 			const start = cursor;
 			members.forEach(t => {
-				t.angle = -Math.PI / 2 + ((cursor + 0.5) / slots) * Math.PI * 2;
+				t.angle = -Math.PI / 2 + ((cursor + 0.5) / slots) * Math.PI * 2 + spinAngle;
 				t.tx = cx + Math.cos(t.angle) * rx;
 				t.ty = cy + Math.sin(t.angle) * ry;
 				t.tr = t.size;
 				cursor += 1;
 			});
-			s.angle = -Math.PI / 2 + (((start + cursor) / 2) / slots) * Math.PI * 2;
-			s.arc0 = -Math.PI / 2 + (start / slots) * Math.PI * 2;
-			s.arc1 = -Math.PI / 2 + (cursor / slots) * Math.PI * 2;
+			s.angle = -Math.PI / 2 + (((start + cursor) / 2) / slots) * Math.PI * 2 + spinAngle;
+			s.arc0 = -Math.PI / 2 + (start / slots) * Math.PI * 2 + spinAngle;
+			s.arc1 = -Math.PI / 2 + (cursor / slots) * Math.PI * 2 + spinAngle;
 			s.tx = cx + Math.cos(s.angle) * rx * 0.46;
 			s.ty = cy + Math.sin(s.angle) * ry * 0.46;
 			s.tr = 8 + Math.sqrt(s.count) * 1.6;
@@ -209,6 +211,11 @@ const Stage = (() => {
 		const focusId = pinnedId || hoverId;
 		const rel = related(focusId);
 		const k = reduceMotion.matches ? 1 : 1 - Math.pow(0.0015, dt);
+
+		if (spinOn && !reduceMotion.matches) {
+			spinAngle = (spinAngle + dt * SPIN_SPEED) % (Math.PI * 2);
+			layout();
+		}
 
 		nodes.forEach(n => {
 			n.x += (n.tx - n.x) * k;
@@ -425,9 +432,14 @@ const Stage = (() => {
 	new ResizeObserver(resize).observe(host);
 	readPalette();
 
+	function setSpin(on) {
+		spinOn = !!on && !reduceMotion.matches;
+	}
+
 	return {
 		start() { resize(); requestAnimationFrame(frame); },
-		setData, nodeScreen, pulse, flash, unpin, renderOverlays,
-		node: id => nodes.get(id)
+		setData, setSpin, nodeScreen, pulse, flash, unpin, renderOverlays,
+		node: id => nodes.get(id),
+		spinning: () => spinOn
 	};
 })();
