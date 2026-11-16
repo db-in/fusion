@@ -9,7 +9,7 @@ const Stage = (() => {
 	const MAX_PARTICLES = 520;
 	let W = 1, H = 1, DPR = 1, cx = 0, cy = 0, rx = 1, ry = 1;
 	let hoverId = null, pinnedId = null, palette = {}, last = performance.now();
-	let spinOn = false, spinAngle = 0;
+	let spinOn = false, spinAngle = 0, visible = false;
 	const SPIN_SPEED = (Math.PI * 2) / 120;
 
 	function readPalette() {
@@ -42,11 +42,29 @@ const Stage = (() => {
 		return c;
 	}
 
+	function birthFromCenter() {
+		const now = performance.now();
+		nodes.forEach(n => {
+			n.x = cx;
+			n.y = cy;
+			n.r = 0;
+			n.alpha = 0;
+			n.intro = reduceMotion.matches ? 0 : now + (n.phase / (Math.PI * 2)) * 480 + (n.kind === "test" ? 90 : 0);
+		});
+	}
+
 	function resize() {
 		const r = host.getBoundingClientRect();
+		const nextW = r.width;
+		const nextH = r.height;
+		if (nextW < 40 || nextH < 40) {
+			visible = false;
+			return;
+		}
+		const revealed = !visible;
 		DPR = Math.min(2, window.devicePixelRatio || 1);
-		W = Math.max(1, r.width);
-		H = Math.max(1, r.height);
+		W = nextW;
+		H = nextH;
 		canvas.width = Math.round(W * DPR);
 		canvas.height = Math.round(H * DPR);
 		cx = W / 2;
@@ -54,13 +72,21 @@ const Stage = (() => {
 		const margin = W > 760 ? 175 : 40;
 		rx = Math.max(120, Math.min(W / 2 - margin, H * 0.5));
 		ry = Math.max(110, Math.min(H / 2 - margin * 0.62, rx * 0.88));
+		visible = true;
+		if (revealed && nodes.size) birthFromCenter();
 		layout();
 	}
 
 	function ensure(id, props) {
 		let n = nodes.get(id);
 		if (!n) {
-			n = { id, x: cx, y: cy, r: 0, alpha: 0, pulse: 0, flash: 0, phase: Math.random() * Math.PI * 2, ...props };
+			const now = performance.now();
+			n = {
+				id, x: cx, y: cy, r: 0, alpha: 0, pulse: 0, flash: 0,
+				phase: Math.random() * Math.PI * 2,
+				intro: !reduceMotion.matches && visible ? now + Math.random() * 420 : 0,
+				...props
+			};
 			nodes.set(id, n);
 		}
 		Object.assign(n, props);
@@ -102,7 +128,7 @@ const Stage = (() => {
 		const suites = [...nodes.values()].filter(n => n.kind === "suite");
 		const tests = [...nodes.values()].filter(n => n.kind === "test");
 		const gap = 2.2;
-		const slots = tests.length + suites.length * gap;
+		const slots = Math.max(1, tests.length + suites.length * gap);
 		let cursor = gap / 2;
 		const hub = nodes.get("hub");
 		if (hub) { hub.tx = cx; hub.ty = cy; hub.tr = Math.max(18, Math.min(W, H) * 0.045); }
@@ -121,7 +147,7 @@ const Stage = (() => {
 			s.arc1 = -Math.PI / 2 + (cursor / slots) * Math.PI * 2 + spinAngle;
 			s.tx = cx + Math.cos(s.angle) * rx * 0.46;
 			s.ty = cy + Math.sin(s.angle) * ry * 0.46;
-			s.tr = 8 + Math.sqrt(s.count) * 1.6;
+			s.tr = s.size || (8 + Math.sqrt(s.count || 1) * 1.6);
 			cursor += gap;
 		});
 	}
@@ -205,7 +231,7 @@ const Stage = (() => {
 		const dt = Math.min(0.05, (now - last) / 1000);
 		last = now;
 		requestAnimationFrame(frame);
-		if (document.hidden) return;
+		if (document.hidden || !visible) return;
 		ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 		ctx.clearRect(0, 0, W, H);
 		const focusId = pinnedId || hoverId;
@@ -218,10 +244,22 @@ const Stage = (() => {
 		}
 
 		nodes.forEach(n => {
-			n.x += (n.tx - n.x) * k;
-			n.y += (n.ty - n.y) * k;
-			n.r += ((n.tr || 4) * (1 + n.pulse * 0.6) - n.r) * k;
-			n.alpha += (1 - n.alpha) * k;
+			if (n.intro && now < n.intro) {
+				n.x = cx;
+				n.y = cy;
+				n.r = 0;
+				return;
+			}
+			let kk = k;
+			if (n.intro) {
+				const t = Math.min(1, (now - n.intro) / 780);
+				kk = k * (0.35 + 0.65 * (1 - Math.pow(1 - t, 3)));
+				if (t >= 1) n.intro = 0;
+			}
+			n.x += (n.tx - n.x) * kk;
+			n.y += (n.ty - n.y) * kk;
+			n.r += ((n.tr || 4) * (1 + n.pulse * 0.6) - n.r) * kk;
+			n.alpha += (1 - n.alpha) * kk;
 			n.pulse = Math.max(0, n.pulse - dt * 1.2);
 			n.flash = Math.max(0, n.flash - dt * 0.9);
 		});
@@ -416,11 +454,11 @@ const Stage = (() => {
 		for (let i = 0; i < 6; i++) setTimeout(() => spawn(n, true), i * 70);
 	}
 
-	function flash(key) {
+	function flash(key, color) {
 		const n = nodes.get(key);
 		if (!n) return;
 		n.flash = 1;
-		ripples.push({ id: key, t: 0, color: colorFor(n) });
+		ripples.push({ id: key, t: 0, color: color || colorFor(n) });
 		spawn(n, true);
 	}
 
@@ -436,9 +474,14 @@ const Stage = (() => {
 		spinOn = !!on && !reduceMotion.matches;
 	}
 
+	function reveal() {
+		visible = false;
+		resize();
+	}
+
 	return {
 		start() { resize(); requestAnimationFrame(frame); },
-		setData, setSpin, nodeScreen, pulse, flash, unpin, renderOverlays,
+		setData, setSpin, reveal, nodeScreen, pulse, flash, unpin, renderOverlays,
 		node: id => nodes.get(id),
 		spinning: () => spinOn
 	};
