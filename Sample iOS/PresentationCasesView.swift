@@ -118,6 +118,24 @@ private struct GrowingCase: View {
 	}
 }
 
+private struct ShrinkCase : View {
+	
+	@State private var rows: Int = 8
+	
+	var body: some View {
+		CaseSheet(title: "Shrink and grow") {
+			CaseRows(count: rows)
+			
+			HStack {
+				Button("Shrink") { rows = 2 }
+				Button("Grow") { rows = 8 }
+                Button("Shrink animated") { withAnimation(.linear) { rows = 2 } }
+			}
+			.buttonStyle(.bordered)
+		}
+	}
+}
+
 private final class AutoLayoutCaseController : UIViewController {
 	
 	override func viewDidLoad() {
@@ -176,6 +194,9 @@ struct PresentationCasesView: View {
 				}
 				Button("Growing content") {
 					GrowingCase().presentOverWindow()
+				}
+				Button("Shrink and grow") {
+					ShrinkCase().presentOverWindow()
 				}
 			}
 			
