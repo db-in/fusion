@@ -5,6 +5,7 @@
 //  Created by Diney on 5/6/23.
 //
 
+import Fusion
 import SwiftUI
 import UIKit
 
@@ -13,6 +14,7 @@ class MainViewController: UIViewController {
 	private enum SampleRow: CaseIterable {
 		case tween
 		case navigation
+		case presentation
 	}
 
 	lazy var tableView: UITableView = {
@@ -50,6 +52,8 @@ extension MainViewController : UITableViewDataSource, UITableViewDelegate {
 			cell.textLabel?.text = "\(TweenViewController.self)"
 		case .navigation:
 			cell.textLabel?.text = "Navigation"
+		case .presentation:
+			cell.textLabel?.text = "Presentation cases"
 		}
 		return cell
 	}
@@ -64,6 +68,8 @@ extension MainViewController : UITableViewDataSource, UITableViewDelegate {
 			let host = UIHostingController(rootView: NavigationSampleView())
 			host.title = "Navigation"
 			navigationController?.pushViewController(host, animated: true)
+		case .presentation:
+			navigationController?.pushViewController(UIHostingController(rootView: PresentationCasesView()), animated: true)
 		}
 	}
 }

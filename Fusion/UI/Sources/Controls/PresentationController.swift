@@ -30,6 +30,13 @@ public extension UIRectEdge {
 	}
 }
 
+protocol PresentationSizing : UIViewController {
+	
+	func presentationHeight(fitting width: CGFloat, maxHeight: CGFloat) -> CGFloat
+	
+	func preparePresentationSizing() -> CGFloat?
+}
+
 /// A presentation controller that has a dimming view and presents from the bottom, as a drawer behavior.
 public final class PresentationController : UIPresentationController {
 	
@@ -47,13 +54,21 @@ public final class PresentationController : UIPresentationController {
 	private weak var snapshotView: UIView?
 	private var isDismissing: Bool = false
 	private var isInteracting: Bool = false
-	private var originalHeight: CGFloat = 0
+	private var heightConstraint: NSLayoutConstraint?
+	private var measuredWidth: CGFloat = 0
 	private var propertyAnimator: UIViewPropertyAnimator?
+	private let snapshotScale: CGFloat = 0.8
+	private let snapshotInset: CGFloat = 40
 	private var nestedViewController: UIViewController? { (presentedViewController as? UINavigationController)?.viewControllers.last ?? presentedViewController }
 	private var scrollView: UIScrollView? { nestedViewController?.view.firstOf() }
-	private var topOffset: CGFloat { UIWindow.keySafeAreaInsets.top }
 	private var interactor: UIPercentDrivenInteractiveTransition? { allowsInteractiveTransition && isInteracting ? interactiveTransition : nil }
 	private lazy var interactiveTransition: UIPercentDrivenInteractiveTransition = { .init() }()
+	
+	private var maximumHeight: CGFloat {
+		guard let containerView else { return UIWindow.keyBounds.height }
+		let insets = containerView.safeAreaInsets
+		return max(0, containerView.bounds.height - insets.top - insets.bottom - extraSafeArea)
+	}
 	
 	/// Indicates if a grabber will be visible for interaction. The default value is `false`.
 	public var isGrabberVisible: Bool = false {
@@ -79,81 +94,22 @@ public final class PresentationController : UIPresentationController {
 	/// Keeps the previous View Controller visible on top, the return navigation is done by tapping on it.
 	public var picInPic: Bool = false
 	
+	public var fixedHeight: CGFloat?
+	
 	/// A closure to be executed after the presentation is dismissed in the future.
 	public var onDismissal: Callback?
 	
 	/// The dimming view. This property can be used to customize the dimming view.
 	public private(set) lazy var dimmingView: UIView = { .init(background: .black.withAlphaComponent(0.5)) }()
 	
-	public override var frameOfPresentedViewInContainerView: CGRect {
-		guard
-			let containerBounds = containerView?.bounds,
-			let controller = nestedViewController,
-			let screenSafeArea = UIWindow.key?.safeAreaInsets
-		else { return UIWindow.keyBounds }
-		
-		let navigation = presentedViewController as? UINavigationController
-		let header = (navigation?.navigationBar.frame.height ?? 0) + (navigation?.additionalSafeAreaInsets.top ?? 0)
-		let viewSafeArea = controller.additionalSafeAreaInsets
-		let extraPadding = header + screenSafeArea.bottom + viewSafeArea.top + viewSafeArea.bottom
-		var frame = containerBounds
-		originalHeight = originalHeight > 0 ? originalHeight : controller.preferredSize.height
-		
-		switch presentingSide {
-		case .left, .right:
-//			frame.size.width = min(controller.preferredSize.width, containerBounds.width - extraSafeArea)
-			frame.origin.x = containerBounds.width - frame.width
-		case .top, .bottom:
-			frame.size.height = min(controller.preferredSize.height + extraPadding + extraSafeArea, containerBounds.height - topOffset - extraSafeArea)
-			frame.origin.y = containerBounds.height - frame.size.height
-		default:
-			break
-		}
-		
-		return frame
-	}
-	
 // MARK: - Constructors
 	
 	override init(presentedViewController: UIViewController, presenting: UIViewController?) {
 		super.init(presentedViewController: presentedViewController, presenting: presenting)
-#if os(iOS)
-		registerForKeyboardNotifications()
-#endif
 	}
 	
 // MARK: - Protected Methods
-#if os(iOS)
-	private func registerForKeyboardNotifications() {
-		let center = NotificationCenter.default
-		center.addObserver(self, selector: #selector(keyboardToggled(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-		center.addObserver(self, selector: #selector(keyboardToggled(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-	}
 	
-	@objc private func keyboardToggled(_ notification: NSNotification) {
-		guard
-			!isDismissing,
-			let keyboard = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue,
-			notification.name == UIResponder.keyboardWillShowNotification || notification.name == UIResponder.keyboardWillHideNotification
-		else { return }
-		
-		let nestedView = nestedViewController?.view
-		var visibleFrame: CGFloat = 0
-		
-		if let scrollView = scrollView, scrollView.findFirstResponder() != nil {
-			visibleFrame = (nestedView?.frame.height ?? 0) - (scrollView.frame.maxY)
-		} else if nestedView?.findFirstResponder() == nil {
-			return
-		}
-
-		let isShowing = notification.name == UIResponder.keyboardWillShowNotification
-		let extraHeight = keyboard.height - visibleFrame
-		let height = isShowing ? originalHeight + extraHeight : originalHeight
-		
-		nestedViewController?.preferredContentSize.height = height
-		nestedViewController?.navigationController?.preferredContentSize.height = height
-	}
-#endif
 	@objc private func handleDismiss() {
 		presentedView?.endEditing(true)
 		guard allowsDismiss else { return }
@@ -206,6 +162,61 @@ public final class PresentationController : UIPresentationController {
 		}
 	}
 	
+	private func layout(_ targetView: UIView, in containerView: UIView) {
+		let height = targetView.safeAreaLayoutGuide.heightAnchor.constraint(equalToConstant: measureHeight()).priority(new: .init(999))
+		heightConstraint = height
+		
+		switch presentingSide {
+		case .bottom:
+			containerView.setConstraintsFitting(child: targetView, leading: 0, trailing: 0)
+			containerView.setConstraints([
+				targetView.bottomAnchor.constraint(equalTo: keyboardTop(of: containerView)),
+				targetView.topAnchor.constraint(greaterThanOrEqualTo: containerView.safeAreaLayoutGuide.topAnchor, constant: extraSafeArea),
+				height
+			])
+		case .top:
+			containerView.setConstraintsFitting(child: targetView, top: 0, leading: 0, trailing: 0)
+			containerView.setConstraints([
+				targetView.bottomAnchor.constraint(lessThanOrEqualTo: containerView.safeAreaLayoutGuide.bottomAnchor, constant: -extraSafeArea),
+				height
+			])
+		default:
+			let edge = presentingSide == .left ?
+				targetView.leftAnchor.constraint(equalTo: containerView.leftAnchor) :
+				targetView.rightAnchor.constraint(equalTo: containerView.rightAnchor)
+			let visibleWidth = (1 + snapshotScale) * 0.5
+			containerView.setConstraintsFitting(child: targetView, top: 0, bottom: 0)
+			containerView.setConstraints([
+				edge,
+				targetView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: visibleWidth, constant: -snapshotInset * snapshotScale)
+			])
+		}
+		
+		targetView.make(radius: cornerRadius.topLeft)
+	}
+	
+	private func keyboardTop(of containerView: UIView) -> NSLayoutYAxisAnchor {
+#if os(iOS)
+		containerView.keyboardLayoutGuide.usesBottomSafeArea = false
+		return containerView.keyboardLayoutGuide.topAnchor
+#else
+		return containerView.bottomAnchor
+#endif
+	}
+	
+	private func measureHeight() -> CGFloat {
+		measuredWidth = containerView?.bounds.width ?? UIWindow.keyBounds.width
+		return min(fixedHeight ?? presentedViewController.fittingPresentationHeight(width: measuredWidth, maxHeight: maximumHeight), maximumHeight)
+	}
+	
+	private func updateHeight(animated: Bool) {
+		guard !isDismissing, let heightConstraint else { return }
+		heightConstraint.constant = measureHeight()
+		
+		guard animated, propertyAnimator?.isRunning != true else { return }
+		UIView.animate(withDuration: Constant.duration) { self.containerView?.layoutIfNeeded() }
+	}
+	
 // MARK: - Exposed Methods
 	
 	public func prepareInitialLayout(closing: Bool = false) {
@@ -214,29 +225,18 @@ public final class PresentationController : UIPresentationController {
 			let targetView = presentedView
 		else { return }
 		
-		targetView.layoutIfNeeded()
-		targetView.frame = frameOfPresentedViewInContainerView
-		targetView.layer.masksToBounds = true
-		targetView.make(bezierCorners: cornerRadius)
-		
 		snapshotView?.transform = .identity
 		if closing {
 			CATransaction.setCompletionBlock { [weak self] in self?.snapshotView?.removeFromSuperview() }
 		}
 		
+		let frame = targetView.frame
+		
 		switch presentingSide {
-		case .left:
-			targetView.autoresizingMask = [.flexibleHeight, .flexibleRightMargin]
-//			targetView.frame.origin.x = -containerBounds.width
-		case .right:
-			targetView.autoresizingMask = [.flexibleHeight, .flexibleLeftMargin]
-//			targetView.frame.origin.x = containerBounds.width
 		case .top:
-			targetView.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
-			targetView.frame.origin.y = -containerBounds.height
+			targetView.transform = .init(translationX: 0, y: -frame.maxY)
 		case .bottom:
-			targetView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-			targetView.frame.origin.y = containerBounds.height
+			targetView.transform = .init(translationX: 0, y: containerBounds.height - frame.minY)
 		default:
 			break
 		}
@@ -245,14 +245,14 @@ public final class PresentationController : UIPresentationController {
 	public func prepareFinalLayout(source: UIViewController?) {
 		guard let targetView = presentedView else { return }
 		
-		targetView.frame = frameOfPresentedViewInContainerView
+		targetView.transform = .identity
 		
 		if presentingSide.isHorizontal {
 			let delta: CGFloat = presentingSide == .right ? 1 : -1
-			let posX = -(UIWindow.keyBounds.width * delta) + (40 * delta)
+			let posX = -(UIWindow.keyBounds.width * delta) + (snapshotInset * delta)
 			let imageView = UIImageView(image: source?.view.superview?.snapshot)
-			nestedViewController?.view.addSubview(imageView)
-			imageView.make(radius: 50).transform = .identity.scaledBy(x: 0.8, y: 0.8).translatedBy(x: posX, y: 0)
+			containerView?.addSubview(imageView)
+			imageView.make(radius: 50).transform = .identity.scaledBy(x: snapshotScale, y: snapshotScale).translatedBy(x: posX, y: 0)
 			UITapGestureRecognizer.set(on: imageView) { [weak self] _ in self?.handleDismiss() }
 			UIPanGestureRecognizer.set(on: imageView) { [weak self] _ in self?.handleDismiss() }
 			snapshotView = imageView
@@ -263,16 +263,21 @@ public final class PresentationController : UIPresentationController {
 	
 	public override func presentationTransitionWillBegin() {
 		guard
-			let containerBounds = containerView?.bounds,
+			let containerView,
 			let targetView = presentedView
 		else { return }
 		
-		containerView?.addSubview(targetView)
-		containerView?.insertSubview(dimmingView, at: 0)
+		let explicitHeight = (nestedViewController as? PresentationSizing)?.preparePresentationSizing()
+		fixedHeight = fixedHeight ?? explicitHeight
+		
+		containerView.insertSubview(dimmingView, at: 0)
+		containerView.addSubview(targetView)
+		layout(targetView, in: containerView)
+		containerView.layoutIfNeeded()
 		updateGrabber()
 		prepareInitialLayout()
 		
-		dimmingView.frame = containerBounds
+		dimmingView.frame = containerView.bounds
 		dimmingView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 		dimmingView.alpha = 0
 		dimmingView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
@@ -299,15 +304,15 @@ public final class PresentationController : UIPresentationController {
 		}
 	}
 	
+	public override func containerViewWillLayoutSubviews() {
+		super.containerViewWillLayoutSubviews()
+		guard let width = containerView?.bounds.width, width != measuredWidth else { return }
+		updateHeight(animated: false)
+	}
+	
 	public override func preferredContentSizeDidChange(forChildContentContainer container: UIContentContainer) {
 		super.preferredContentSizeDidChange(forChildContentContainer: container)
-		
-		if propertyAnimator == nil || propertyAnimator?.isRunning == false {
-			asyncMain {
-				self.presentedView?.frame = self.frameOfPresentedViewInContainerView
-				self.presentedView?.layoutIfNeeded()
-			}
-		}
+		updateHeight(animated: true)
 	}
 }
 
@@ -367,42 +372,23 @@ private struct Keys {
 
 public extension UIViewController {
 	
-	fileprivate var preferredSize: CGSize {
-		let target = (self as? UINavigationController)?.topViewController ?? self
-		let size = target.preferredContentSize
-		guard size == .zero else { return size }
-		
-		let verticalInsets = target.view.safeAreaInsets.top + target.view.safeAreaInsets.bottom
-		let horizontalInsets = target.view.safeAreaInsets.left + target.view.safeAreaInsets.right
-		var height = max(0, target.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height - verticalInsets)
-		var width = max(0, target.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).width - horizontalInsets)
-
-		if let mainScroll = target.view as? UIScrollView {
-			height += mainScroll.contentSize.height + mainScroll.contentInset.top + mainScroll.contentInset.bottom
-			width += mainScroll.contentSize.width + mainScroll.contentInset.left + mainScroll.contentInset.right
-			return CGSize(width: width, height: height)
+	fileprivate func fittingPresentationHeight(width: CGFloat, maxHeight: CGFloat) -> CGFloat {
+		if let navigation = self as? UINavigationController, let top = navigation.topViewController {
+			let bar = navigation.isNavigationBarHidden ? 0 : navigation.navigationBar.frame.height
+			return top.fittingPresentationHeight(width: width, maxHeight: max(0, maxHeight - bar)) + bar
 		}
-
-		let scrollViews: [UIScrollView] = target.view.allSubviewOf()
-		target.view.layoutIfNeeded()
-
-		height += scrollViews.reduce(CGFloat(0), { result, scrollView in
-			if scrollView.intrinsicContentSize.height <= 0 {
-				return result + scrollView.contentSize.height + scrollView.contentInset.top + scrollView.contentInset.bottom
-			} else {
-				return result
-			}
-		})
-
-		width += scrollViews.reduce(CGFloat(0), { result, scrollView in
-			if scrollView.intrinsicContentSize.width <= 0 {
-				return result + scrollView.contentSize.width + scrollView.contentInset.left + scrollView.contentInset.right
-			} else {
-				return result
-			}
-		})
-
-		return CGSize(width: width, height: height)
+		
+		if let sizing = self as? PresentationSizing {
+			return sizing.presentationHeight(fitting: width, maxHeight: maxHeight)
+		}
+		
+		if preferredContentSize.height > 0 {
+			return preferredContentSize.height
+		}
+		
+		let target = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
+		let size = view.systemLayoutSizeFitting(target, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+		return max(0, size.height - view.safeAreaInsets.top - view.safeAreaInsets.bottom)
 	}
 	
 	/// Automatically creates and returns the ``PresentationController`` that will be used on the next ``presentOver(_:style:)`` action.
@@ -433,7 +419,10 @@ public extension UIViewController {
 			target.modalPresentationStyle = style
 			target.transitioningDelegate = nil
 			let sheet = target.sheetPresentationController
-			let detent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { _ in target.preferredSize.height }
+			let detent = UISheetPresentationController.Detent.custom(identifier: .init("dent")) { context in
+				let width = UIWindow.keyBounds.width
+				return target.presentation.fixedHeight ?? target.fittingPresentationHeight(width: width, maxHeight: context.maximumDetentValue)
+			}
 			sheet?.detents = [detent]
 			
 			if isModal {
@@ -469,10 +458,10 @@ public extension UIViewController {
 	///
 	/// - Parameter style: Defines the `UIModalPresentationStyle` in which it will be presented. Default is `.none`.
 	/// - Parameter side: The screen edge from which the presentation should originate.
-	/// - Parameter preferredHeight: If provided, sets the preferred content height for the presented view controller.
+	/// - Parameter preferredHeight: If provided, fixes the content height of the presentation instead of measuring it.
 	func presentOverWindow(style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom, preferredHeight: CGFloat? = nil) {
 		if let height = preferredHeight {
-			preferredContentSize.height = height
+			presentation.fixedHeight = height
 		}
 		UIWindow.topViewController?.presentOver(self, style: style, from: side)
 	}

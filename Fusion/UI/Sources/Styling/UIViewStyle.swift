@@ -467,7 +467,7 @@ public extension UIView {
 		let view = grabber ?? .init(frame: .init(origin: .zero, size: size), background: color)
 		addSubview(view)
 		view.cornerRadius = size.height * 0.5
-		view.center = .init(x: center.x, y: center.y - (frame.height * 0.5) + padding)
+		view.center = .init(x: bounds.midX, y: padding + size.height * 0.5)
 		view.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
 		grabber = view
 		return self

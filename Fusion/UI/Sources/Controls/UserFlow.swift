@@ -23,6 +23,7 @@ fileprivate extension UINavigationController {
 	}
 }
 
+#if os(iOS)
 private final class SwipeBackGestureDelegate: NSObject, UIGestureRecognizerDelegate {
 	
 	weak var navigation: UINavigationController?
@@ -40,9 +41,11 @@ private final class SwipeBackGestureDelegate: NSObject, UIGestureRecognizerDeleg
 private struct SwipeBackKeys {
 	static var delegate: UInt8 = 0
 }
+#endif
 
 public extension UINavigationController {
 	
+#if os(iOS)
 	/// Enables the interactive swipe back gesture, even when the navigation bar is hidden or the back button is customized.
 	/// It never replaces a delegate assigned by the navigation controller itself.
 	func enableSwipeBack() {
@@ -52,10 +55,13 @@ public extension UINavigationController {
 		objc_setAssociatedObject(self, &SwipeBackKeys.delegate, swipeDelegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 		gesture.delegate = swipeDelegate
 	}
+#endif
 	
 	fileprivate func enableSwipeBackIfNeeded() {
+#if os(iOS)
 		guard UserFlow.Config.isSwipeBackEnabled else { return }
 		enableSwipeBack()
+#endif
 	}
 }
 

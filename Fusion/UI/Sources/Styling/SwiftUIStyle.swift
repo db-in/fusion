@@ -103,11 +103,14 @@ public extension View {
 	/// - Parameter from: The side of the screen to present the view from.
 	/// - Parameter preferredHeight: The preferred height of the view.
 	func presentOverWindow(style: UIModalPresentationStyle = .none, from side: UIRectEdge = .bottom, preferredHeight: CGFloat? = nil) {
-		var height = CGFloat(600)
-#if !os(visionOS)
-		height = UIScreen.main.bounds.height
-#endif
-		uiHost(cached: false).presentOverWindow(style: style, from: side, preferredHeight: preferredHeight ?? height)
+		guard preferredHeight == nil, style.isModal, side.isVertical else {
+			uiHost(cached: false).presentOverWindow(style: style, from: side, preferredHeight: preferredHeight)
+			return
+		}
+		
+		UIHostingController(rootView: PresentationLayout { self })
+			.background(.clear)
+			.presentOverWindow(style: style, from: side)
 	}
 	
 	/// Manages the hide state of the native navigation bar.
@@ -116,6 +119,41 @@ public extension View {
 	/// - Returns: The same view, with a modified navigation bar property
 	func hideNavigationBar(_ value: Bool = true) -> some View {
 		toolbar(value ? .hidden : .visible, for: .navigationBar)
+	}
+}
+
+// MARK: - Extension - UIHostingController
+
+extension UIHostingController : PresentationSizing {
+	
+	func presentationHeight(fitting width: CGFloat, maxHeight: CGFloat) -> CGFloat {
+		let insets = view.safeAreaInsets
+		let height = sizeThatFits(in: CGSize(width: width, height: maxHeight + insets.top + insets.bottom)).height
+		return max(0, height - insets.top - insets.bottom)
+	}
+	
+	func preparePresentationSizing() -> CGFloat? {
+		safeAreaRegions = .container
+		let explicitHeight = sizingOptions.contains(.preferredContentSize) ? 0 : preferredContentSize.height
+		sizingOptions.insert(.preferredContentSize)
+		return explicitHeight > 0 ? explicitHeight : nil
+	}
+}
+
+// MARK: - Type - PresentationLayout
+
+private struct PresentationLayout : Layout {
+	
+	func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+		let ideal = subviews.reduce(CGSize.zero) { result, subview in
+			let size = subview.sizeThatFits(.init(width: proposal.width, height: nil))
+			return CGSize(width: max(result.width, size.width), height: max(result.height, size.height))
+		}
+		return CGSize(width: proposal.width ?? ideal.width, height: min(ideal.height, proposal.height ?? ideal.height))
+	}
+	
+	func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+		subviews.forEach { $0.place(at: CGPoint(x: bounds.midX, y: bounds.midY), anchor: .center, proposal: .init(bounds.size)) }
 	}
 }
 
