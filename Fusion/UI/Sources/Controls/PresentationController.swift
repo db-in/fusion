@@ -67,8 +67,10 @@ public final class PresentationController : UIPresentationController {
 	private var maximumHeight: CGFloat {
 		guard let containerView else { return UIWindow.keyBounds.height }
 		let insets = containerView.safeAreaInsets
-		return max(0, containerView.bounds.height - insets.top - insets.bottom - extraSafeArea)
+		return max(0, containerView.bounds.height - insets.top - max(insets.bottom, keyboardOverlap) - extraSafeArea)
 	}
+	
+	private var keyboardOverlap: CGFloat = 0
 	
 	/// Indicates if a grabber will be visible for interaction. The default value is `false`.
 	public var isGrabberVisible: Bool = false {
@@ -168,9 +170,9 @@ public final class PresentationController : UIPresentationController {
 		
 		switch presentingSide {
 		case .bottom:
-			containerView.setConstraintsFitting(child: targetView, leading: 0, trailing: 0)
+			trackKeyboard()
+			containerView.setConstraintsFitting(child: targetView, leading: 0, bottom: 0, trailing: 0)
 			containerView.setConstraints([
-				targetView.bottomAnchor.constraint(equalTo: keyboardTop(of: containerView)),
 				targetView.topAnchor.constraint(greaterThanOrEqualTo: containerView.safeAreaLayoutGuide.topAnchor, constant: extraSafeArea),
 				height
 			])
@@ -195,13 +197,38 @@ public final class PresentationController : UIPresentationController {
 		targetView.make(radius: cornerRadius.topLeft)
 	}
 	
-	private func keyboardTop(of containerView: UIView) -> NSLayoutYAxisAnchor {
-#if os(iOS)
-		containerView.keyboardLayoutGuide.usesBottomSafeArea = false
-		return containerView.keyboardLayoutGuide.topAnchor
-#else
-		return containerView.bottomAnchor
-#endif
+	private func trackKeyboard() {
+		let center = NotificationCenter.default
+		[UIResponder.keyboardWillShowNotification, UIResponder.keyboardWillChangeFrameNotification, UIResponder.keyboardWillHideNotification].forEach {
+			center.removeObserver(self, name: $0, object: nil)
+			center.addObserver(self, selector: #selector(keyboardChanged(notification:)), name: $0, object: nil)
+		}
+	}
+	
+	@objc private func keyboardChanged(notification: Notification) {
+		guard
+			let containerView,
+			let userInfo = notification.userInfo,
+			let frame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+		else { return }
+		
+		let isHiding = notification.name == UIResponder.keyboardWillHideNotification
+		let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval ?? Constant.duration
+		let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int ?? 0
+		
+		keyboardOverlap = isHiding ? 0 : max(0, containerView.bounds.maxY - containerView.convert(frame, from: nil).minY)
+		
+		UIView.animate(withDuration: duration, delay: 0, options: .init(rawValue: UInt(curve << 16))) {
+			self.updateKeyboardInset()
+			containerView.layoutIfNeeded()
+		}
+	}
+	
+	private func updateKeyboardInset() {
+		let inset = max(0, keyboardOverlap - (containerView?.safeAreaInsets.bottom ?? 0))
+		guard abs(presentedViewController.additionalSafeAreaInsets.bottom - inset) > 0.5 else { return }
+		presentedViewController.additionalSafeAreaInsets.bottom = inset
+		updateHeight(animated: false)
 	}
 	
 	private func measureHeight() -> CGFloat {
@@ -211,10 +238,14 @@ public final class PresentationController : UIPresentationController {
 	
 	private func updateHeight(animated: Bool) {
 		guard !isDismissing, let heightConstraint else { return }
-		heightConstraint.constant = measureHeight()
+		let height = measureHeight()
+		guard abs(heightConstraint.constant - height) > 0.5 else { return }
+		heightConstraint.constant = height
 		
 		guard animated, propertyAnimator?.isRunning != true else { return }
-		UIView.animate(withDuration: Constant.duration) { self.containerView?.layoutIfNeeded() }
+		UIView.animate(springDuration: Constant.duration, bounce: 0, options: .beginFromCurrentState) {
+			self.containerView?.layoutIfNeeded()
+		}
 	}
 	
 // MARK: - Exposed Methods
@@ -306,6 +337,7 @@ public final class PresentationController : UIPresentationController {
 	
 	public override func containerViewWillLayoutSubviews() {
 		super.containerViewWillLayoutSubviews()
+		updateKeyboardInset()
 		guard let width = containerView?.bounds.width, width != measuredWidth else { return }
 		updateHeight(animated: false)
 	}

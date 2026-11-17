@@ -153,7 +153,14 @@ private struct PresentationLayout : Layout {
 	}
 	
 	func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-		subviews.forEach { $0.place(at: CGPoint(x: bounds.midX, y: bounds.midY), anchor: .center, proposal: .init(bounds.size)) }
+		let point = CGPoint(x: bounds.midX, y: bounds.minY)
+		
+		subviews.forEach {
+			let ideal = $0.sizeThatFits(.init(width: bounds.width, height: nil)).height
+			let fitted = $0.sizeThatFits(.init(width: bounds.width, height: bounds.height)).height
+			let height = fitted > ideal ? bounds.height : min(ideal, bounds.height)
+			$0.place(at: point, anchor: .top, proposal: .init(width: bounds.width, height: height))
+		}
 	}
 }
 
