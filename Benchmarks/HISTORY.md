@@ -520,3 +520,110 @@ runner: xcode
 | iOS | UIPerformanceTests | testStyledText | 1384 | 29710 | 35287 |
 | iOS | UIPerformanceTests | testTextBoundingSize | 14993 | 243531 | 35294 |
 | iOS | UIPerformanceTests | testTintedImage128 | 663989 | 16284182 | 42673 |
+
+## 20261117-124934-b3e553c-dirty
+
+```
+date: 2026-11-17T08:49:34Z
+commit: b3e553c43fe76a122f5046ae1d46253d562d6553
+branch: master
+dirty: yes
+model: Mac16,8
+cpu: Apple M4 Pro
+cores: 12 physical, 12 logical
+memory_gb: 24
+macos: 27.0.1 (26A434)
+xcode: Xcode 27.2 Build version 27B52 
+swift: Apple Swift version 6.4.2 (swiftlang-6.4.2.1.9 clang-2100.4.1.1)
+power: Now drawing from 'AC Power'
+thermal: Note: No thermal warning level has been recorded Note: No performance warning level has been recorded Note: No CPU power status has been recorded 
+ios_device: iPhone 17 latest
+runner: xcode
+```
+
+| Platform | Suite | Test | Time/op (ns) | Instructions/op | Peak (kB) |
+|---|---|---|---:|---:|---:|
+| macOS | CorePerformanceTests | testAnyCodableKeyPathMap | 7416 | 139451 | 10641 |
+| macOS | CorePerformanceTests | testBase64Encode | 69 | 3255 | 38552 |
+| macOS | CorePerformanceTests | testContainsCharacters | 448 | 12316 | 38602 |
+| macOS | CorePerformanceTests | testEaseCalculate | 6 | 1689 | 38624 |
+| macOS | CorePerformanceTests | testFilteredByTextOf1000 | 4783432 | 82210929 | 38487 |
+| macOS | CorePerformanceTests | testFlushPendingWritesWhenIdle | 127 | 5789 | 38271 |
+| macOS | CorePerformanceTests | testFlushPendingWritesWith50TrackedFileKeys | 13722400 | 130182607 | 38569 |
+| macOS | CorePerformanceTests | testHMACSHA256 | 18599 | 404871 | 37183 |
+| macOS | CorePerformanceTests | testInMemoryCacheGetOrSet | 82 | 3369 | 34909 |
+| macOS | CorePerformanceTests | testJSONDecode | 55536 | 873736 | 35348 |
+| macOS | CorePerformanceTests | testJSONDecodeArrayOf500 | 25277810 | 428900941 | 23135 |
+| macOS | CorePerformanceTests | testJSONEncode | 2902 | 59158 | 22263 |
+| macOS | CorePerformanceTests | testKeychainWriteAndRead | 14994030 | 64896970 | 25730 |
+| macOS | CorePerformanceTests | testRegexReplacing | 1679 | 42542 | 22922 |
+| macOS | CorePerformanceTests | testSendToTenSubscribers | 3136 | 73737 | 41960 |
+| macOS | CorePerformanceTests | testSHA256OfOneKilobyte | 591 | 7141 | 52299 |
+| macOS | CorePerformanceTests | testStateStorageSetAndRead | 2751 | 53071 | 52331 |
+| macOS | CorePerformanceTests | testThreadSafeMutate | 6 | 1710 | 52348 |
+| macOS | CorePerformanceTests | testThreadSafeRead | 6 | 1658 | 52348 |
+| macOS | CorePerformanceTests | testUniqueOf1000 | 93572 | 2388643 | 52361 |
+| macOS | HotPathPerformanceTests | testAbsentKeyReads | 2902 | 51801 | 52364 |
+| macOS | HotPathPerformanceTests | testAppGroupURL | 43 | 2639 | 52364 |
+| macOS | HotPathPerformanceTests | testColorHex | 532 | 13800 | 52397 |
+| macOS | HotPathPerformanceTests | testConvertedDigitsToLocale | 31946 | 412185 | 53796 |
+| macOS | HotPathPerformanceTests | testDateToStringWithFormat | 1340 | 28040 | 53921 |
+| macOS | HotPathPerformanceTests | testFileStorageWrites | 3778 | 85403 | 54055 |
+| macOS | HotPathPerformanceTests | testLocalized | 934 | 18466 | 24954 |
+| macOS | HotPathPerformanceTests | testNumberToString | 657 | 14701 | 25019 |
+| macOS | HotPathPerformanceTests | testPreferredLocale | 803 | 17604 | 25019 |
+| macOS | HotPathPerformanceTests | testPresentKeyColdReads | 18738 | 240947 | 26887 |
+| macOS | HotPathPerformanceTests | testSilentLoggerWithoutSaving | 11 | 1909 | 26920 |
+| macOS | HotPathPerformanceTests | testTimeUnits | 25632 | 399443 | 27067 |
+| macOS | HotPathPerformanceTests | testUTCDateFormatting | 987 | 23032 | 27100 |
+| macOS | HotPathPerformanceTests | testUTCDateParsing | 52666 | 840434 | 27133 |
+| iOS | CorePerformanceTests | testAnyCodableKeyPathMap | 8565 | 133342 | 20879 |
+| iOS | CorePerformanceTests | testBase64Encode | 72 | 3405 | 21646 |
+| iOS | CorePerformanceTests | testContainsCharacters | 701 | 12325 | 21662 |
+| iOS | CorePerformanceTests | testEaseCalculate | 9 | 1787 | 21646 |
+| iOS | CorePerformanceTests | testFilteredByTextOf1000 | 6870296 | 86887019 | 24844 |
+| iOS | CorePerformanceTests | testFlushPendingWritesWhenIdle | 173 | 6576 | 25352 |
+| iOS | CorePerformanceTests | testFlushPendingWritesWith50TrackedFileKeys | 20428800 | 140943769 | 25342 |
+| iOS | CorePerformanceTests | testHMACSHA256 | 20201 | 380507 | 25388 |
+| iOS | CorePerformanceTests | testInMemoryCacheGetOrSet | 78 | 3231 | 25388 |
+| iOS | CorePerformanceTests | testJSONDecode | 73665 | 876121 | 25519 |
+| iOS | CorePerformanceTests | testJSONDecodeArrayOf500 | 33450540 | 428091426 | 25470 |
+| iOS | CorePerformanceTests | testJSONEncode | 2860 | 52763 | 25417 |
+| iOS | CorePerformanceTests | testKeychainWriteAndRead | 1828926 | 738814 | 25404 |
+| iOS | CorePerformanceTests | testRegexReplacing | 1726 | 40699 | 25486 |
+| iOS | CorePerformanceTests | testSendToTenSubscribers | 3414 | 65555 | 45868 |
+| iOS | CorePerformanceTests | testSHA256OfOneKilobyte | 600 | 7162 | 25758 |
+| iOS | CorePerformanceTests | testStateStorageSetAndRead | 2994 | 53861 | 25765 |
+| iOS | CorePerformanceTests | testThreadSafeMutate | 7 | 1635 | 25791 |
+| iOS | CorePerformanceTests | testThreadSafeRead | 6 | 1758 | 25820 |
+| iOS | CorePerformanceTests | testUniqueOf1000 | 82579 | 1832330 | 25791 |
+| iOS | HotPathPerformanceTests | testAbsentKeyReads | 9891 | 133138 | 25778 |
+| iOS | HotPathPerformanceTests | testAppGroupURL | 47 | 2664 | 25791 |
+| iOS | HotPathPerformanceTests | testColorHex | 592 | 13509 | 25774 |
+| iOS | HotPathPerformanceTests | testConvertedDigitsToLocale | 29101 | 371149 | 25843 |
+| iOS | HotPathPerformanceTests | testDateToStringWithFormat | 1237 | 25634 | 25892 |
+| iOS | HotPathPerformanceTests | testFileStorageWrites | 3445 | 59175 | 25909 |
+| iOS | HotPathPerformanceTests | testLocalized | 1149 | 22932 | 30303 |
+| iOS | HotPathPerformanceTests | testNumberToString | 804 | 13603 | 31827 |
+| iOS | HotPathPerformanceTests | testPreferredLocale | 1513 | 22515 | 31804 |
+| iOS | HotPathPerformanceTests | testPresentKeyColdReads | 36707 | 427047 | 32007 |
+| iOS | HotPathPerformanceTests | testSilentLoggerWithoutSaving | 10 | 1862 | 32033 |
+| iOS | HotPathPerformanceTests | testTimeUnits | 25954 | 369191 | 32105 |
+| iOS | HotPathPerformanceTests | testUTCDateFormatting | 1125 | 21563 | 32086 |
+| iOS | HotPathPerformanceTests | testUTCDateParsing | 70806 | 831251 | 32197 |
+| iOS | ImagePipelinePerformanceTests | testCorruptCachedImageLoad | 29003 | 347863 | 33160 |
+| iOS | ImagePipelinePerformanceTests | testDecodeDownsampled1024To128 | 3635250 | 65802602 | 39904 |
+| iOS | ImagePipelinePerformanceTests | testDecodeFullSize1024 | 7852625 | 2671505 | 122073 |
+| iOS | ImagePipelinePerformanceTests | testFlushCacheWith20Images | 435200 | 8683608 | 34366 |
+| iOS | ImagePipelinePerformanceTests | testMemoryCacheHit | 1 | 41 | 34425 |
+| iOS | ImagePipelinePerformanceTests | testMemoryCacheMiss | 175 | 4835 | 34392 |
+| iOS | ImagePipelinePerformanceTests | testURLCacheAppGroupAccess | 1409 | 26343 | 34432 |
+| iOS | ImagePipelinePerformanceTests | testURLCacheLoadAndDecode | 918229 | 0 | 38053 |
+| iOS | UIPerformanceTests | testColorDarker | 342 | 7410 | 35585 |
+| iOS | UIPerformanceTests | testColorInterpolation | 7230 | 112796 | 35693 |
+| iOS | UIPerformanceTests | testResizedImage128To64 | 157123 | 2186005 | 42388 |
+| iOS | UIPerformanceTests | testSizeThatFits | 26722 | 307224 | 35631 |
+| iOS | UIPerformanceTests | testSolidImage32 | 13367 | 129338 | 35628 |
+| iOS | UIPerformanceTests | testStyledText | 1883 | 29718 | 35552 |
+| iOS | UIPerformanceTests | testTextBoundingSize | 19706 | 243385 | 35539 |
+| iOS | UIPerformanceTests | testTintedImage128 | 953781 | 16335649 | 44377 |
