@@ -307,21 +307,27 @@ const CATALOG = {
 	},
 	testTextAnimationCountingFrame: {
 		feature: "Text animation counting frame",
-		measures: "TextAnimationSegments.composed(value:locale:)",
+		measures: "TextAnimationSegments.composed(value:)",
 		how: "2,000 frames formatting a changing value and composing prefix + number run + suffix.",
-		why: "Runs on the main thread on every tween tick of the counting style, up to 120 times per second per label."
+		why: "Runs on the main thread on every tween tick of the counting style when the formatted string changes."
+	},
+	testTextAnimationCountingFrameUnchanged: {
+		feature: "Text animation counting skip",
+		measures: "quantized value compare before format + composed",
+		how: "2,000 ticks over values that truncate to the same decimals; formats and rebuilds AttributedString only when the visible digits change.",
+		why: "Real counting tweens spend many frames on the same digits. Skipping format and compose keeps the average tick well under the 5 µs budget."
 	},
 	testTextAnimationScrambleFrame: {
 		feature: "Text animation scramble frame",
 		measures: "TextUpdateModifier.scrambled + TextAnimationSegments.composed(number:)",
-		how: "2,000 frames scrambling the unsettled digits and composing the attributed result.",
+		how: "2,000 frames scrambling the unsettled digits with a precomputed digit count and composing the attributed result.",
 		why: "Runs on the main thread on every tween tick of the scramble style."
 	},
 	testOdometerGlyphs: {
 		feature: "Odometer glyph split",
 		measures: "OdometerGlyph.glyphs(for:)",
 		how: "2,000 splits of a grouped decimal number into trailing-keyed glyphs.",
-		why: "Runs inside the odometer body on every value change; keys keep units aligned so SwiftUI only rolls changed digits."
+		why: "Prepared once per value change on TextAnimationSegments so odometer body never reallocates the glyph list."
 	}
 };
 

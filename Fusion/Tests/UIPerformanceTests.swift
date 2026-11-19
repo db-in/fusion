@@ -77,15 +77,31 @@ final class UIPerformanceTests : PerformanceTestCase {
 	
 	func testTextAnimationCountingFrame() {
 		let segments = TextAnimationSegments(animatedTemplate, locale: english)
-		let locale = english
-		measureLoop { _ = segments.composed(value: 12_345.67 + Double($0), locale: locale) }
+		measureLoop { _ = segments.composed(value: 12_345.67 + Double($0)) }
+	}
+	
+	func testTextAnimationCountingFrameUnchanged() {
+		let segments = TextAnimationSegments(animatedTemplate, locale: english)
+		var lastQuantized = Double.nan
+		var display = segments.full
+		measureLoop { index in
+			let value = 12_345.67 + Double(index % 40) / 1000
+			let quantized = TextUpdateModifier.quantized(value, decimals: segments.decimals)
+			guard quantized != lastQuantized else { return }
+			lastQuantized = quantized
+			display = segments.composed(value: value)
+		}
+		_ = display
 	}
 	
 	func testTextAnimationScrambleFrame() {
 		let segments = TextAnimationSegments(animatedTemplate, locale: english)
 		var generator = SystemRandomNumberGenerator()
 		measureLoop { index in
-			let scrambled = TextUpdateModifier.scrambled(segments.number, progress: Double(index % 100) / 100, using: &generator)
+			let scrambled = TextUpdateModifier.scrambled(segments.number,
+														progress: Double(index % 100) / 100,
+														digitCount: segments.digitCount,
+														using: &generator)
 			_ = segments.composed(number: scrambled)
 		}
 	}

@@ -10,22 +10,28 @@ import SwiftUI
 struct TextAnimationSegments {
 	
 	private static let numberRegex: NSRegularExpression? = try? NSRegularExpression(pattern: "[0-9][0-9.,]*", options: [])
+	private static let digitSymbols: [String] = (0...9).map { "\($0)" }
 	
-	let template: NSAttributedString
+	let string: String
 	let numberRange: NSRange
 	let number: String
 	let decimals: Int
 	let value: Double
+	let locale: Locale
 	let full: AttributedString
 	let prefix: AttributedString
 	let suffix: AttributedString
 	let numberAttributes: AttributeContainer
+	let glyphs: [OdometerGlyph]
+	let digitRuns: [AttributedString]
+	let digitCount: Int
 	
 	var hasNumber: Bool { numberRange.location != NSNotFound }
 	
-	init(_ attributed: NSAttributedString = .init(), locale: Locale = .preferredLocale) {
+	init(_ attributed: NSAttributedString = .init(), locale: Locale = .preferredLocale, includeDigitRuns: Bool = false) {
 		let string = attributed.string
-		template = attributed
+		self.string = string
+		self.locale = locale
 		full = AttributedString(attributed)
 		
 		guard let range = Self.firstNumberRange(in: string), let bounds = Range<AttributedString.Index>(range, in: full) else {
@@ -36,17 +42,24 @@ struct TextAnimationSegments {
 			prefix = full
 			suffix = .init()
 			numberAttributes = .init()
+			glyphs = []
+			digitRuns = []
+			digitCount = 0
 			return
 		}
 		
 		let number = (string as NSString).substring(with: range)
+		let attributes = full[bounds].runs.first?.attributes ?? .init()
 		numberRange = range
 		self.number = number
 		decimals = Self.fractionDigits(in: number, locale: locale)
 		value = Self.parse(number, locale: locale)
 		prefix = AttributedString(full[..<bounds.lowerBound])
 		suffix = AttributedString(full[bounds.upperBound...])
-		numberAttributes = full[bounds].runs.first?.attributes ?? .init()
+		numberAttributes = attributes
+		glyphs = OdometerGlyph.glyphs(for: number)
+		digitRuns = includeDigitRuns ? Self.digitSymbols.map { AttributedString($0, attributes: attributes) } : []
+		digitCount = number.reduce(0) { $1.isWholeNumber ? $0 + 1 : $0 }
 	}
 	
 	static func firstNumberRange(in string: String) -> NSRange? {
@@ -74,8 +87,12 @@ struct TextAnimationSegments {
 		return result
 	}
 	
-	func composed(value: Double, locale: Locale = .preferredLocale) -> AttributedString {
-		composed(number: value.toString(decimals: decimals, locale: locale))
+	func formatted(value: Double) -> String {
+		value.toString(decimals: decimals, locale: locale)
+	}
+	
+	func composed(value: Double) -> AttributedString {
+		composed(number: formatted(value: value))
 	}
 }
 #endif

@@ -11,19 +11,22 @@ import SwiftUI
 /// It preserves text formatting and attributes while animating only the numeric portions.
 ///
 /// The source is parsed and converted once per change. Frame based styles only rebuild
-/// the numeric run on each tick, keeping the main thread cost to a few microseconds per frame.
+/// the numeric run on each tick, and skip the rebuild when the formatted number did not change.
 public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 	
 // MARK: - Properties
 	
 	@State private var segments: TextAnimationSegments = .init()
 	@State private var display: AttributedString = .init()
+	@State private var lastNumber: String = ""
+	@State private var lastQuantized: Double = .nan
 	@State private var identifier: String = ""
 	@State private var isPrepared: Bool = false
 	@State private var currentValue: Double = 0
 	@State private var tweenStartValue: Double = 0
 	@State private var targetValue: Double = 0
 	@State private var waveCycle: Double = 0
+	@State private var scrambleSeed: UInt64 = 0x9E3779B97F4A7C15
 	@State private var tweenName: String = UUID().uuidString
 	
 	/// The source text content that will be displayed and animated.
@@ -41,6 +44,8 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 	/// The frames per second rate for the frame based styles.
 	public let fps: FPoint
 	
+	private var animation: Animation { ease.animation(duration: duration) }
+	
 	@ViewBuilder
 	private var styledText: some View {
 		switch style {
@@ -49,7 +54,7 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 		case .native:
 			nativeText
 		case .odometer(let stagger):
-			OdometerText(segments: segments, animation: ease.animation(duration: duration), stagger: stagger)
+			OdometerText(segments: segments, animation: animation, stagger: stagger)
 		case .wave(let amplitude):
 			if #available(iOS 18.0, tvOS 18.0, visionOS 2.0, *) {
 				WaveText(segments: segments, amplitude: amplitude, cycle: waveCycle)
@@ -71,12 +76,26 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 		return NSAttributedString(string: source.content)
 	}
 	
+	private var needsDigitRuns: Bool {
+		if case .odometer = style { return true }
+		return false
+	}
+	
 	private func prepare(from attributed: NSAttributedString) {
-		segments = .init(attributed)
+		segments = .init(attributed, includeDigitRuns: needsDigitRuns)
 		currentValue = segments.value
 		tweenStartValue = currentValue
 		targetValue = currentValue
+		lastNumber = segments.number
+		lastQuantized = Self.quantized(segments.value, decimals: segments.decimals)
 		display = segments.full
+	}
+	
+	static func quantized(_ value: Double, decimals: Int) -> Double {
+		if decimals <= 0 { return value.rounded(.towardZero) }
+		var scale = 1.0
+		for _ in 0..<decimals { scale *= 10 }
+		return (value * scale).rounded(.towardZero)
 	}
 	
 	static func startValue(current: Double, tweenStart: Double, previousTarget: Double, isRunning: Bool) -> Double {
@@ -84,9 +103,8 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 		return previousTarget
 	}
 	
-	static func scrambled<G: RandomNumberGenerator>(_ target: String, progress: Double, using generator: inout G) -> String {
-		let total = target.reduce(0) { $1.isWholeNumber ? $0 + 1 : $0 }
-		guard total > 0 else { return target }
+	static func scrambled<G: RandomNumberGenerator>(_ target: String, progress: Double, digitCount: Int, using generator: inout G) -> String {
+		guard digitCount > 0 else { return target }
 		var result = ""
 		result.reserveCapacity(target.utf8.count)
 		var index = 0
@@ -96,13 +114,18 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 				continue
 			}
 			index += 1
-			if progress >= Double(index) / Double(total) {
+			if progress >= Double(index) / Double(digitCount) {
 				result.append(character)
 			} else {
 				result.unicodeScalars.append(Unicode.Scalar(UInt8.random(in: 48...57, using: &generator)))
 			}
 		}
 		return result
+	}
+	
+	static func scrambled<G: RandomNumberGenerator>(_ target: String, progress: Double, using generator: inout G) -> String {
+		let digitCount = target.reduce(0) { $1.isWholeNumber ? $0 + 1 : $0 }
+		return scrambled(target, progress: progress, digitCount: digitCount, using: &generator)
 	}
 	
 	private func animate(to attributed: NSAttributedString) {
@@ -112,24 +135,26 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 		case .scramble:
 			animateScramble(to: attributed)
 		case .native, .odometer:
-			withAnimation(ease.animation(duration: duration)) {
+			withAnimation(animation) {
 				prepare(from: attributed)
 			}
 		case .wave:
 			let previous = targetValue
 			prepare(from: attributed)
 			guard targetValue != previous else { return }
-			withAnimation(ease.animation(duration: duration)) {
+			withAnimation(animation) {
 				waveCycle += 1
 			}
 		}
 	}
 	
 	private func animateCounting(to attributed: NSAttributedString) {
-		segments = .init(attributed)
+		segments = .init(attributed, includeDigitRuns: false)
 		let newTarget = segments.value
 		guard newTarget != currentValue else {
 			if !Tween.tweens(withName: tweenName).isEmpty { return }
+			lastNumber = segments.number
+			lastQuantized = Self.quantized(segments.value, decimals: segments.decimals)
 			display = segments.full
 			return
 		}
@@ -158,13 +183,20 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 	}
 	
 	private func updateDisplay(value: Double) {
-		display = segments.composed(value: value)
 		currentValue = value
+		let quantized = Self.quantized(value, decimals: segments.decimals)
+		guard quantized != lastQuantized else { return }
+		lastQuantized = quantized
+		let formatted = segments.formatted(value: value)
+		lastNumber = formatted
+		display = segments.composed(number: formatted)
 	}
 	
 	private func updateScramble(progress: Double) {
-		var generator = SystemRandomNumberGenerator()
-		display = segments.composed(number: Self.scrambled(segments.number, progress: progress, using: &generator))
+		var generator = ScrambleGenerator(state: scrambleSeed &+ UInt64((progress * 1_000_000).rounded()))
+		let formatted = Self.scrambled(segments.number, progress: progress, digitCount: segments.digitCount, using: &generator)
+		lastNumber = formatted
+		display = segments.composed(number: formatted)
 	}
 	
 // MARK: - Exposed Methods
@@ -192,6 +224,18 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 				updateScramble(progress: Double(progress))
 			}
 		}
+	}
+}
+
+// MARK: - Type - ScrambleGenerator
+
+private struct ScrambleGenerator: RandomNumberGenerator {
+	
+	var state: UInt64
+	
+	mutating func next() -> UInt64 {
+		state = state &* 6364136223846793005 &+ 1
+		return state
 	}
 }
 #endif

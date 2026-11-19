@@ -110,6 +110,37 @@ extension FusionSuite {
 			#expect(before.last?.id == after.last?.id)
 			#expect(before.last?.id == 0)
 		}
+		
+		@Test
+		func segments_ShouldPrecomputeGlyphsAndDigitRuns() {
+			let segments = TextAnimationSegments(NSAttributedString(string: "1,024"), locale: Locale(identifier: "en_US"), includeDigitRuns: true)
+			#expect(segments.glyphs.map(\.id) == [4, 3, 2, 1, 0])
+			#expect(segments.digitRuns.count == 10)
+			#expect(segments.digitCount == 4)
+			#expect(String(segments.digitRuns[7].characters) == "7")
+		}
+		
+		@Test
+		func segments_WithoutDigitRuns_ShouldSkipTheDigitTable() {
+			let segments = TextAnimationSegments(NSAttributedString(string: "1,024"), locale: Locale(identifier: "en_US"))
+			#expect(segments.digitRuns.isEmpty)
+			#expect(segments.glyphs.count == 5)
+		}
+		
+		@Test
+		func formatted_ShouldMatchComposedNumber() {
+			let segments = TextAnimationSegments(NSAttributedString(string: "Balance $ 1,234.50"), locale: Locale(identifier: "en_US"))
+			let formatted = segments.formatted(value: 9)
+			#expect(String(segments.composed(number: formatted).characters) == "Balance $ \(formatted)")
+		}
+		
+		@Test
+		func quantized_ShouldMatchNumberFormatterTruncation() {
+			#expect(TextUpdateModifier.quantized(1_250.129, decimals: 2) == 125_012)
+			#expect(TextUpdateModifier.quantized(1_250.129, decimals: 0) == 1_250)
+			#expect(TextUpdateModifier.quantized(1_250.9, decimals: 0) == 1_250)
+			#expect(TextUpdateModifier.quantized(1_250.129, decimals: 2) == TextUpdateModifier.quantized(1_250.124, decimals: 2))
+		}
 	}
 }
 #endif

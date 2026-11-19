@@ -17,6 +17,7 @@ struct WaveTextRenderer: TextRenderer, Animatable {
 	
 	var cycle: Double
 	let amplitude: CGFloat
+	let glyphCount: Int
 	
 	var animatableData: Double {
 		get { cycle }
@@ -31,20 +32,12 @@ struct WaveTextRenderer: TextRenderer, Animatable {
 	
 	func draw(layout: Text.Layout, in context: inout GraphicsContext) {
 		let progress = cycle - cycle.rounded(.down)
-		guard progress > 0 else {
+		guard progress > 0, glyphCount > 0 else {
 			for line in layout { context.draw(line) }
 			return
 		}
 		
-		var total = 0
-		for line in layout {
-			for run in line where run[WaveNumberAttribute.self] != nil {
-				total += run.count
-			}
-		}
-		
 		var index = 0
-		
 		for line in layout {
 			for run in line {
 				guard run[WaveNumberAttribute.self] != nil else {
@@ -54,7 +47,7 @@ struct WaveTextRenderer: TextRenderer, Animatable {
 				
 				for slice in run {
 					var copy = context
-					copy.translateBy(x: 0, y: Self.offset(index: index, total: total, progress: progress, amplitude: amplitude))
+					copy.translateBy(x: 0, y: Self.offset(index: index, total: glyphCount, progress: progress, amplitude: amplitude))
 					copy.draw(slice)
 					index += 1
 				}
@@ -75,13 +68,13 @@ struct WaveText: View {
 	private var composed: Text {
 		guard segments.hasNumber else { return Text(segments.full) }
 		let number = Text(AttributedString(segments.number, attributes: segments.numberAttributes)).customAttribute(WaveNumberAttribute())
-		return Text("\(Text(segments.prefix))\(number)\(Text(segments.suffix))")
+		return Text(segments.prefix) + number + Text(segments.suffix)
 	}
 	
 	var body: some View {
 		composed
-			.textRenderer(WaveTextRenderer(cycle: cycle, amplitude: amplitude))
-			.accessibilityLabel(segments.template.string)
+			.textRenderer(WaveTextRenderer(cycle: cycle, amplitude: amplitude, glyphCount: segments.digitCount))
+			.accessibilityLabel(segments.string)
 	}
 }
 

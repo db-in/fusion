@@ -15,8 +15,15 @@ struct OdometerGlyph: Identifiable, Equatable {
 	var digit: Int? { character.wholeNumberValue }
 	
 	static func glyphs(for string: String) -> [OdometerGlyph] {
-		let characters = Array(string)
-		return characters.enumerated().map { .init(id: characters.count - 1 - $0.offset, character: $0.element) }
+		let count = string.count
+		var result: [OdometerGlyph] = []
+		result.reserveCapacity(count)
+		var index = 0
+		for character in string {
+			result.append(.init(id: count - 1 - index, character: character))
+			index += 1
+		}
+		return result
 	}
 }
 
@@ -24,23 +31,17 @@ struct OdometerGlyph: Identifiable, Equatable {
 
 struct OdometerDigit: View {
 	
-	private static let symbols: [String] = (0...9).map { "\($0)" }
-	
 	let digit: Int
-	let attributes: AttributeContainer
-	
-	private func glyph(_ value: Int) -> Text {
-		Text(AttributedString(Self.symbols[value], attributes: attributes))
-	}
+	let runs: [AttributedString]
 	
 	var body: some View {
-		glyph(0)
+		Text(runs[0])
 			.hidden()
 			.overlay(alignment: .top) {
 				GeometryReader { proxy in
 					VStack(spacing: 0) {
 						ForEach(0..<10, id: \.self) { value in
-							glyph(value)
+							Text(runs[value])
 								.frame(width: proxy.size.width, height: proxy.size.height)
 						}
 					}
@@ -60,12 +61,12 @@ struct OdometerText: View {
 	let stagger: Double
 	
 	@ViewBuilder
-	private func glyphView(_ glyph: OdometerGlyph, attributes: AttributeContainer) -> some View {
+	private func glyphView(_ glyph: OdometerGlyph) -> some View {
 		if let digit = glyph.digit {
-			OdometerDigit(digit: digit, attributes: attributes)
+			OdometerDigit(digit: digit, runs: segments.digitRuns)
 				.animation(animation.delay(Double(glyph.id) * stagger), value: digit)
 		} else {
-			Text(AttributedString(String(glyph.character), attributes: attributes))
+			Text(AttributedString(String(glyph.character), attributes: segments.numberAttributes))
 		}
 	}
 	
@@ -73,14 +74,14 @@ struct OdometerText: View {
 		if segments.hasNumber {
 			HStack(alignment: .firstTextBaseline, spacing: 0) {
 				Text(segments.prefix)
-				ForEach(OdometerGlyph.glyphs(for: segments.number)) { glyph in
-					glyphView(glyph, attributes: segments.numberAttributes)
+				ForEach(segments.glyphs) { glyph in
+					glyphView(glyph)
 						.transition(.move(edge: .bottom).combined(with: .opacity))
 				}
 				Text(segments.suffix)
 			}
 			.accessibilityElement(children: .ignore)
-			.accessibilityLabel(segments.template.string)
+			.accessibilityLabel(segments.string)
 		} else {
 			Text(segments.full)
 		}
@@ -93,7 +94,7 @@ private struct OdometerPreview: View {
 	
 	var body: some View {
 		VStack(spacing: 24) {
-			OdometerText(segments: .init(NSAttributedString(string: "\(value)", attributes: [.font: UIFont.systemFont(ofSize: 48, weight: .bold)])),
+			OdometerText(segments: .init(NSAttributedString(string: "\(value)", attributes: [.font: UIFont.systemFont(ofSize: 48, weight: .bold)]), includeDigitRuns: true),
 						 animation: Ease.backOut.animation(duration: 0.6),
 						 stagger: 0.05)
 			Button("Random") {

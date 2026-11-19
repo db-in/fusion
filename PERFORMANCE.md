@@ -58,14 +58,21 @@ If the standard approach cannot meet the budget, use a better technique: split w
 
 ## Case study: `textAnimated`
 
-The counting and scramble styles rebuild the label on every tween tick, up to 120 times per second per label.
+The counting and scramble styles rebuild the label on every tween tick, up to 120 times per second per label. Numbers below are helper costs measured with `measureLoop` (iPhone simulator, Release), per operation.
 
-| Benchmark (iPhone simulator, Release) | Before | After |
-|---|---:|---:|
-| Counting frame | ~15.3 µs, ~288k instructions | ~5.0 µs, ~95k instructions |
-| Scramble frame | ~15.3 µs, ~290k instructions | ~5.0 µs, ~108k instructions |
+| Benchmark | First cut | After segment split | After quantized skip |
+|---|---:|---:|---:|
+| Counting frame (every digit changes) | ~15.3 µs / ~288k instr | ~5.0 µs / ~96k instr | ~5.0 µs / ~96k instr |
+| Counting frame (same visible digits) | (same as above) | (same as above) | **~0.5 µs / ~11k instr** |
+| Scramble frame | ~15.3 µs / ~290k instr | ~5.0 µs / ~96k instr | ~5.0 µs / ~96k instr |
+| Prepare (once per value change) | ~2.9 µs | ~20 µs | ~21 µs |
+| Odometer glyph split | ~0.5 µs / ~16k instr | ~0.5 µs / ~16k instr | **~0.25 µs / ~9k instr** |
 
-Before, each frame copied the whole `NSAttributedString`, replaced the number, and converted the result to `AttributedString`. Now `TextAnimationSegments` converts the template once per value change into a prefix, the number's attributes, and a suffix. Each frame only builds the small number run and joins the three pieces. Preparing a new value costs ~20 µs once, instead of ~10 µs extra on every frame.
+What changed:
+1. **Segment split** — convert the template once per value change into prefix, number style, and suffix. Frames only build the number run.
+2. **Quantized skip** — counting compares a truncated numeric key before calling `NumberFormatter` or rebuilding `AttributedString`. Real tweens spend many frames on the same visible digits; those frames drop well under the 5 µs budget.
+3. **Odometer prep** — glyph lists and digit `AttributedString`s are built once on change (digit runs only for the odometer style). Body no longer reallocates them.
+4. **Wave** — `Text + Text` instead of localized interpolation; glyph count is passed into the renderer so draw does one pass.
 
 ## Adding a benchmark
 
