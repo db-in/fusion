@@ -51,20 +51,20 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 		switch style {
 		case .counting, .scramble:
 			Text(display)
-		case .native:
-			nativeText
+		case .numericText:
+			numericText
 		case .odometer(let stagger):
 			OdometerText(segments: segments, animation: animation, stagger: stagger)
 		case .wave(let amplitude):
 			if #available(iOS 18.0, tvOS 18.0, visionOS 2.0, *) {
 				WaveText(segments: segments, amplitude: amplitude, cycle: waveCycle)
 			} else {
-				nativeText
+				numericText
 			}
 		}
 	}
 	
-	private var nativeText: some View {
+	private var numericText: some View {
 		Text(segments.full)
 			.contentTransition(.numericText(value: targetValue))
 	}
@@ -134,7 +134,7 @@ public struct TextUpdateModifier: ViewModifier, TweenDelegate {
 			animateCounting(to: attributed)
 		case .scramble:
 			animateScramble(to: attributed)
-		case .native, .odometer:
+		case .numericText, .odometer:
 			withAnimation(animation) {
 				prepare(from: attributed)
 			}

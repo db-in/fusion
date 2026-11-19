@@ -13,8 +13,8 @@ public enum TextAnimationStyle {
 	/// Counts from the old value to the new value, frame by frame, using a ``Tween``.
 	case counting
 	
-	/// Uses the native SwiftUI `numericText` content transition.
-	case native
+	/// Uses SwiftUI's `contentTransition(.numericText)` so digits morph toward the new value.
+	case numericText
 	
 	/// Rolls every digit vertically like a mechanical counter.
 	///
@@ -24,7 +24,7 @@ public enum TextAnimationStyle {
 	/// Shuffles the digits randomly and settles them from leading to trailing on the new value.
 	case scramble
 	
-	/// Ripples the digits of the new value in a wave. Requires iOS 18, falling back to ``native`` otherwise.
+	/// Ripples the digits of the new value in a wave. Requires iOS 18, falling back to ``numericText`` otherwise.
 	///
 	/// - Parameter amplitude: The maximum vertical offset of each glyph, in points.
 	case wave(amplitude: CGFloat = 6)

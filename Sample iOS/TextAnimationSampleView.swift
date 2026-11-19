@@ -12,7 +12,7 @@ private struct TextAnimationSample: Identifiable {
 	
 	static let all: [TextAnimationSample] = [
 		.init(id: "Counting", style: .counting),
-		.init(id: "Native", style: .native),
+		.init(id: "Numeric text", style: .numericText),
 		.init(id: "Odometer", style: .odometer()),
 		.init(id: "Scramble", style: .scramble),
 		.init(id: "Wave", style: .wave(amplitude: 10))

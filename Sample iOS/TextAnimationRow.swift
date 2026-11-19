@@ -77,8 +77,8 @@ private struct TextAnimationRowPreview: View {
 	TextAnimationRowPreview(title: "Counting", style: .counting)
 }
 
-#Preview("Native") {
-	TextAnimationRowPreview(title: "Native", style: .native)
+#Preview("Numeric text") {
+	TextAnimationRowPreview(title: "Numeric text", style: .numericText)
 }
 
 #Preview("Odometer") {
