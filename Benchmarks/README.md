@@ -9,6 +9,10 @@ Pick one:
 
 The dashboard opens as soon as the run starts and streams it live: builds, cooldowns, every test as it is measured. When the run finishes, the page reloads with the new history. Pressing Stop in Xcode, or Ctrl-C in Terminal, cancels the run without touching the history.
 
+## Requirements
+
+The budgets these numbers are held to, the regression gates, and how to add a benchmark are in [PERFORMANCE.md](../PERFORMANCE.md). Anything that can run on the main thread must have a benchmark here.
+
 ## Where results live
 
 | File | What it is |

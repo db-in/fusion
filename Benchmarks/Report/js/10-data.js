@@ -298,6 +298,30 @@ const CATALOG = {
 		measures: "String.sizeThatFits(font:width:)",
 		how: "500 size measurements at width 200.",
 		why: "UILabel-style fitting without a view."
+	},
+	testTextAnimationPrepare: {
+		feature: "Text animation prepare",
+		measures: "TextAnimationSegments.init(_:locale:)",
+		how: "2,000 parses of a two-style attributed template: number detection, value parse and a single AttributedString conversion split into prefix, number style and suffix.",
+		why: "Runs on the main thread once per value change of textAnimated. Pays the conversion once so frames never do."
+	},
+	testTextAnimationCountingFrame: {
+		feature: "Text animation counting frame",
+		measures: "TextAnimationSegments.composed(value:locale:)",
+		how: "2,000 frames formatting a changing value and composing prefix + number run + suffix.",
+		why: "Runs on the main thread on every tween tick of the counting style, up to 120 times per second per label."
+	},
+	testTextAnimationScrambleFrame: {
+		feature: "Text animation scramble frame",
+		measures: "TextUpdateModifier.scrambled + TextAnimationSegments.composed(number:)",
+		how: "2,000 frames scrambling the unsettled digits and composing the attributed result.",
+		why: "Runs on the main thread on every tween tick of the scramble style."
+	},
+	testOdometerGlyphs: {
+		feature: "Odometer glyph split",
+		measures: "OdometerGlyph.glyphs(for:)",
+		how: "2,000 splits of a grouped decimal number into trailing-keyed glyphs.",
+		why: "Runs inside the odometer body on every value change; keys keep units aligned so SwiftUI only rolls changed digits."
 	}
 };
 
@@ -319,7 +343,7 @@ const SUITES = {
 	CorePerformanceTests: { label: "Core", color: "--teal", tags: ["foundation", "codable", "concurrency"] },
 	HotPathPerformanceTests: { label: "Hot path", color: "--accent", tags: ["formatting", "storage", "localization"] },
 	ImagePipelinePerformanceTests: { label: "Image pipeline", color: "--pink", tags: ["images", "cache", "decode"] },
-	UIPerformanceTests: { label: "UI", color: "--violet", tags: ["drawing", "text", "color"] }
+	UIPerformanceTests: { label: "UI", color: "--violet", tags: ["drawing", "text", "color", "animation"] }
 };
 
 function suiteInfo(suite) {

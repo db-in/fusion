@@ -58,7 +58,7 @@ Run it yourself:
 - Double-click **`Run Benchmarks.command`**, or
 - In Xcode: scheme **Benchmarks** → **⌘B**
 
-Results open in [`Benchmarks/report.html`](Benchmarks/report.html) (**Baseline · Best · Worst · Current**). History: [`Benchmarks/HISTORY.md`](Benchmarks/HISTORY.md). How to run: [Benchmarks/README.md](Benchmarks/README.md).
+Results open in [`Benchmarks/report.html`](Benchmarks/report.html) (**Baseline · Best · Worst · Current**). History: [`Benchmarks/HISTORY.md`](Benchmarks/HISTORY.md). How to run: [Benchmarks/README.md](Benchmarks/README.md). Budgets and rules: [PERFORMANCE.md](PERFORMANCE.md).
 
 ---
 
@@ -223,7 +223,7 @@ github "db-in/fusion" ~> 2.1.1
 
 ## Contributing
 
-Issues and pull requests are welcome. If you touch a hot path, run the **Benchmarks** scheme and keep `Benchmarks/report.html` honest.
+Issues and pull requests are welcome. Read [PERFORMANCE.md](PERFORMANCE.md) first: anything that can run on the main thread has a hard budget. If you touch a hot path, add or update its benchmark, run the **Benchmarks** scheme, and keep `Benchmarks/report.html` honest.
 
 ## License
 

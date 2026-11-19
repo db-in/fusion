@@ -17,6 +17,8 @@ final class UIPerformanceTests : PerformanceTestCase {
 	
 	private let font = UIFont.systemFont(ofSize: 15)
 	
+	private let english = Locale(identifier: "en_US")
+	
 // MARK: - Colors
 	
 	func testColorInterpolation() {
@@ -58,6 +60,38 @@ final class UIPerformanceTests : PerformanceTestCase {
 	func testSizeThatFits() {
 		let font = font
 		measureLoop(iterations: 500) { _ = "Apple Inc. closed at \($0).25 USD".sizeThatFits(font: font, width: 200) }
+	}
+	
+// MARK: - Text animation
+	
+	private var animatedTemplate: NSAttributedString {
+		"Balance $ 12,345.67 today"
+			.styled([.font: font, .foregroundColor: UIColor.secondaryLabel])
+			.styled([.font: UIFont.monospacedDigitSystemFont(ofSize: 17, weight: .bold), .foregroundColor: UIColor.systemGreen], onText: "12,345.67")
+	}
+	
+	func testTextAnimationPrepare() {
+		let template = animatedTemplate
+		measureLoop { _ in _ = TextAnimationSegments(template, locale: english) }
+	}
+	
+	func testTextAnimationCountingFrame() {
+		let segments = TextAnimationSegments(animatedTemplate, locale: english)
+		let locale = english
+		measureLoop { _ = segments.composed(value: 12_345.67 + Double($0), locale: locale) }
+	}
+	
+	func testTextAnimationScrambleFrame() {
+		let segments = TextAnimationSegments(animatedTemplate, locale: english)
+		var generator = SystemRandomNumberGenerator()
+		measureLoop { index in
+			let scrambled = TextUpdateModifier.scrambled(segments.number, progress: Double(index % 100) / 100, using: &generator)
+			_ = segments.composed(number: scrambled)
+		}
+	}
+	
+	func testOdometerGlyphs() {
+		measureLoop { _ = OdometerGlyph.glyphs(for: "\($0 + 10_000).25") }
 	}
 }
 #endif

@@ -15,6 +15,7 @@ class MainViewController: UIViewController {
 		case tween
 		case navigation
 		case presentation
+		case textAnimation
 	}
 
 	lazy var tableView: UITableView = {
@@ -54,6 +55,8 @@ extension MainViewController : UITableViewDataSource, UITableViewDelegate {
 			cell.textLabel?.text = "Navigation"
 		case .presentation:
 			cell.textLabel?.text = "Presentation cases"
+		case .textAnimation:
+			cell.textLabel?.text = "Text animation"
 		}
 		return cell
 	}
@@ -70,6 +73,8 @@ extension MainViewController : UITableViewDataSource, UITableViewDelegate {
 			navigationController?.pushViewController(host, animated: true)
 		case .presentation:
 			navigationController?.pushViewController(UIHostingController(rootView: PresentationCasesView()), animated: true)
+		case .textAnimation:
+			navigationController?.pushViewController(UIHostingController(rootView: TextAnimationSampleView()), animated: true)
 		}
 	}
 }

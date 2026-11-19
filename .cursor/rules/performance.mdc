@@ -1,0 +1,28 @@
+---
+description: Fusion performance requirements for any code that can run on the main thread
+alwaysApply: true
+---
+
+# Performance first
+
+Read and follow [PERFORMANCE.md](../../PERFORMANCE.md). Summary:
+
+- Treat anything that can run on the main thread (SwiftUI `body`, modifiers, renderers, UIKit layout/draw, `Tween` ticks, `@MainActor` code) as running inside a frame, many times, on the slowest device.
+- Budgets per call: **≤ 5 µs per frame**, **≤ 50 µs per value change**, **≤ 1 ms per appearance**. Anything slower goes off main.
+- Do work once on change, never per frame: no `NSAttributedString` to `AttributedString` conversion, regex compile, formatter creation, or table building in a frame.
+- No intermediate arrays (`flatMap`, `filter`, `map` chains) in tick or draw loops. `reserveCapacity` when size is known. No `AnyView`.
+- Prefer system-driven animation (`contentTransition`, `Animatable`, `TextRenderer`, Core Animation) over per-frame state changes.
+- Measure, don't guess: every hot path gets a `measureLoop` benchmark in `Fusion/Tests/*PerformanceTests.swift` plus a `CATALOG` entry in `Benchmarks/Report/js/10-data.js`. Report before and after numbers.
+- If the standard approach misses the budget, use a better technique (precomputed segments, lookup tables, render-time renderers, `Accelerate`, Core Text, Metal) and justify it with numbers.
+
+Bad, converts the whole string on every tick:
+
+```swift
+display = AttributedString(template.replacingNumber(with: formatted))
+```
+
+Good, segments converted once on change and only the number run built per tick:
+
+```swift
+display = segments.composed(number: formatted)
+```

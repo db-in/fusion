@@ -198,13 +198,16 @@ public final class PresentationController : UIPresentationController {
 	}
 	
 	private func trackKeyboard() {
+#if !os(tvOS)
 		let center = NotificationCenter.default
 		[UIResponder.keyboardWillShowNotification, UIResponder.keyboardWillChangeFrameNotification, UIResponder.keyboardWillHideNotification].forEach {
 			center.removeObserver(self, name: $0, object: nil)
 			center.addObserver(self, selector: #selector(keyboardChanged(notification:)), name: $0, object: nil)
 		}
+#endif
 	}
 	
+#if !os(tvOS)
 	@objc private func keyboardChanged(notification: Notification) {
 		guard
 			let containerView,
@@ -223,6 +226,7 @@ public final class PresentationController : UIPresentationController {
 			containerView.layoutIfNeeded()
 		}
 	}
+#endif
 	
 	private func updateKeyboardInset() {
 		let inset = max(0, keyboardOverlap - (containerView?.safeAreaInsets.bottom ?? 0))
